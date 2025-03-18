@@ -1,0 +1,1002 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content%}
+    <!-- Page Header Start -->
+	<div class="page-header parallaxie">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<!-- Page Header Box Start -->
+					<div class="page-header-box">
+						<h1 class="text-anime-style-2" data-cursor="-opaque">About us</h1>
+						<nav class="wow fadeInUp">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="{% url 'blog:index' %}">home</a></li>
+								<li class="breadcrumb-item active" aria-current="page">about us</li>
+							</ol>
+						</nav>
+					</div>
+					<!-- Page Header Box End -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Page Header End -->
+
+    <!-- About Us Section Start -->
+    <div class="about-us page-about-us">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <!-- About Us Images Start -->
+                    <div class="about-us-images">
+                        <!-- About Image 1 Start -->
+                        <div class="about-img-1">
+                            <figure class="image-anime reveal">
+                                <img src="{% static 'images/about-img-1.jpg' %}" alt="">
+                            </figure>
+                        </div>
+                        <!-- About Image 1 End -->
+
+                        <!-- About Image 2 Start -->
+                        <div class="about-img-2">
+                            <figure class="image-anime reveal">
+                                <img src="{% static 'images/about-img-2.jpg' %}" alt="">
+                            </figure>
+
+                            <!-- Feedback Counter Start -->
+                            <div class="experience-counter">
+                                <h3><span class="counter">15</span>+</h3>
+                                <p>Years of experience</p>
+                            </div>
+                            <!-- Feedback Counter End -->
+                        </div>
+                        <!-- About Image 2 End -->
+    
+                        <!-- Feedback Counter Start -->
+                        <div class="feedback-counter">
+                            <p><span class="counter">95</span>%</p>
+                            <h3>positive feedback</h3>
+                        </div>
+                        <!-- Feedback Counter End -->
+                    </div>
+                    <!-- About Us Images End -->
+                </div>
+
+                <div class="col-lg-6">
+                    <!-- About Us Content Start -->
+                    <div class="about-us-content">
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h3 class="wow fadeInUp">about us</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Our passion for design, your <span>vision realized</span></h2>
+                            <p class="wow fadeInUp" data-wow-delay="0.2s">Our dedicated team of designers works closely with you to understand your vision and bring it to life with thoughtful attention to detail. Whether it's transforming a single room or an entire home.</p>
+                        </div>
+                        <!-- Section Title End -->
+
+                        <!-- About Us Content Body Start -->
+                        <div class="about-us-content-body">
+                            <!-- About Content Info Start -->
+                            <div class="about-us-content-info">
+                                <!-- About Us Content List Start -->
+                                <div class="about-us-content-list wow fadeInUp" data-wow-delay="0.4s">
+                                    <ul>
+                                        <li>creative expertise</li>
+                                        <li>client-centered approach</li>
+                                    </ul>
+                                </div>
+                                <!-- About Us Content List End -->
+
+                                <!-- About Us Content Button Start -->
+                                <div class="about-us-content-btn wow fadeInUp" data-wow-delay="0.6s">
+                                    <a href="{% url 'blog:contact' %}" class="btn-default">contect now</a>
+                                </div>
+                                <!-- About Us Content Button End -->
+                            </div>
+                            <!-- About Content Info End -->
+
+                            <!-- About Content List Start -->
+                            <div class="about-us-contact-list">
+                                <!-- About Contact Item Start -->
+                                <div class="about-contact-item wow fadeInUp" data-wow-delay="0.4s">
+                                    <div class="icon-box">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </div>
+                                    <div class="about-contact-content">
+                                        <p>need any help?</p>
+                                        <h3>+(1) 235 800 999</h3>
+                                    </div>
+                                </div>
+                                <!-- About Contact Item End -->
+
+                                <!-- About Contact Item Start -->
+                                <div class="about-contact-item wow fadeInUp" data-wow-delay="0.6s">
+                                    <div class="icon-box">
+                                        <figure class="image-anime">
+                                            <img src="{% static 'images/author-1.jpg' %}" alt="">
+                                        </figure>
+                                    </div>
+                                    <div class="about-contact-content">
+                                        <h3>leslie alexander</h3>
+                                        <p>co founder</p>
+                                    </div>
+                                </div>
+                                <!-- About Contact Item End -->
+                            </div>
+                            <!-- About Content Info End -->
+                        </div>
+                        <!-- About Us Content Body End -->
+                    </div>
+                    <!-- About Us Content End -->
+                </div>
+
+                <div class="col-lg-12">
+                    <!-- About Facility List Start -->
+                    <div class="about-facility-list">
+                        <!-- About Facility Item Start -->
+                        <div class="about-facility-item wow fadeInUp">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-about-facility-1.svg' %}" alt="">
+                            </div>
+
+                            <div class="about-facility-content">
+                                <h3>reasonable prices</h3>
+                                <p>We produce furniture to fulfill needs of all people and offer it at affordable prices.</p>
+                            </div>
+                        </div>
+                        <!-- About Facility Item End -->
+
+                        <!-- About Facility Item Start -->
+                        <div class="about-facility-item wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-about-facility-2.svg' %}" alt="">
+                            </div>
+
+                            <div class="about-facility-content">
+                                <h3>exclusive design</h3>
+                                <p>Mixture of imagination, experience and professionalism is the secret of our design!</p>
+                            </div>
+                        </div>
+                        <!-- About Facility Item End -->
+
+                        <!-- About Facility Item Start -->
+                        <div class="about-facility-item wow fadeInUp" data-wow-delay="0.4s">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-about-facility-2.svg' %}" alt="">
+                            </div>
+
+                            <div class="about-facility-content">
+                                <h3>professional team</h3>
+                                <p>We are proud of our amicable, professional and always developing team!</p>
+                            </div>
+                        </div>
+                        <!-- About Facility Item End -->
+                    </div>
+                    <!-- About Facility List End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About Us Section End -->
+
+    <!-- Vision Mission Start -->
+    <div class="vision-mission">
+        <div class="container">
+            <div class="row section-row align-items-center">
+                <div class="col-lg-6">
+                    <!-- Section Title Start -->
+                    <div class="section-title dark-section">
+                        <h3 class="wow fadeInUp">vision mission</h3>
+                        <h2 class="text-anime-style-2" data-cursor="-opaque">A behind the scenes look at <span>our agency</span></h2>
+                    </div>
+                    <!-- Section Title End -->
+                </div>
+
+                <div class="col-lg-6">
+                    <!-- Section Title Content Start -->
+                    <div class="section-title-content dark-section">
+                        <p class="wow fadeInUp" data-wow-delay="0.2s">Our portfolio showcases a diverse range of projects, from beautifully crafted residential spaces functional and stylish commercial interiors</p>
+                    </div>
+                    <!-- Section Title Content End -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Vision Mission Box Start -->
+                    <div class="vision-mission-box">
+                        <!-- Vision Mission Item Start -->
+                        <div class="vision-mission-item wow fadeInUp">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-our-vision.svg' %}" alt="">
+                            </div>
+                            <div class="vision-mission-content">
+                                <h3>our vision</h3>
+                                <p>Our vision is rooted in the belief that thoughtfully designed spaces can transform lives, enhancing how people feel, work, and connect. We are committed to creating interiors that reflect our clients' unique identities, blending comfort, functionality, and beauty. By combining timeless design with modern innovations, we craft spaces that are visually stunning and practical.</p>
+                            </div>
+                        </div>
+                        <!-- Vision Mission Item End -->
+    
+                        <!-- Vision Mission Item Start -->
+                        <div class="vision-mission-item wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-our-mission.svg' %}" alt="">
+                            </div>
+                            <div class="vision-mission-content">
+                                <h3>our mission</h3>
+                                <p>Our mission is to deliver exceptional interior designs that enhance the quality of life by prioritizing comfort, functionality, and aesthetics. We aim to create space that are not only visually appealing but also tailored to meet the specific needs and desires of our client By staying true to design innovation, we ensure that every project reflects the perfect balance between style and purpose.</p>
+                            </div>
+                        </div>
+                        <!-- Vision Mission Item End -->
+                    </div>
+                    <!-- Vision Mission Box End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Vision Mission End -->
+
+    <!-- Best Seeling Start -->
+     <div class="best-selling">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <!-- Best Seeling Content Start -->
+                    <div class="best-selling-content">
+                        <!-- Best Seeling Content Image Start -->
+                        <div class="best-selling-content-img">
+                            <figure class="image-anime reveal">
+                                <img src="{% static 'images/best-selling-img-1.jpg' %}" alt="">
+                            </figure>
+                        </div>
+                        <!-- Best Seeling Content Image End -->
+
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h3 class="wow fadeInUp">best selling finishes</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">We use materials only from personally <span>verified suppliers</span></h2>
+                            <p class="wow fadeInUp" data-wow-delay="0.2s">Gloss, matte wood texture, 200+ colors to choose from. Environmentally friendly materials, all certificates are available.</p>
+                        </div>
+                        <!-- Section Title End -->
+                    </div>
+                    <!-- Best Seeling Content End -->
+                </div>
+                <div class="col-lg-6">
+                    <!-- Best Seeling Image Start -->
+                    <div class="best-selling-iamge">
+                        <figure class="image-anime reveal">
+                            <img src="{% static 'images/best-selling-img-2.jpg' %}" alt="">
+                        </figure>
+                    </div>
+                    <!-- Best Seeling Image End -->
+                </div>
+            </div>
+        </div>
+     </div>
+    <!-- Best Seeling End -->
+
+    <!-- Our Testimonial Start -->
+    <div class="our-testimonials">
+        <div class="container-fluid">
+            <div class="row no-gutters">
+                <div class="col-lg-6">
+                    <!-- Our Testimonial Image Start -->
+                    <div class="our-testimonials-image">
+                        <figure class="image-anime">
+                            <img src="{% static 'images/testimonial-img.jpg' %}" alt="">
+                        </figure>
+                    </div>
+                    <!-- Our Testimonial Image End -->
+                </div>
+
+                <div class="col-lg-6">
+                    <!-- Our Testimonial Content Start -->
+                    <div class="our-testimonial-content">
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h3 class="wow fadeInUp">client testimonials</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Trusted by thousand of <span>people & companies.</span></h2>
+                        </div>
+                        <!-- Section Title End -->
+
+                        <!-- Testimonial Slider Start -->
+                        <div class="testimonial-slider">
+                            <div class="swiper">
+                                <div class="swiper-wrapper" data-cursor-text="Drag">
+                                    <!-- Testimonial Slide Start -->
+                                    <div class="swiper-slide">
+                                        <div class="testimonial-item">	
+                                            <div class="testimonial-rating">
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                            </div>                                        
+                                            <div class="testimonial-body">
+                                                <div class="testimonial-content">
+                                                    <p>I couldn't be happier with the transformation of my home! From our very first consultation, the team at took the time to understand my vision and preferences.</p>
+                                                </div>
+                                            </div>
+                                            <div class="testimonial-body">
+                                                <div class="author-image">
+                                                    <figure class="image-anime">
+                                                        <img src="{% static 'images/author-1.jpg' %}" alt="">
+                                                    </figure>
+                                                </div>            
+                                                <div class="author-content">
+                                                    <h3>arlene mcCoy</h3>
+                                                    <p>co. founder</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Testimonial Slide End -->
+
+                                    <!-- Testimonial Slide Start -->
+                                    <div class="swiper-slide">
+                                        <div class="testimonial-item">	
+                                            <div class="testimonial-rating">
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                                <i class="fa-solid fa-star"></i>
+                                            </div>                                        
+                                            <div class="testimonial-content">
+                                                <p>I couldn't be happier with the transformation of my home! From our very first consultation, the team at took the time to understand my vision and preferences.</p>
+                                            </div>
+                                            <div class="testimonial-body">
+                                                <div class="author-image">
+                                                    <figure class="image-anime">
+                                                        <img src="{% static 'images/author-1.jpg' %}" alt="">
+                                                    </figure>
+                                                </div>            
+                                                <div class="author-content">
+                                                    <h3>arlene mcCoy</h3>
+                                                    <p>co founder</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Testimonial Slide End -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Testimonial Slider End -->
+
+                        <!-- Testimonial Rating Counter Start -->
+                        <div class="testimonial-rating-counter">
+                            <div class="rating-counter">
+                                <h2><span class="counter">4.82</span></h2>
+                            </div>
+                            <div class="testimonial-rating-content">
+                                <div class="testimonial-client-rating">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                                <p>2,488 reviews</p>
+                            </div>
+                        </div>
+                        <!-- Testimonial Rating Counter End -->
+                    </div>
+                    <!-- Our Testimonial Content End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Our Testimonial End -->
+
+    <!-- Our Team Section Start -->
+     <div class="our-team">
+        <div class="container">
+            <div class="row section-row align-items-center">
+                <div class="col-lg-5">
+                    <!-- Section Title Start -->
+                    <div class="section-title">
+                        <h3 class="wow fadeInUp">meet our team</h3>
+                        <h2 class="text-anime-style-2" data-cursor="-opaque">Creative minds always <span>think something</span></h2>
+                    </div>
+                    <!-- Section Title End -->
+                </div>
+
+                <div class="col-lg-7">
+                    <!-- Section Title Content Start -->
+                    <div class="section-title-content">
+                        <p class="wow fadeInUp" data-wow-delay="0.2s">We offer a range of bespoke interior design services tailored to your unique needs. From concept development to final installation.</p>
+                    </div>
+                    <!-- Section Title Content End -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <!-- Team Member Item Start -->
+					<div class="team-member-item wow fadeInUp">
+                        <!-- Team Image Start -->
+						<div class="team-image">
+                            <a href="#" data-cursor-text="View">
+                                <figure class="image-anime">
+                                    <img src="{% static 'images/team-1.jpg' %}" alt="">
+                                </figure>
+                            </a>
+
+                            <!-- Team Readmore Button Start -->
+                            <div class="team-readmore-btn">
+                                <a href="#"><img src="{% static 'images/arrow-white.svg' %}" alt=""></a>
+                            </div>
+                            <!-- Team Readmore Button End -->
+						</div>	
+                        <!-- Team Image End -->
+
+                        <!-- Team Body Start -->
+                        <div class="team-body">
+                            <!-- Team Content Start -->
+                            <div class="team-content">
+                                <h3>harry R. blackston</h3>
+                                <p>co-founder & CEO</p>
+                            </div>
+                            <!-- Team Content End -->
+                            
+                            <!-- Team Social List Start -->
+                            <div class="team-social-list">
+                                <!-- Team Social Icon Start -->
+                                <div class="team-social-icon">
+                                    <ul>
+                                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                    </ul>
+                                </div>
+                                <!-- Team Social Icon End -->
+                            </div>
+                            <!-- Team Social List End -->
+                        </div>
+                        <!-- Team Body End -->
+					</div>
+					<!-- Team Member Item Start -->
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <!-- Team Member Item Start -->
+					<div class="team-member-item wow fadeInUp" data-wow-delay="0.2s">
+                        <!-- Team Image Start -->
+						<div class="team-image">
+                            <a href="#" data-cursor-text="View">
+                                <figure class="image-anime">
+                                    <img src="{% static 'images/team-2.jpg' %}" alt="">
+                                </figure>
+                            </a>
+                            
+                            <!-- Team Readmore Button Start -->
+                            <div class="team-readmore-btn">
+                                <a href="#"><img src="{% static 'images/arrow-white.svg' %}" alt=""></a>
+                            </div>
+                            <!-- Team Readmore Button End -->
+						</div>	
+                        <!-- Team Image End -->
+
+                        <!-- Team Body Start -->
+                        <div class="team-body">
+                            <!-- Team Content Start -->
+                            <div class="team-content">
+                                <h3>alexa brook</h3>
+                                <p>human resoures manager</p>
+                            </div>
+                            <!-- Team Content End -->
+                            
+                            <!-- Team Social List Start -->
+                            <div class="team-social-list">
+                                <!-- Team Social Icon Start -->
+                                <div class="team-social-icon">
+                                    <ul>
+                                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                    </ul>
+                                </div>
+                                <!-- Team Social Icon End -->
+                            </div>
+                            <!-- Team Social List End -->
+                        </div>
+                        <!-- Team Body End -->
+					</div>
+					<!-- Team Member Item Start -->
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <!-- Team Member Item Start -->
+					<div class="team-member-item wow fadeInUp" data-wow-delay="0.4s">
+                        <!-- Team Image Start -->
+						<div class="team-image">
+                            <a href="#" data-cursor-text="View">
+                                <figure class="image-anime">
+                                    <img src="{% static 'images/team-3.jpg' %}" alt="">
+                                </figure>
+                            </a>
+                            
+                            <!-- Team Readmore Button Start -->
+                            <div class="team-readmore-btn">
+                                <a href="#"><img src="{% static 'images/arrow-white.svg' %}" alt=""></a>
+                            </div>
+                            <!-- Team Readmore Button End -->
+						</div>	
+                        <!-- Team Image End -->
+
+                        <!-- Team Body Start -->
+                        <div class="team-body">
+                            <!-- Team Content Start -->
+                            <div class="team-content">
+                                <h3>suzen hilly</h3>
+                                <p>civil engineering</p>
+                            </div>
+                            <!-- Team Content End -->
+                            
+                            <!-- Team Social List Start -->
+                            <div class="team-social-list">
+                                <!-- Team Social Icon Start -->
+                                <div class="team-social-icon">
+                                    <ul>
+                                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                    </ul>
+                                </div>
+                                <!-- Team Social Icon End -->
+                            </div>
+                            <!-- Team Social List End -->
+                        </div>
+                        <!-- Team Body End -->
+					</div>
+					<!-- Team Member Item Start -->
+                </div>
+            </div>
+        </div>
+     </div>
+    <!-- Our Team Section End -->
+
+    <!-- How We Work Start -->
+    <div class="how-we-work">
+        <div class="container">
+            <div class="row section-row align-items-center">
+                <div class="col-lg-6">
+                    <!-- Section Title Start -->
+                    <div class="section-title dark-section">
+                        <h3 class="wow fadeInUp">how we work</h3>
+                        <h2 class="text-anime-style-2" data-cursor="-opaque">From concept to completion in<span> our work</span></h2>
+                    </div>
+                    <!-- Section Title End -->
+                </div>
+
+                <div class="col-lg-6">
+                    <!-- Section Title Content Start -->
+                    <div class="section-title-content dark-section">
+                        <p class="wow fadeInUp" data-wow-delay="0.2s">Our comprehensive approach guides you through each phase of the design process, from initial brainstorming and conceptualization.</p>
+                    </div>
+                    <!-- Section Title Content End -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- How We Work List Start -->
+                    <div class="how-we-work-list">
+                        <!-- How We Item Start -->
+                        <div class="how-we-work-item wow fadeInUp">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-how-we-work-1.svg' %}" alt="">
+                            </div>
+                            <div class="how-we-work-content">
+                                <h3>01. initial consultation</h3>
+                                <p>We start with a one-on meeting to understand your vision preferences and requirement.</p>
+                            </div>
+                        </div>
+                        <!-- How We Item End -->
+
+                        <!-- How We Item Start -->
+                        <div class="how-we-work-item wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-how-we-work-2.svg' %}" alt="">
+                            </div>
+                            <div class="how-we-work-content">
+                                <h3>02. design planning</h3>
+                                <p>This involves selecting materials, and layouts, furnishings, as well as creating 3D renderings.</p>
+                            </div>
+                        </div>
+                        <!-- How We Item End -->
+
+                        <!-- How We Item Start -->
+                        <div class="how-we-work-item wow fadeInUp" data-wow-delay="0.4s">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-how-we-work-3.svg' %}" alt="">
+                            </div>
+                            <div class="how-we-work-content">
+                                <h3>03. project execution</h3>
+                                <p>With the design plans in this place, we manage and coordinate all aspects of the projects.</p>
+                            </div>
+                        </div>
+                        <!-- How We Item End -->
+
+                        <!-- How We Item Start -->
+                        <div class="how-we-work-item wow fadeInUp" data-wow-delay="0.6s">
+                            <div class="icon-box">
+                                <img src="{% static 'images/icon-how-we-work-4.svg' %}" alt="">
+                            </div>
+                            <div class="how-we-work-content">
+                                <h3>04. final review</h3>
+                                <p>After completing project we conduct a thorough walkthrough with you to review the space.</p>
+                            </div>
+                        </div>
+                        <!-- How We Item End -->
+                    </div>
+                    <!-- How We Work List End -->
+
+                    <!-- How Work Company Slider Start -->
+                    <div class="how-work-company-slider">
+                        <div class="swiper">
+                            <div class="swiper-wrapper">
+                                <!-- Company Support Logo Start -->
+                                <div class="swiper-slide">
+                                    <div class="company-logo">
+                                        <img src="{% static 'images/company-logo-1.svg' %}" alt="">
+                                    </div>
+                                </div>
+                                <!-- Company Support Logo End -->
+
+                                <!-- Company Support Logo Start -->
+                                <div class="swiper-slide">
+                                    <div class="company-logo">
+                                        <img src="{% static 'images/company-logo-2.svg' %}" alt="">
+                                    </div>
+                                </div>
+                                <!-- Company Support Logo End -->
+
+                                <!-- Company Support Logo Start -->
+                                <div class="swiper-slide">
+                                    <div class="company-logo">
+                                        <img src="{% static 'images/company-logo-3.svg' %}" alt="">
+                                    </div>
+                                </div>
+                                <!-- Company Support Logo End -->
+                                
+                                <!-- Company Support Logo Start -->
+                                <div class="swiper-slide">
+                                    <div class="company-logo">
+                                        <img src="{% static 'images/company-logo-4.svg' %}" alt="">
+                                    </div>
+                                </div>
+                                <!-- Company Support Logo End -->
+                                
+                                <!-- Company Support Logo Start -->
+                                <div class="swiper-slide">
+                                    <div class="company-logo">
+                                        <img src="{% static 'images/company-logo-5.svg' %}" alt="">
+                                    </div>
+                                </div>
+                                <!-- Company Support Logo End -->
+                                
+                                <!-- Company Support Logo Start -->
+                                <div class="swiper-slide">
+                                    <div class="company-logo">
+                                        <img src="{% static 'images/company-logo-1.svg' %}" alt="">
+                                    </div>
+                                </div>
+                                <!-- Company Support Logo End -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- How Work Company Slider End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- How We Work End -->
+
+    <!-- Our Faqs Stat -->
+    <div class="our-faqs">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <!-- Our Faq Content Start -->
+                    <div class="our-faqs-content">
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h3 class="wow fadeInUp">asked question</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Have your any question look <span>here now</span></h2>
+                            <p class="wow fadeInUp" data-wow-delay="0.2s">Nostra turma dedicata consilium arctius operatur ut visionem tuam intelligat et eam ad vitam adducat cum magna cura in singula</p>
+                        </div>
+                        <!-- Section Title End -->
+
+                        <!-- FAQ Accordion Start -->
+                        <div class="faq-accordion" id="accordion">
+                            <!-- FAQ Item Start -->
+                            <div class="accordion-item wow fadeInUp">
+                                <h2 class="accordion-header" id="heading1">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                        <span>1.</span>  What is the typical process for starting a design project?
+                                    </button>
+                                </h2>
+                                <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="heading1" data-bs-parent="#accordion">
+                                    <div class="accordion-body">
+                                        <p>Our process starts with a consultation to discuss your vision, followed by planning, design presentation, and implementation to achieve your ideal space.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ Item End -->
+
+                            <!-- FAQ Item Start -->
+                            <div class="accordion-item wow fadeInUp" data-wow-delay="0.2s">
+                                <h2 class="accordion-header" id="heading2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                        <span>2.</span>  How long does a typical interior design project take?
+                                    </button>
+                                </h2>
+                                <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2" data-bs-parent="#accordion">
+                                    <div class="accordion-body">
+                                        <p>Our process starts with a consultation to discuss your vision, followed by planning, design presentation, and implementation to achieve your ideal space.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ Item End -->
+
+                            <!-- FAQ Item Start -->
+                            <div class="accordion-item wow fadeInUp" data-wow-delay="0.4s">
+                                <h2 class="accordion-header" id="heading3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                        <span>3.</span>  Can I incorporate my existing furniture into the new design?
+                                    </button>
+                                </h2>
+                                <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#accordion">
+                                    <div class="accordion-body">
+                                        <p>Our process starts with a consultation to discuss your vision, followed by planning, design presentation, and implementation to achieve your ideal space.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ Item End -->
+
+                            <!-- FAQ Item Start -->
+                            <div class="accordion-item wow fadeInUp" data-wow-delay="0.6s">
+                                <h2 class="accordion-header" id="heading4">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                        <span>4.</span>  What should I expect during the design consultation?
+                                    </button>
+                                </h2>
+                                <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4" data-bs-parent="#accordion">
+                                    <div class="accordion-body">
+                                        <p>Our process starts with a consultation to discuss your vision, followed by planning, design presentation, and implementation to achieve your ideal space.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FAQ Item End -->
+                        </div>
+                        <!-- FAQ Accordion End -->
+                    </div>
+                    <!-- Our Faq Content End -->
+                </div>
+
+                <div class="col-lg-5">
+                    <!-- Our Faq Image Start -->
+                    <div class="our-faqs-image">
+                        <figure class="image-anime reveal">
+                            <img src="{% static 'images/faqs-image.jpg' %}" alt="">
+                        </figure>
+                    </div>
+                    <!-- Our Faq Image End -->
+                </div>
+            </div>
+        </div>
+     </div>
+    <!-- Our Faqs End -->
+
+    <!-- Our Clients Start -->
+     <div class="our-clients">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="our-clients-box">
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h3 class="wow fadeInUp">our clients</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">Transforming 1,000+ spaces with tailored designs</h2>
+                            <p class="wow fadeInUp" data-wow-delay="0.2s">We've had the privilege of designing and transforming over a thousand interiors, creating spaces that truly resonate with our clients' visions and needs. Our approach focuses on blending aesthetics and functionality, ensuring each project brings comfort, elegance, and a personalized touch.</p>
+                        </div>
+                        <!-- Section Title End -->
+
+                        <!-- Client Logo Slider Start -->
+                        <div class="our-client-slider">
+                            <div class="swiper">
+                                <div class="swiper-wrapper">
+                                    <!-- Client Logo Start -->
+                                    <div class="swiper-slide">
+                                        <div class="client-logo">
+                                            <img src="{% static 'images/client-logo-1.svg' %}" alt="">
+                                        </div>
+                                    </div>
+                                    <!-- Client Logo End -->
+
+                                    <!-- Client Logo Start -->
+                                    <div class="swiper-slide">
+                                        <div class="client-logo">
+                                            <img src="{% static 'images/client-logo-2.svg' %}" alt="">
+                                        </div>
+                                    </div>
+                                    <!-- Client Logo End -->
+
+                                    <!-- Client Logo Start -->
+                                    <div class="swiper-slide">
+                                        <div class="client-logo">
+                                            <img src="{% static 'images/client-logo-3.svg' %}" alt="">
+                                        </div>
+                                    </div>
+                                    <!-- Client Logo End -->
+                                    
+                                    <!-- Client Logo Start -->
+                                    <div class="swiper-slide">
+                                        <div class="client-logo">
+                                            <img src="{% static 'images/client-logo-4.svg' %}" alt="">
+                                        </div>
+                                    </div>
+                                    <!-- Client Logo End -->
+                                    
+                                    <!-- Client Logo Start -->
+                                    <div class="swiper-slide">
+                                        <div class="client-logo">
+                                            <img src="{% static 'images/client-logo-1.svg' %}" alt="">
+                                        </div>
+                                    </div>
+                                    <!-- Client Logo End -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Client Logo Slider End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+    <!-- Our Clients End -->
+
+    <!-- Footer Start -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Footer Header Start -->
+                    <div class="footer-header">
+                        <div class="row align-items-center">  
+                            <div class="col-md-6">
+                                <!-- Footer Logo Start -->
+                                <div class="footer-logo">
+                                    <img src="{% static 'images/footer-logo.svg' %} " alt="">
+                                </div>
+                                <!-- Footer Logo End -->
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Footer Social Link Start -->
+                                <div class="footer-social-links">
+                                    <div class="footer-social-link-title">
+                                        <h3>follow our socials</h3>
+                                    </div>
+                                    <ul>
+                                        <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-dribbble"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                    </ul>
+                                </div>
+                                <!-- Footer Social Link End -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Footer Header End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Links Start -->
+                     <div class="footer-links">
+                        <h3>information</h3>
+                        <ul>
+                            <li><a href="{% url 'blog:about' %}">about our company</a></li>
+                            <li><a href="{% url 'blog:index' %}">read our blog</a></li>
+                        </ul>
+                     </div>
+                    <!-- Footer Links End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Links Start -->
+                     <div class="footer-links">
+                        <h3>portfolio</h3>
+                        <ul>
+                            <li><a href="#">luxury home design</a></li>
+                            <li><a href="#">residential interior design</a></li>
+                            <li><a href="#">commercial space design</a></li>
+                            <li><a href="#">residential interior design</a></li>
+                            <li><a href="#">renovation and restoration design</a></li>
+                        </ul>
+                     </div>
+                    <!-- Footer Links End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Contact Box Start -->
+                    <div class="footer-contact-box footer-links">
+                        <h3>contact us</h3>
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>+1 (213) 465 789</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>info@domain.com</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>Generała Ziętka Jerzego 54, Mysłowice 41-412</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+                    </div>
+                    <!-- Footer Contact Box End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Newsletter Form Start -->
+                    <div class="footer-latest-news footer-links">
+                        <h3>get the latest trending news</h3>
+                        
+                        <div class="footer-newsletter-form">
+                            <p>Your Dream Space Starts Here Get Exclusive Design Straight Your Inbox!</p>
+
+                            <form id="newslettersForm" action="#" method="POST">
+                                <div class="form-group">
+                                    <input type="email" name="email" class="form-control"  id="mail" placeholder="Enter your email" required>
+                                    <button type="submit"><i class="fa-solid fa-arrow-right-long"></i> </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Footer Newsletter Form End -->
+                </div>
+            </div>
+
+            <!-- Footer Copyright Section Start -->
+            <div class="footer-copyright">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Footer Copyright Start -->
+                        <div class="footer-copyright-text">
+                            <p>Copyright © 2024 All Rights Reserved.</p>
+                        </div>
+                        <!-- Footer Copyright End -->
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Copyright Section End -->
+        </div>
+    </footer>
+    <!-- Footer End -->
+
+    {% endblock %}

@@ -1,0 +1,322 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content%}
+    <!-- Page Header Start -->
+	<div class="page-header parallaxie">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<!-- Page Header Box Start -->
+					<div class="page-header-box">
+						<h1 class="text-anime-style-2" data-cursor="-opaque">Conatct us</h1>
+						<nav class="wow fadeInUp">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="{% url 'blog:index' %}">home</a></li>
+								<li class="breadcrumb-item active" aria-current="page">conatct us</li>
+							</ol>
+						</nav>
+					</div>
+					<!-- Page Header Box End -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Page Header End -->
+
+    <!-- Page Contact Us Start -->
+    <div class="page-contact-us">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <!-- Contact Us Image Start -->
+                    <div class="contact-us-image">
+                        <figure class="image-anime reveal">
+                            <img src="{% static 'images/contact-us-image.jpg' %}" alt="">
+                        </figure>
+                    </div>
+                    <!-- Contact Us Image End -->
+                </div>
+                
+                <div class="col-lg-6">
+                    <!-- Contact Us Form Start -->
+                    <div class="contact-us-form">
+                        <!-- Section Title Start -->
+                        <div class="section-title">
+                            <h3 class="wow fadeInUp">contact form</h3>
+                            <h2 class="text-anime-style-2" data-cursor="-opaque">We would love to hear <span>from you</span></h2>
+                            <p class="wow fadeInUp" data-wow-delay="0.2s">Your email address will not be published. Required fields are marked *</p>
+                        </div>
+                        <!-- Section Title End -->
+
+                        <!-- Contact Form Start -->
+                        <div class="contact-form">
+                            <!-- Contact Form Start -->
+                            <form id="contactForm" action="#" method="POST" data-toggle="validator" class="wow fadeInUp" data-wow-delay="0.4s">
+                                <div class="row">
+                                    <div class="form-group col-md-6 mb-4">
+                                        <input type="text" name="name" class="form-control" id="name" placeholder="Name*" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="form-group col-md-6 mb-4">
+                                        <input type="email" name ="email" class="form-control" id="email" placeholder="Email Address*" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="form-group col-md-12 mb-4">
+                                        <input type="text" name="phone" class="form-control" id="phone" placeholder="Your Phone" required>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="form-group col-md-12 mb-5">
+                                        <textarea name="message" class="form-control" id="message" rows="4" placeholder="Your Message"></textarea>
+                                        <div class="help-block with-errors"></div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn-default">submit</button>
+                                        <div id="msgSubmit" class="h3 hidden"></div>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Contact Form End -->
+                        </div>
+                        <!-- Contact Form End -->
+                    </div>
+                    <!-- Contact Us Form End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Contact Us End -->
+
+    <!-- Google Map Section Start -->
+    <div class="google-map">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Section Title Start -->
+                    <div class="section-title">
+                        <h3 class="wow fadeInUp">Our contact</h3>
+                        <h2 class="text-anime-style-2" data-cursor="-opaque">Get in touch with us</h2>
+                        <p class="wow fadeInUp" data-wow-delay="0.2s">Get in touch to discuss your employee wellbeing needs today. Please give us a call, drop us an email or fill out the contact form and we'll get back to you.</p>
+                    </div>
+                    <!-- Section Title End -->
+                </div>
+
+                <div class="col-lg-12">
+                    <!-- Google Map IFrame Start -->
+                    <div class="google-map-iframe">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96737.10562045308!2d-74.08535042841811!3d40.739265258395164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1703158537552!5m2!1sen!2sin" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <!-- Google Map IFrame End -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Contact Info Box Start -->
+                    <div class="contact-info-box">
+                        <!-- Conatct Info Item Start -->
+                        <div class="contact-info-item wow fadeInUp">
+                            <!-- Icon Box Start -->
+                            <div class="icon-box">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <!-- Icon Box End -->
+
+                            <!-- Contact Info Content Start -->
+                            <div class="contact-info-content">
+                                <h3>phone number</h3>
+                                <p>(+05) 698 - 548 - 6354</p>
+                                <p>(+07) 358 - 879 - 3257</p>                               
+                            </div>
+                            <!-- Contact Info Content End -->
+                        </div>
+                        <!-- Conatct Info Item End -->
+
+                        <!-- Conatct Info Item Start -->
+                        <div class="contact-info-item wow fadeInUp" data-wow-delay="0.2s">
+                            <!-- Icon Box Start -->
+                            <div class="icon-box">
+                                <i class="fa-regular fa-envelope"></i>
+                            </div>
+                            <!-- Icon Box End -->
+
+                            <!-- Contact Info Content Start -->
+                            <div class="contact-info-content">
+                                <h3>e-mail support</h3>
+                                <p>hello@domain12.com</p>
+                                <p>hello@domain12.com</p>
+                            </div>
+                            <!-- Contact Info Content End -->
+                        </div>
+                        <!-- Conatct Info Item End -->
+
+                        <!-- Conatct Info Item Start -->
+                        <div class="contact-info-item wow fadeInUp" data-wow-delay="0.4s">
+                            <!-- Icon Box Start -->
+                            <div class="icon-box">
+                                <i class="fa-solid fa-house"></i>
+                            </div>
+                            <!-- Icon Box End -->
+
+                            <!-- Contact Info Content Start -->
+                            <div class="contact-info-content">
+                                <h3>headquarter</h3>
+                                <p>2972 Westheimer Rd. Santa Ana Illinois 85486</p>
+                            </div>
+                            <!-- Contact Info Content End -->
+                        </div>
+                        <!-- Conatct Info Item End -->
+                    </div>
+                    <!-- Contact Info Box End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Google Map Section End -->
+
+    <!-- Footer Start -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Footer Header Start -->
+                    <div class="footer-header">
+                        <div class="row align-items-center">  
+                            <div class="col-md-6">
+                                <!-- Footer Logo Start -->
+                                <div class="footer-logo">
+                                    <img src="{% static 'images/footer-logo.svg' %}" alt="">
+                                </div>
+                                <!-- Footer Logo End -->
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Footer Social Link Start -->
+                                <div class="footer-social-links">
+                                    <div class="footer-social-link-title">
+                                        <h3>follow our socials</h3>
+                                    </div>
+                                    <ul>
+                                        <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-dribbble"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                    </ul>
+                                </div>
+                                <!-- Footer Social Link End -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Footer Header End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Links Start -->
+                     <div class="footer-links">
+                        <h3>information</h3>
+                        <ul>
+                            <li><a href="{% url 'blog:about' %}">about our company</a></li>
+                            <li><a href="{% url 'blog:index' %}">read our blog</a></li>
+                        </ul>
+                     </div>
+                    <!-- Footer Links End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Links Start -->
+                     <div class="footer-links">
+                        <h3>portfolio</h3>
+                        <ul>
+                            <li><a href="#">luxury home design</a></li>
+                            <li><a href="#">residential interior design</a></li>
+                            <li><a href="#">commercial space design</a></li>
+                            <li><a href="#">residential interior design</a></li>
+                            <li><a href="#">renovation and restoration design</a></li>
+                        </ul>
+                     </div>
+                    <!-- Footer Links End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Contact Box Start -->
+                    <div class="footer-contact-box footer-links">
+                        <h3>contact us</h3>
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>+1 (213) 465 789</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>info@domain.com</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>Generała Ziętka Jerzego 54, Mysłowice 41-412</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+                    </div>
+                    <!-- Footer Contact Box End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Newsletter Form Start -->
+                    <div class="footer-latest-news footer-links">
+                        <h3>get the latest trending news</h3>
+                        
+                        <div class="footer-newsletter-form">
+                            <p>Your Dream Space Starts Here Get Exclusive Design Straight Your Inbox!</p>
+
+                            <form id="newslettersForm" action="#" method="POST">
+                                <div class="form-group">
+                                    <input type="email" name="email" class="form-control"  id="mail" placeholder="Enter your email" required>
+                                    <button type="submit"><i class="fa-solid fa-arrow-right-long"></i> </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Footer Newsletter Form End -->
+                </div>
+            </div>
+
+            <!-- Footer Copyright Section Start -->
+            <div class="footer-copyright">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Footer Copyright Start -->
+                        <div class="footer-copyright-text">
+                            <p>Copyright © 2024 All Rights Reserved.</p>
+                        </div>
+                        <!-- Footer Copyright End -->
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Copyright Section End -->
+        </div>
+    </footer>
+    <!-- Footer End -->
+
+
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base/dashboardbase.html" %}
+{% load static %}
+
+
+{% block content %}
+
+    <div class="container mt-5">
+        <div class="card shadow p-4">
+            <h2 class="text-center mb-4">Ajout d'un nouvel article</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+
+                <fieldset class="border p-4 rounded mb-4">
+                    <legend class="fw-semibold fs-5">Informations Générales</legend>
+                    {{ form_infos.as_p }}
+                </fieldset>
+
+                <fieldset class="border p-4 rounded mb-4">
+                    <legend class="fw-semibold fs-5">Contenu de l’Article</legend>
+                    {{ form_contenu.as_p }} <!-- CKEditor 5 devrait s'afficher ici -->
+                </fieldset>
+
+                <fieldset class="border p-4 rounded mb-4">
+                    <legend class="fw-semibold fs-5">Standards</legend>
+                    {{ form_standards.as_p }}
+                </fieldset>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Publier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% endblock %}

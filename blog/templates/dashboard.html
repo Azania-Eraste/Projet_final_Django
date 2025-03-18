@@ -1,0 +1,44 @@
+{% extends "base/dashboardbase.html" %}
+{% load static %}
+
+
+{% block content %}
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Dashboard</h2>
+            <a href="{% url 'blog:add' %}" class="btn btn-success">Ajouter un article</a>
+        </div>
+
+        <!-- Liste des articles -->
+        <div class="row">
+            {% for article in articles %}
+
+                <div class="col-md-4 px-4 py-2">
+                    <div class="card shadow-sm">
+                        <!-- Vérification de la présence d'une image -->
+                        {% if article.couverture %}
+                            <img src="{{ article.couverture.url }}" class="card-img-top" alt="{{ article.titre }}">
+                        {% else %}
+                            <p>Aucune image</p>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.titre }}</h5>
+                            <a href="{% url 'blog:article' article.slug %}" class="btn btn-primary">Lire plus</a>
+                            <a href="{% url 'blog:edit' article.slug %}" class="btn btn-success">Éditer</a>
+                            <a href="{% url 'blog:delete' article.slug %}" class="btn btn-danger">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+
+            {% empty %}
+                <div class="col-12">
+                    <p>Aucun article disponible. Ajoutez-en un.</p>
+                </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+        
+{% endblock %}

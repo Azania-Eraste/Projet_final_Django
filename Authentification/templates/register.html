@@ -1,0 +1,61 @@
+{% extends 'base/forgetpasswordbase.html' %}
+{% load socialaccount %}
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded-lg shadow-md w-96">
+        <h2 class="text-2xl font-semibold text-center">Inscription</h2>
+        <form method="POST" id="register-form" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="username" class="block ml-5 text-sm font-medium text-gray-600">Nom d'utilisateur</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="text-red-500 text-sm mt-1">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="email" class="block ml-5 text-sm font-medium text-gray-600">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <ul class="text-red-500 text-sm mt-1">
+                        {% for error in form.email.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block ml-5 text-sm font-medium text-gray-600">Mot de passe</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <ul class="text-red-500 text-sm mt-1">
+                        {% for error in form.password.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="confirmpassword" class="block ml-5 text-sm font-medium text-gray-600">Confirmer le mot de passe</label>
+                {{ form.confirmpassword }}
+                {% if form.confirmpassword.errors %}
+                    <ul class="text-red-500 text-sm mt-1">
+                        {% for error in form.confirmpassword.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg ">S'inscrire</button>
+        </form>
+
+        <p class="mt-4 text-center text-sm">
+            Déjà un compte ? <a href="{% url 'Authentification:login' %}" class="text-blue-500">Se connecter</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
