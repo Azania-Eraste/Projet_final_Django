@@ -9,17 +9,16 @@ from blog.form import InfosGeneralesForm, ContenuForm, StandardsForm, Commentair
 
 def index(request):
 
-    articles = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")[:3]
-  
+
     datas = {
-        "articles" : articles,
+      'active_page': 'accueil'
     }
 
     return render(request, 'index.html', datas)
 
 def contact(request):
     datas = {
-
+        'active_page': 'contact'
     }
 
     return render(request, 'contact.html', datas)
@@ -150,7 +149,8 @@ def blog(request):
 
     datas = {
         "articles" : articles,
-        "page_obj": page_obj
+        "page_obj": page_obj,
+        'active_page': 'blog'
     }
 
     return render(request, 'blog.html', datas)

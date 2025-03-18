@@ -1,265 +1,260 @@
-{% extends "base/base.html" %}
+{% extends "base\base.html" %}
 {% load static %}
 
-{% block content%}
-    <!-- Page Header Start -->
-	<div class="page-header parallaxie">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12">
-					<!-- Page Header Box Start -->
-					<div class="page-header-box">
-                        <h1 class="text-anime-style-2" data-cursor="-opaque">{{ article.titre|truncatechars:20 }}</h1>
-						<nav class="wow fadeInUp">
-							<ol class="breadcrumb">
-								<li class="breadcrumb-item"><a href="{% url 'blog:index' %}">home</a></li>
-								<li class="breadcrumb-item active" aria-current="page">{{article.titre}}</li>
-							</ol>
-						</nav>
-					</div>
-					<!-- Page Header Box End -->
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Page Header End -->
+{% block content %}
 
-    <!-- Page Single Post Start -->
-    <div class="page-single-post">
+    <!-- Hero Section Begin -->
+    <section class="hero hero-normal">
         <div class="container">
             <div class="row">
-                <div class="col-lg-12">
-                    <!-- Post Featured Image Start -->
-                    <div class="post-image">
-                        <figure class="image-anime reveal">
-                            <img src="{{article.couverture.url }}" alt="">
-                        </figure>
-                    </div>
-                    <!-- Post Featured Image Start -->
-
-                    <!-- Post Single Content Start -->
-                    <div class="post-content">
-                        <!-- Post Entry Start -->
-                        {{article.contenu|safe }}
-                        <!-- Post Entry End -->
-
-                        <!-- Post Tag Links Start -->
-                        <div class="post-tag-links">
-                            <div class="row align-items-center">
-                                <div class="col-lg-8">
-                                    <!-- Post Tags Start -->
-                                    <div class="post-tags wow fadeInUp" data-wow-delay="0.5s">
-                                        <span class="tag-links">
-                                            Tags:
-                                            {% for tag in article.tag_ids.all  %}
-                                            <a href="#">{{tag.nom}}</a>
-                                            {% endfor %}
-                                        </span>
-                                    </div>
-                                    <!-- Post Tags End -->
-                                </div>
-
-                                <div class="col-lg-4">
-                                    <!-- Post Social Links Start -->
-                                    <div class="post-social-sharing wow fadeInUp" data-wow-delay="0.5s">
-                                        <ul>
-                                            <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
-                                            <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
-                                            <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
-                                            <li><a href="#"><i class="fa-brands fa-x-twitter"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <!-- Post Social Links End -->
-                                </div>
-                            </div>
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span>All departments</span>
                         </div>
-                        <!-- Post Tag Links End -->
-                    </div>
-                    <!-- Post Single Content End -->
-                </div>
-                <!-- Comment Form Start -->
-                <div class="comment-form col-lg-12 py-5">
-                    <h3>Laisser un commentaire</h3>
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            {{ form_comment.as_p }}  <!-- Affiche le champ du formulaire avec les styles -->
-                        </div>
-                        <button type="submit" class="btn btn-primary">Envoyer</button>
-                    </form>
-                </div>
-                <!-- Comment Form End -->
-
-                <!-- Comment Section Start -->
-                <div class="post-comments">
-                    <h3>Commentaires</h3>
-                    {% if article.article_commentaire_ids.exists %}
-                        {% for commentaire in article.article_commentaire_ids.all|dictsort:"created_at" %}
-                        <div class="comment">
-                            <p><strong>
-                                {% if commentaire.auteur_id == null %}
-                                    <span>Delete User</span>
-                                {% else %}
-                                    {{ commentaire.auteur_id.username }}
-                                {% endif %}
-                            </strong> - {{ commentaire.created_at|date:"d M Y H:i" }}</p>
-                            <p>{{ commentaire.contenu }}</p>
-                            {% if request.user == commentaire.auteur_id %}
-                                <a href="{% url 'blog:update_comment' article.slug commentaire.id %}" class="btn btn-success">Modifier</a>
-                                <a href="{% url 'blog:delete_comment' article.slug commentaire.id %}" class="btn btn-danger">Supprimer</a>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p>Aucun commentaire pour l'instant. Soyez le premier à commenter !</p>
-                    {% endif %}
-                </div>
-                <!-- Comment Section End -->
-
-            </div>
-        </div>
-    </div>
-    <!-- Page Single Post End -->
-
-
-
-
-    <!-- Footer Start -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <!-- Footer Header Start -->
-                    <div class="footer-header">
-                        <div class="row align-items-center">  
-                            <div class="col-md-6">
-                                <!-- Footer Logo Start -->
-                                <div class="footer-logo">
-                                    <img src="{% static 'images/footer-logo.svg' %}" alt="">
-                                </div>
-                                <!-- Footer Logo End -->
-                            </div>
-
-                            <div class="col-md-6">
-                                <!-- Footer Social Link Start -->
-                                <div class="footer-social-links">
-                                    <div class="footer-social-link-title">
-                                        <h3>follow our socials</h3>
-                                    </div>
-                                    <ul>
-                                        <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
-                                        <li><a href="#"><i class="fa-brands fa-dribbble"></i></a></li>
-                                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
-                                    </ul>
-                                </div>
-                                <!-- Footer Social Link End -->
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Footer Header End -->
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <!-- Footer Links Start -->
-                     <div class="footer-links">
-                        <h3>information</h3>
                         <ul>
-                            <li><a href="{% url 'blog:about' %}">about our company</a></li>
-                            <li><a href="{% url 'blog:index' %}">read our blog</a></li>
+                            <li><a href="#">Fresh Meat</a></li>
+                            <li><a href="#">Vegetables</a></li>
+                            <li><a href="#">Fruit & Nut Gifts</a></li>
+                            <li><a href="#">Fresh Berries</a></li>
+                            <li><a href="#">Ocean Foods</a></li>
+                            <li><a href="#">Butter & Eggs</a></li>
+                            <li><a href="#">Fastfood</a></li>
+                            <li><a href="#">Fresh Onion</a></li>
+                            <li><a href="#">Papayaya & Crisps</a></li>
+                            <li><a href="#">Oatmeal</a></li>
+                            <li><a href="#">Fresh Bananas</a></li>
                         </ul>
-                     </div>
-                    <!-- Footer Links End -->
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <!-- Footer Links Start -->
-                     <div class="footer-links">
-                        <h3>portfolio</h3>
-                        <ul>
-                            <li><a href="#">luxury home design</a></li>
-                            <li><a href="#">residential interior design</a></li>
-                            <li><a href="#">commercial space design</a></li>
-                            <li><a href="#">residential interior design</a></li>
-                            <li><a href="#">renovation and restoration design</a></li>
-                        </ul>
-                     </div>
-                    <!-- Footer Links End -->
-                </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <!-- Footer Contact Box Start -->
-                    <div class="footer-contact-box footer-links">
-                        <h3>contact us</h3>
-                        <!-- Footer Contact Item Start -->
-                        <div class="footer-contact-item">
-                            <div class="icon-box">
-                                <i class="fa-solid fa-phone"></i>
-                            </div>
-                            <div class="footer-contact-content">
-                                <p>+1 (213) 465 789</p>
-                            </div>
-                        </div>
-                        <!-- Footer Contact Item End -->
-
-                        <!-- Footer Contact Item Start -->
-                        <div class="footer-contact-item">
-                            <div class="icon-box">
-                                <i class="fa-solid fa-envelope"></i>
-                            </div>
-                            <div class="footer-contact-content">
-                                <p>info@domain.com</p>
-                            </div>
-                        </div>
-                        <!-- Footer Contact Item End -->
-
-                        <!-- Footer Contact Item Start -->
-                        <div class="footer-contact-item">
-                            <div class="icon-box">
-                                <i class="fa-solid fa-location-dot"></i>
-                            </div>
-                            <div class="footer-contact-content">
-                                <p>Generała Ziętka Jerzego 54, Mysłowice 41-412</p>
-                            </div>
-                        </div>
-                        <!-- Footer Contact Item End -->
                     </div>
-                    <!-- Footer Contact Box End -->
                 </div>
-
-                <div class="col-lg-3 col-md-6">
-                    <!-- Footer Newsletter Form Start -->
-                    <div class="footer-latest-news footer-links">
-                        <h3>get the latest trending news</h3>
-                        
-                        <div class="footer-newsletter-form">
-                            <p>Your Dream Space Starts Here Get Exclusive Design Straight Your Inbox!</p>
-
-                            <form id="newslettersForm" action="#" method="POST">
-                                <div class="form-group">
-                                    <input type="email" name="email" class="form-control"  id="mail" placeholder="Enter your email" required>
-                                    <button type="submit"><i class="fa-solid fa-arrow-right-long"></i> </button>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form action="#">
+                                <div class="hero__search__categories">
+                                    All Categories
+                                    <span class="arrow_carrot-down"></span>
                                 </div>
+                                <input type="text" placeholder="What do yo u need?">
+                                <button type="submit" class="site-btn">SEARCH</button>
                             </form>
                         </div>
-                    </div>
-                    <!-- Footer Newsletter Form End -->
-                </div>
-            </div>
-
-            <!-- Footer Copyright Section Start -->
-            <div class="footer-copyright">
-                <div class="row">
-                    <div class="col-md-12">
-                        <!-- Footer Copyright Start -->
-                        <div class="footer-copyright-text">
-                            <p>Copyright © 2024 All Rights Reserved.</p>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="hero__search__phone__text">
+                                <h5>+65 11.188.888</h5>
+                                <span>support 24/7 time</span>
+                            </div>
                         </div>
-                        <!-- Footer Copyright End -->
                     </div>
                 </div>
             </div>
-            <!-- Footer Copyright Section End -->
         </div>
-    </footer>
-    <!-- Footer End -->
+    </section>
+    <!-- Hero Section End -->
+
+    <!-- Blog Details Hero Begin -->
+    <section class="blog-details-hero set-bg" data-setbg="{% static 'img/blog/details/details-hero.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="blog__details__hero__text">
+                        <h2>The Moment You Need To Remove Garlic From The Menu</h2>
+                        <ul>
+                            <li>By Michael Scofield</li>
+                            <li>January 14, 2019</li>
+                            <li>8 Comments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Blog Details Hero End -->
+
+    <!-- Blog Details Section Begin -->
+    <section class="blog-details spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-5 order-md-1 order-2">
+                    <div class="blog__sidebar">
+                        <div class="blog__sidebar__search">
+                            <form action="#">
+                                <input type="text" placeholder="Search...">
+                                <button type="submit"><span class="icon_search"></span></button>
+                            </form>
+                        </div>
+                        <div class="blog__sidebar__item">
+                            <h4>Categories</h4>
+                            <ul>
+                                <li><a href="#">All</a></li>
+                                <li><a href="#">Beauty (20)</a></li>
+                                <li><a href="#">Food (5)</a></li>
+                                <li><a href="#">Life Style (9)</a></li>
+                                <li><a href="#">Travel (10)</a></li>
+                            </ul>
+                        </div>
+                        <div class="blog__sidebar__item">
+                            <h4>Recent News</h4>
+                            <div class="blog__sidebar__recent">
+                                <a href="#" class="blog__sidebar__recent__item">
+                                    <div class="blog__sidebar__recent__item__pic">
+                                        <img src="{% static 'img/blog/sidebar/sr-1.jpg' %}" alt="">
+                                    </div>
+                                    <div class="blog__sidebar__recent__item__text">
+                                        <h6>09 Kinds Of Vegetables<br /> Protect The Liver</h6>
+                                        <span>MAR 05, 2019</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="blog__sidebar__recent__item">
+                                    <div class="blog__sidebar__recent__item__pic">
+                                        <img src="{% static 'img/blog/sidebar/sr-2.jpg' %}" alt="">
+                                    </div>
+                                    <div class="blog__sidebar__recent__item__text">
+                                        <h6>Tips You To Balance<br /> Nutrition Meal Day</h6>
+                                        <span>MAR 05, 2019</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="blog__sidebar__recent__item">
+                                    <div class="blog__sidebar__recent__item__pic">
+                                        <img src="{% static 'img/blog/sidebar/sr-3.jpg' %}" alt="">
+                                    </div>
+                                    <div class="blog__sidebar__recent__item__text">
+                                        <h6>4 Principles Help You Lose <br />Weight With Vegetables</h6>
+                                        <span>MAR 05, 2019</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="blog__sidebar__item">
+                            <h4>Search By</h4>
+                            <div class="blog__sidebar__item__tags">
+                                <a href="#">Apple</a>
+                                <a href="#">Beauty</a>
+                                <a href="#">Vegetables</a>
+                                <a href="#">Fruit</a>
+                                <a href="#">Healthy Food</a>
+                                <a href="#">Lifestyle</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-7 order-md-1 order-1">
+                    <div class="blog__details__text">
+                        <img src="{% static 'img/blog/details/details-pic.jpg' %}" alt="">
+                        <p>Sed porttitor lectus nibh. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet
+                            dui. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Mauris blandit
+                            aliquet elit, eget tincidunt nibh pulvinar a. Vivamus magna justo, lacinia eget consectetur
+                            sed, convallis at tellus. Sed porttitor lectus nibh. Donec sollicitudin molestie malesuada.
+                            Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Proin eget tortor risus.
+                            Donec rutrum congue leo eget malesuada. Curabitur non nulla sit amet nisl tempus convallis
+                            quis ac lectus. Donec sollicitudin molestie malesuada. Nulla quis lorem ut libero malesuada
+                            feugiat. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem.</p>
+                        <h3>The corner window forms a place within a place that is a resting point within the large
+                            space.</h3>
+                        <p>The study area is located at the back with a view of the vast nature. Together with the other
+                            buildings, a congruent story has been managed in which the whole has a reinforcing effect on
+                            the components. The use of materials seeks connection to the main house, the adjacent
+                            stables</p>
+                    </div>
+                    <div class="blog__details__content">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="blog__details__author">
+                                    <div class="blog__details__author__pic">
+                                        <img src="{% static 'img/blog/details/details-author.jpg' %}" alt="">
+                                    </div>
+                                    <div class="blog__details__author__text">
+                                        <h6>Michael Scofield</h6>
+                                        <span>Admin</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="blog__details__widget">
+                                    <ul>
+                                        <li><span>Categories:</span> Food</li>
+                                        <li><span>Tags:</span> All, Trending, Cooking, Healthy Food, Life Style</li>
+                                    </ul>
+                                    <div class="blog__details__social">
+                                        <a href="#"><i class="fa fa-facebook"></i></a>
+                                        <a href="#"><i class="fa fa-twitter"></i></a>
+                                        <a href="#"><i class="fa fa-google-plus"></i></a>
+                                        <a href="#"><i class="fa fa-linkedin"></i></a>
+                                        <a href="#"><i class="fa fa-envelope"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Blog Details Section End -->
+
+    <!-- Related Blog Section Begin -->
+    <section class="related-blog spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title related-blog-title">
+                        <h2>Post You May Like</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img src="{% static 'img/blog/blog-1.jpg' %}" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> May 4,2019</li>
+                                <li><i class="fa fa-comment-o"></i> 5</li>
+                            </ul>
+                            <h5><a href="#">Cooking tips make cooking simple</a></h5>
+                            <p>Sed quia non numquam modi tempora indunt ut labore et dolore magnam aliquam quaerat </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img src="{% static 'img/blog/blog-2.jpg' %}" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> May 4,2019</li>
+                                <li><i class="fa fa-comment-o"></i> 5</li>
+                            </ul>
+                            <h5><a href="#">6 ways to prepare breakfast for 30</a></h5>
+                            <p>Sed quia non numquam modi tempora indunt ut labore et dolore magnam aliquam quaerat </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img src="{% static 'img/blog/blog-3.jpg' %}" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> May 4,2019</li>
+                                <li><i class="fa fa-comment-o"></i> 5</li>
+                            </ul>
+                            <h5><a href="#">Visit the clean farm in the US</a></h5>
+                            <p>Sed quia non numquam modi tempora indunt ut labore et dolore magnam aliquam quaerat </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Related Blog Section End -->
+
     {% endblock %}
