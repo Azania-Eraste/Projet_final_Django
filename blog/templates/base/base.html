@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="author" content="Awaiken">
+    {% block title %}
+    	<!-- Page Title -->
+        <title>Inspaire - Architecture and Interior Design HTML Template</title>
+        <!-- Favicon Icon -->
+    {% endblock title %}
+	<link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
+	<!-- Google Fonts Css-->
+	<link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
+	<!-- Bootstrap Css -->
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+	<!-- SlickNav Css -->
+	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
+	<!-- Swiper Css -->
+	<link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
+	<!-- Font Awesome Icon Css-->
+	<link href="{% static 'css/all.min.css' %}" rel="stylesheet" media="screen">
+	<!-- Animated Css -->
+	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
+    <!-- Magnific Popup Core Css File -->
+	<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+	<!-- Mouse Cursor Css File -->
+	<link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
+	<!-- Main Custom Css -->
+	<link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
+</head>
+<body>
+
+    <!-- Preloader Start -->
+	<div class="preloader">
+		<div class="loading-container">
+			<div class="loading"></div>
+			<div id="loading-icon"><img src="{% static 'images/loader.svg' %}" alt=""></div>
+		</div>
+	</div>
+	<!-- Preloader End -->
+
+    <!-- Header Start -->
+	<header class="main-header">
+		<div class="header-sticky">
+			<nav class="container">
+				<div class="navbar navbar-expand-lg">
+					<!-- Logo Start -->
+					<a class="navbar-brand" href="{% url 'blog:index' %}">
+						<img src="{% static 'images/logo.svg' %}" alt="Logo">
+					</a>
+					<!-- Logo End -->
+
+					<!-- Main Menu Start -->
+					<div class="collapse navbar-collapse main-menu">
+                        <div class="nav-menu-wrapper">
+                            <ul class="navbar-nav mr-auto" id="menu">
+                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:index' %}">Home</a></li>                                                               
+                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:about' %}">About Us</a>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:blog' %}">Blog</a></li> 
+                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:contact' %}">Contact Us</a></li>  
+                                <li class="nav-item">                          
+                                {% if request.user.is_authenticated %}
+                                    <a href="{% url 'blog:board' %}" class="nav-link">Dashboard</a>
+                                {% else %}
+                                    <a href="{% url 'Authentification:login' %}" class="nav-link">Se connecter</a>
+                                {% endif %}
+                                </li>                           
+                            </ul>
+                        </div>
+                        <!-- Header Btn Start -->
+                        <div class="header-btn d-inline-flex">
+                            {% if request.user.is_authenticated %}
+                                <a href="{% url 'Authentification:logout' %}" class="btn-default">Se deconnecter</a>
+                            {% else %}
+                                <a href="{% url 'Authentification:login' %}" class="btn-default">Se connecter</a>
+                            {% endif %}
+                        
+                        </div>
+                        <!-- Header Btn End -->
+					</div>
+					<!-- Main Menu End -->
+					<div class="navbar-toggle"></div>
+				</div>
+			</nav>
+			<div class="responsive-menu"></div>
+		</div>
+	</header>
+	<!-- Header End -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- Jquery Library File -->
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <!-- Bootstrap js file -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- Validator js file -->
+    <script src="{% static 'js/validator.min.js' %}"></script>
+    <!-- SlickNav js file -->
+    <script src="{% static 'js/jquery.slicknav.js' %}"></script>
+    <!-- Swiper js file -->
+    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
+    <!-- Counter js file -->
+    <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
+    <!-- Isotop js file -->
+	<script src="{% static 'js/isotope.min.js' %}"></script>
+    <!-- Magnific js file -->
+    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+    <!-- SmoothScroll -->
+    <script src="{% static 'js/SmoothScroll.js' %}"></script>
+    <!-- Parallax js -->
+    <script src="{% static 'js/parallaxie.js' %}"></script>
+    <!-- MagicCursor js file -->
+    <script src="{% static 'js/gsap.min.js' %}"></script>
+    <script src="{% static 'js/magiccursor.js' %}"></script>
+    <!-- Text Effect js file -->
+    <script src="{% static 'js/SplitText.js' %}"></script>
+    <script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
+    <!-- YTPlayer js File -->
+    <script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
+    <!-- Wow js file -->
+    <script src="{% static 'js/wow.min.js' %}"></script>
+    <!-- Main Custom js file -->
+    <script src="{% static 'js/function.js' %}"></script>
+
+
+</body>

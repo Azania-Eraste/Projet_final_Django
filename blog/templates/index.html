@@ -1,0 +1,211 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content%}
+    <!-- Page Header Start -->
+	<div class="page-header parallaxie">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<!-- Page Header Box Start -->
+					<div class="page-header-box">
+						<h1 class="text-anime-style-2" data-cursor="-opaque">Our blog</h1>
+						<nav class="wow fadeInUp">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="{% url 'blog:index' %}">home</a></li>
+								<li class="breadcrumb-item active" aria-current="page">blog</li>
+							</ol>
+						</nav>
+					</div>
+					<!-- Page Header Box End -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Page Header End -->
+
+    <!-- Our Blog Section Start -->
+    <div class="page-blog">
+        <div class="container">
+            <div class="row">
+                {% for article in articles %}
+                    <div class="col-lg-4 col-md-6">
+                    <!-- Post Item Start -->
+                    <div class="post-item wow fadeInUp">
+                        <!-- Post Featured Image Start-->
+                        <div class="post-featured-image">
+                            <figure>
+                                <a href="{% url 'blog:article' article.slug %}" class="image-anime" data-cursor-text="View">
+                                    <img src="{{ article.couverture.url }}" alt="{{ article.titre }}">
+                                </a>
+                            </figure>
+                        </div>
+                        <!-- Post Featured Image End -->
+            
+                        <!-- Post Item Body Start -->
+                        <div class="post-item-body">
+                            <!-- Post Item Content Start -->
+                            <div class="post-item-content">
+                                <h3><a href="{% url 'blog:article' article.slug %}">{{ article.titre }}</a></h3>
+                            </div>
+                            <!-- Post Item Content End -->
+            
+                            <!-- Blog Item Button Start -->
+                            <div class="post-item-btn">
+                                <a href="{% url 'blog:article' article.slug %}" class="post-btn">read more</a>
+                            </div>
+                            <!-- Blog Item Button End -->
+                        </div>
+                        <!-- Post Item Body End -->
+                    </div>
+                    <!-- Post Item End -->
+                    </div>
+                {% endfor %}
+            
+                <div class="header-btn d-inline-flex">
+                    <a href="{% url 'blog:blog' %}" class="btn-default">Voir plus</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Our Blog Section End -->
+
+    <!-- Footer Start -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- Footer Header Start -->
+                    <div class="footer-header">
+                        <div class="row align-items-center">  
+                            <div class="col-md-6">
+                                <!-- Footer Logo Start -->
+                                <div class="footer-logo">
+                                    <img src="{% static 'images/footer-logo.svg' %}" alt="">
+                                </div>
+                                <!-- Footer Logo End -->
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Footer Social Link Start -->
+                                <div class="footer-social-links">
+                                    <div class="footer-social-link-title">
+                                        <h3>follow our socials</h3>
+                                    </div>
+                                    <ul>
+                                        <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-dribbble"></i></a></li>
+                                        <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+                                    </ul>
+                                </div>
+                                <!-- Footer Social Link End -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Footer Header End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Links Start -->
+                     <div class="footer-links">
+                        <h3>information</h3>
+                        <ul>
+                            <li><a href="{% url 'blog:about' %}">about our company</a></li>
+                            <li><a href="#">careers at company</a></li>
+                        </ul>
+                     </div>
+                    <!-- Footer Links End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Links Start -->
+                     <div class="footer-links">
+                        <h3>portfolio</h3>
+                        <ul>
+                            <li><a href="#">luxury home design</a></li>
+                            <li><a href="#">residential interior design</a></li>
+                            <li><a href="#">commercial space design</a></li>
+                            <li><a href="#">residential interior design</a></li>
+                            <li><a href="#">renovation and restoration design</a></li>
+                        </ul>
+                     </div>
+                    <!-- Footer Links End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Contact Box Start -->
+                    <div class="footer-contact-box footer-links">
+                        <h3>contact us</h3>
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>+1 (213) 465 789</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>info@domain.com</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+
+                        <!-- Footer Contact Item Start -->
+                        <div class="footer-contact-item">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div class="footer-contact-content">
+                                <p>Generała Ziętka Jerzego 54, Mysłowice 41-412</p>
+                            </div>
+                        </div>
+                        <!-- Footer Contact Item End -->
+                    </div>
+                    <!-- Footer Contact Box End -->
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <!-- Footer Newsletter Form Start -->
+                    <div class="footer-latest-news footer-links">
+                        <h3>get the latest trending news</h3>
+                        
+                        <div class="footer-newsletter-form">
+                            <p>Your Dream Space Starts Here Get Exclusive Design Straight Your Inbox!</p>
+
+                            <form id="newslettersForm" action="#" method="POST">
+                                <div class="form-group">
+                                    <input type="email" name="email" class="form-control"  id="mail" placeholder="Enter your email" required>
+                                    <button type="submit"><i class="fa-solid fa-arrow-right-long"></i> </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Footer Newsletter Form End -->
+                </div>
+            </div>
+
+            <!-- Footer Copyright Section Start -->
+            <div class="footer-copyright">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Footer Copyright Start -->
+                        <div class="footer-copyright-text">
+                            <p>Copyright © 2024 All Rights Reserved.</p>
+                        </div>
+                        <!-- Footer Copyright End -->
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Copyright Section End -->
+        </div>
+    </footer>
+    <!-- Footer End -->
+    {% endblock %}
