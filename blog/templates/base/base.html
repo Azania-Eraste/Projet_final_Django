@@ -1,135 +1,244 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="fr">
+
 <head>
-	<!-- Meta -->
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-	<meta name="description" content="">
-	<meta name="keywords" content="">
-	<meta name="author" content="Awaiken">
-    {% block title %}
-    	<!-- Page Title -->
-        <title>Inspaire - Architecture and Interior Design HTML Template</title>
-        <!-- Favicon Icon -->
-    {% endblock title %}
-	<link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
-	<!-- Google Fonts Css-->
-	<link rel="preconnect" href="https://fonts.googleapis.com/">
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
-	<!-- Bootstrap Css -->
-	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
-	<!-- SlickNav Css -->
-	<link href="{% static 'css/slicknav.min.css' %}" rel="stylesheet">
-	<!-- Swiper Css -->
-	<link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
-	<!-- Font Awesome Icon Css-->
-	<link href="{% static 'css/all.min.css' %}" rel="stylesheet" media="screen">
-	<!-- Animated Css -->
-	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
-    <!-- Magnific Popup Core Css File -->
-	<link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
-	<!-- Mouse Cursor Css File -->
-	<link rel="stylesheet" href="{% static 'css/mousecursor.css' %}">
-	<!-- Main Custom Css -->
-	<link href="{% static 'css/custom.css' %}" rel="stylesheet" media="screen">
+    <meta charset="UTF-8">
+    <meta name="description" content="Ogani Template">
+    <meta name="keywords" content="Ogani, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ogani | Template</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
 </head>
+
 <body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+    <!-- Humberger Begin -->
+    <div class="humberger__menu__overlay"></div>
+    <div class="humberger__menu__wrapper">
+        <div class="humberger__menu__logo">
+            <a href="#"><img src="{% static 'img/logo.png' %}" alt=""></a>
+        </div>
+        <div class="humberger__menu__cart">
+            <ul>
+                <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+            </ul>
+            <div class="header__cart__price">item: <span>$150.00</span></div>
+        </div>
+        <div class="humberger__menu__widget">
+            <div class="header__top__right__language">
+                <img src="{% static 'img/language.png' %}" alt="">
+                <div>English</div>
+                <span class="arrow_carrot-down"></span>
+                <ul>
+                    <li><a href="#">Spanis</a></li>
+                    <li><a href="#">English</a></li>
+                </ul>
+            </div>
+            <div class="header__top__right__auth">
+                <a href="#"><i class="fa fa-user"></i> Login</a>
+            </div>
+        </div>
+        <nav class="humberger__menu__nav mobile-menu">
+            <ul>
+                <li class="active"><a href="{% url 'blog:index' %}">Home</a></li>
+                <li><a href="./shop-grid.html">Shop</a></li>
+                <li><a href="{% url 'blog:blog' %}">Blog</a></li>
+                <li><a href="{% url 'blog:contact' %}">Contact</a></li>
+            </ul>
+        </nav>
+        <div id="mobile-menu-wrap"></div>
+        <div class="header__top__right__social">
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-linkedin"></i></a>
+            <a href="#"><i class="fa fa-pinterest-p"></i></a>
+        </div>
+        <div class="humberger__menu__contact">
+            <ul>
+                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
+                <li>Free Shipping for all Order of $99</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Humberger End -->
 
-    <!-- Preloader Start -->
-	<div class="preloader">
-		<div class="loading-container">
-			<div class="loading"></div>
-			<div id="loading-icon"><img src="{% static 'images/loader.svg' %}" alt=""></div>
-		</div>
-	</div>
-	<!-- Preloader End -->
-
-    <!-- Header Start -->
-	<header class="main-header">
-		<div class="header-sticky">
-			<nav class="container">
-				<div class="navbar navbar-expand-lg">
-					<!-- Logo Start -->
-					<a class="navbar-brand" href="{% url 'blog:index' %}">
-						<img src="{% static 'images/logo.svg' %}" alt="Logo">
-					</a>
-					<!-- Logo End -->
-
-					<!-- Main Menu Start -->
-					<div class="collapse navbar-collapse main-menu">
-                        <div class="nav-menu-wrapper">
-                            <ul class="navbar-nav mr-auto" id="menu">
-                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:index' %}">Home</a></li>                                                               
-                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:about' %}">About Us</a>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:blog' %}">Blog</a></li> 
-                                <li class="nav-item"><a class="nav-link" href="{% url 'blog:contact' %}">Contact Us</a></li>  
-                                <li class="nav-item">                          
-                                {% if request.user.is_authenticated %}
-                                    <a href="{% url 'blog:board' %}" class="nav-link">Dashboard</a>
-                                {% else %}
-                                    <a href="{% url 'Authentification:login' %}" class="nav-link">Se connecter</a>
-                                {% endif %}
-                                </li>                           
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="header__top__left">
+                            <ul>
+                                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
+                                <li>Free Shipping for all Order of $99</li>
                             </ul>
                         </div>
-                        <!-- Header Btn Start -->
-                        <div class="header-btn d-inline-flex">
-                            {% if request.user.is_authenticated %}
-                                <a href="{% url 'Authentification:logout' %}" class="btn-default">Se deconnecter</a>
-                            {% else %}
-                                <a href="{% url 'Authentification:login' %}" class="btn-default">Se connecter</a>
-                            {% endif %}
-                        
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="header__top__right">
+                            <div class="header__top__right__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                            </div>
+                            <div class="header__top__right__language">
+                                <img src="{% static 'img/language.png' %}" alt="">
+                                <div>English</div>
+                                <span class="arrow_carrot-down"></span>
+                                <ul>
+                                    <li><a href="#">Spanis</a></li>
+                                    <li><a href="#">English</a></li>
+                                </ul>
+                            </div>
+                            <div class="header__top__right__auth">
+                                {% if request.user.is_authenticated %}
+                                    <a href="{% url 'Authentification:logout' %}" class="fa fa-sign-out"> Deconnexion</a>
+                                {% else %}
+                                    <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
+                                {% endif %}
+                            </div>
                         </div>
-                        <!-- Header Btn End -->
-					</div>
-					<!-- Main Menu End -->
-					<div class="navbar-toggle"></div>
-				</div>
-			</nav>
-			<div class="responsive-menu"></div>
-		</div>
-	</header>
-	<!-- Header End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a href="{% url 'blog:index' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul>
+                            <li class="{% if active_page == 'accueil' %}active{% endif %}"><a href="{% url 'blog:index' %}">Home</a></li>
+                            <li class="{% if active_page == 'shop' %}active{% endif %}"><a href="./shop-grid.html">Shop</a></li>
+                            <li class="{% if active_page == 'blog' %}active{% endif %}"><a href="{% url 'blog:blog' %}">Blog</a></li>
+                            <li class="{% if active_page == 'contact' %}active{% endif %}"><a href="{% url 'blog:contact' %}">Contact</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    <div class="header__cart">
+                        <ul>
+                            <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                            <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                        </ul>
+                        <div class="header__cart__price">item: <span>$150.00</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Header Section End -->
+
     {% block content %}
     {% endblock %}
 
-    <!-- Jquery Library File -->
-    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
-    <!-- Bootstrap js file -->
+        <!-- Footer Section Begin -->
+        <footer class="footer spad">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="footer__about">
+                            <div class="footer__about__logo">
+                                <a href="./index.html"><img src="{% static 'img/logo.png' %}" alt=""></a>
+                            </div>
+                            <ul>
+                                <li>Address: 60-49 Road 11378 New York</li>
+                                <li>Phone: +65 11.188.888</li>
+                                <li>Email: hello@colorlib.com</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                        <div class="footer__widget">
+                            <h6>Useful Links</h6>
+                            <ul>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">About Our Shop</a></li>
+                                <li><a href="#">Secure Shopping</a></li>
+                                <li><a href="#">Delivery infomation</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Our Sitemap</a></li>
+                            </ul>
+                            <ul>
+                                <li><a href="#">Who We Are</a></li>
+                                <li><a href="#">Our Services</a></li>
+                                <li><a href="#">Projects</a></li>
+                                <li><a href="#">Contact</a></li>
+                                <li><a href="#">Innovation</a></li>
+                                <li><a href="#">Testimonials</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12">
+                        <div class="footer__widget">
+                            <h6>Join Our Newsletter Now</h6>
+                            <p>Get E-mail updates about our latest shop and special offers.</p>
+                            <form action="#">
+                                <input type="text" placeholder="Enter your mail">
+                                <button type="submit" class="site-btn">Subscribe</button>
+                            </form>
+                            <div class="footer__widget__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-instagram"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="footer__copyright">
+                            <div class="footer__copyright__text"><p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+      Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+      <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p></div>
+                            <div class="footer__copyright__payment"><img src="{% static 'img/payment-item.png' %}" alt=""></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer Section End -->
+
+    <!-- Js Plugins -->
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <!-- Validator js file -->
-    <script src="{% static 'js/validator.min.js' %}"></script>
-    <!-- SlickNav js file -->
+    <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>
-    <!-- Swiper js file -->
-    <script src="{% static 'js/swiper-bundle.min.js' %}"></script>
-    <!-- Counter js file -->
-    <script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
-    <!-- Isotop js file -->
-	<script src="{% static 'js/isotope.min.js' %}"></script>
-    <!-- Magnific js file -->
-    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
-    <!-- SmoothScroll -->
-    <script src="{% static 'js/SmoothScroll.js' %}"></script>
-    <!-- Parallax js -->
-    <script src="{% static 'js/parallaxie.js' %}"></script>
-    <!-- MagicCursor js file -->
-    <script src="{% static 'js/gsap.min.js' %}"></script>
-    <script src="{% static 'js/magiccursor.js' %}"></script>
-    <!-- Text Effect js file -->
-    <script src="{% static 'js/SplitText.js' %}"></script>
-    <script src="{% static 'js/ScrollTrigger.min.js' %}"></script>
-    <!-- YTPlayer js File -->
-    <script src="{% static 'js/jquery.mb.YTPlayer.min.js' %}"></script>
-    <!-- Wow js file -->
-    <script src="{% static 'js/wow.min.js' %}"></script>
-    <!-- Main Custom js file -->
-    <script src="{% static 'js/function.js' %}"></script>
+    <script src="{% static 'js/mixitup.min.js' %}"></script>
+    <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
 
 
 </body>
+
+</html>
