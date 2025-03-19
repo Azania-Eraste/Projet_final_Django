@@ -59,7 +59,7 @@
         <nav class="humberger__menu__nav mobile-menu">
             <ul>
                 <li class="active"><a href="{% url 'blog:index' %}">Home</a></li>
-                <li><a href="./shop-grid.html">Shop</a></li>
+                <li><a href="{% url 'Ecommerce:shop' %}">Shop</a></li>
                 <li><a href="{% url 'blog:blog' %}">Blog</a></li>
                 <li><a href="{% url 'blog:contact' %}">Contact</a></li>
             </ul>
@@ -122,7 +122,7 @@
                     <nav class="header__menu">
                         <ul>
                             <li class="{% if active_page == 'accueil' %}active{% endif %}"><a href="{% url 'blog:index' %}">Home</a></li>
-                            <li class="{% if active_page == 'shop' %}active{% endif %}"><a href="./shop-grid.html">Shop</a></li>
+                            <li class="{% if active_page == 'shop' %}active{% endif %}"><a href="{% url 'Ecommerce:shop' %}">Shop</a></li>
                             <li class="{% if active_page == 'blog' %}active{% endif %}"><a href="{% url 'blog:blog' %}">Blog</a></li>
                             <li class="{% if active_page == 'contact' %}active{% endif %}"><a href="{% url 'blog:contact' %}">Contact</a></li>
                         </ul>
@@ -131,7 +131,7 @@
                 <div class="col-lg-3">
                     <div class="header__cart">
                         <ul>
-                            <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                            <li><a href="{% url 'Ecommerce:favorite' %}"><i class="fa fa-heart"></i> <span>1</span></a></li>
                             <li><a href="{% url 'Ecommerce:board' %}"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
                         </ul>
                         <div class="header__cart__price">item: <span>$150.00</span></div>
