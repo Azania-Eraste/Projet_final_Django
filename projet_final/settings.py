@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'blog.apps.BlogConfig',
-    'Authentification.apps.AuthentificationConfig'
+    'Authentification.apps.AuthentificationConfig',
+    'Ecommerce.apps.EcommerceConfig'
 ]
 
 MIDDLEWARE = [
