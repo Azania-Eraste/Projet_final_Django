@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/filebrowser/', site.urls),
     path('', include('blog.urls')),
+    path('', include('Ecommerce.urls')),
     path('Auth/', include('Authentification.urls')),
     path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('api-auth/', include('rest_framework.urls')),

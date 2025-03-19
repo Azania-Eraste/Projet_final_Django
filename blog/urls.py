@@ -21,7 +21,6 @@ urlpatterns = [
     path("Blog/<slug:slug>/delete/<int:id>", views.commentaire_delete, name="delete_comment"),
     path("Blog/<slug:slug>/update/<int:id>", views.commentaire_update, name="update_comment"),
     path("Blog/", views.blog, name="blog"),
-    path("Dashboard/", views.darshbord, name="board"),
     path("Dashboard/ajout", views.ajout_article, name='add'),
     path("Dashboard/edit/<slug:slug>/", views.update_article, name="edit"),
     path("Dashboard/delete/<slug:slug>/", views.delete_article, name="delete"),
