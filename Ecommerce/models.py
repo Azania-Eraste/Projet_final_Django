@@ -1,7 +1,9 @@
 from django.db import models
 from enum import Enum
+from django.utils import timezone
 from django.contrib.auth import get_user_model
-
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -10,26 +12,47 @@ class StatutCommande(Enum):
     EXPEDIEE = "Expédiée"
     ANNULEE = "Annulée"
 
+
+class StatutPaiement(Enum):
+    EN_ATTENTE = "En attente"
+    EFFECTUEE = "Effectué"
 class StatutLivraison(Enum):
     EN_COURS = "En cours"
     LIVREE = "Livrée"
     RETOURNEE = "Retournée"
 
-
+MOIS_CHOICES = [
+    (1, "Janvier"), (2, "Février"), (3, "Mars"), (4, "Avril"),
+    (5, "Mai"), (6, "Juin"), (7, "Juillet"), (8, "Août"),
+    (9, "Septembre"), (10, "Octobre"), (11, "Novembre"), (12, "Décembre")
+]
 
 class Role(models.Model):
     nom = models.CharField(max_length=255)
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.nom
 
 class Produit(models.Model):
     nom = models.CharField(max_length=255)
     Image = models.ImageField(upload_to="Produit")
     description = models.TextField()
-    prix = models.FloatField()
-    stock = models.IntegerField()
+    stock = models.IntegerField(default=0)
     categorie = models.ForeignKey('Ecommerce.CategorieProduit', on_delete=models.CASCADE)
 
     def mettre_a_jour_stock(self):
-        pass
+        nouveau_stock = sum(variation.quantite for variation in self.Variation_Produit_ids.filter(statut=True))
+        Produit.objects.filter(pk=self.pk).update(stock=nouveau_stock)
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.nom
 
 class CategorieProduit(models.Model):
     nom = models.CharField(max_length=255)
@@ -37,37 +60,53 @@ class CategorieProduit(models.Model):
 
     def obtenir_produits(self):
         return Produit.objects.filter(categorie=self)
-    
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.nom
 
 class Commande(models.Model):
     date = models.DateField(auto_now_add=True)
-    statut = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutCommande])
+    statut_commande = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutCommande])
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
     produits = models.ManyToManyField(Produit)
     code_promo = models.ForeignKey('Ecommerce.CodePromo', on_delete=models.SET_NULL, null=True, blank=True)
     paiement = models.OneToOneField('Ecommerce.Paiement', on_delete=models.CASCADE, null=True, blank=True)
 
     def mettre_a_jour_statut(self, nouveau_statut):
-        self.statut = nouveau_statut
+        self.statut_commande = nouveau_statut
         self.save()
 
+    est_actif = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
-        return  "Commande N" + str(self.pk)
+        return "Commande N" + str(self.pk)
 
 class Livraison(models.Model):
     commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
     transporteur = models.CharField(max_length=255)
-    statut = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
+    statut_livraison = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
     numero_suivi = models.CharField(max_length=255)
 
+    est_actif = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
-        return  "Livraison N" + str(self.pk)
-    
+        return "Livraison N" + str(self.pk)
+
 class Mode(models.Model):
     nom = models.CharField(max_length=255)
     description = models.TextField()
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.nom
@@ -75,14 +114,17 @@ class Mode(models.Model):
 class Paiement(models.Model):
     montant = models.FloatField()
     mode = models.ForeignKey("Ecommerce.Mode", on_delete=models.CASCADE, related_name="ModePaiement")
-    statut = models.CharField(max_length=255)
+    statut_paiement = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutPaiement], null=True)
+    est_actif = models.BooleanField(default=True)  # Statut booléen
 
     def effectuer_paiement(self):
         pass
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return "Paiement N" + str(self.pk)
-
 
 class Panier(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -97,12 +139,19 @@ class Panier(models.Model):
     def vider_panier(self):
         self.produits.clear()
 
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return "Panier N" + str(self.pk)
 
-
 class Ville(models.Model):
     nom = models.CharField(max_length=255)
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.nom
@@ -110,6 +159,11 @@ class Ville(models.Model):
 class Commune(models.Model):
     nom = models.CharField(max_length=255)
     ville = models.ForeignKey("Ecommerce.Ville", on_delete=models.CASCADE, related_name="Commune_ville_ids")
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.nom
 
@@ -117,21 +171,86 @@ class Adresse(models.Model):
     code_postal = models.CharField(max_length=10)
     commune = models.ForeignKey("Ecommerce.Commune", on_delete=models.CASCADE, related_name="Adresse_Commune_ids")
 
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
-        return self.code_postal + self.commune
+        return f"{self.code_postal} {self.commune}"
+
+class Promotion(models.Model):
+    nom = models.CharField(max_length=255, help_text="Nom de la promotion, ex: '20% fin de récolte'")
+    variations = models.ManyToManyField('Ecommerce.VariationProduit', related_name="promotions", blank=True)
+    reduction = models.FloatField(help_text="Réduction en pourcentage (ex: 20 pour 20%)")
+    date_debut = models.DateField(help_text="Début de la promotion")
+    date_fin = models.DateField(help_text="Fin de la promotion")
+    active = models.BooleanField(default=True, help_text="Indique si la promotion est active")
+    raison = models.CharField(max_length=255, default="Fin de période de récolte", help_text="Raison de la promotion")
+
+    def est_active(self):
+        aujourd_hui = timezone.now().date()
+        dans_periode_promo = self.date_debut <= aujourd_hui <= self.date_fin
+        return self.active and dans_periode_promo
+
+    def appliquer_reduction(self, prix_initial):
+        if self.est_active():
+            prix_reduit = prix_initial * (1 - self.reduction / 100)
+            return max(prix_reduit, 0)
+        return prix_initial
+
+    def appliquer_a_variations(self, variations):
+        for variation in variations:
+            self.variations.add(variation)
+
+    def retirer_de_variations(self, variations):
+        for variation in variations:
+            self.variations.remove(variation)
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.nom} - {self.reduction}% jusqu'au {self.date_fin}"
 
 class VariationProduit(models.Model):
+    nom = models.CharField(max_length=255, null=True)
     produit = models.ForeignKey("Ecommerce.Produit", on_delete=models.CASCADE, related_name="Variation_Produit_ids")
     poids = models.FloatField(help_text="Poids en kilogrammes")
-    quantite = models.IntegerField(help_text="Quantité disponible (ex: 10 sacs)")
+    quantite = models.IntegerField(help_text="Quantité disponible")
     origine = models.CharField(max_length=255)
-    periode_recolte = models.CharField(max_length=255, choices=[("Haute saison", "Haute saison"), ("Basse saison", "Basse saison")])
+    mois_debut_recolte = models.IntegerField(choices=MOIS_CHOICES, help_text="Mois de début de la période de récolte")
+    mois_fin_recolte = models.IntegerField(choices=MOIS_CHOICES, help_text="Mois de fin de la période de récolte")
     prix = models.FloatField(help_text="Prix de la variation du produit")
     qualite = models.CharField(max_length=255, choices=[("Premium", "Premium"), ("Standard", "Standard")])
-    
+
+    def est_dans_periode_recolte(self):
+        aujourd_hui = timezone.now().date()
+        mois_actuel = aujourd_hui.month
+        if self.mois_debut_recolte > self.mois_fin_recolte:
+            return mois_actuel >= self.mois_debut_recolte or mois_actuel <= self.mois_fin_recolte
+        return self.mois_debut_recolte <= mois_actuel <= self.mois_fin_recolte
+
+    def prix_avec_reduction_saison(self):
+        if not self.est_dans_periode_recolte():
+            prix_reduit = self.prix * (1 - 20 / 100)
+            return max(prix_reduit, 0)
+        return self.prix
+
+    def prix_actuel(self):
+        prix_base = self.prix_avec_reduction_saison()
+        promotions_actives = self.promotions.filter(active=True)
+        if promotions_actives.exists():
+            promo = promotions_actives.first()
+            return promo.appliquer_reduction(prix_base)
+        return prix_base
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return f"{self.produit.nom} - {self.qualite} - {self.poids} kg"
-
 
 class Avis(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -139,6 +258,10 @@ class Avis(models.Model):
     note = models.IntegerField()
     commentaire = models.TextField()
     date = models.DateField(auto_now_add=True)
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.utilisateur} - {self.produit} - {self.note}"
@@ -148,6 +271,10 @@ class CodePromo(models.Model):
     reduction = models.FloatField()
     date_expiration = models.DateField()
 
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return f"Code promo N {self.pk}"
 
@@ -155,5 +282,16 @@ class Favoris(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
     produit = models.ForeignKey("Ecommerce.Produit", on_delete=models.CASCADE)
 
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return f"{self.utilisateur} aime {self.produit}"
+
+@receiver(post_save, sender=VariationProduit)
+@receiver(post_delete, sender=VariationProduit)
+def update_produit_stock(sender, instance, **kwargs):
+    """Met à jour le stock du produit quand une variation est créée, modifiée ou supprimée."""
+    produit = instance.produit
+    produit.mettre_a_jour_stock()
