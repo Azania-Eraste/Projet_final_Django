@@ -126,25 +126,7 @@ class Paiement(models.Model):
     def __str__(self):
         return "Paiement N" + str(self.pk)
 
-class Panier(models.Model):
-    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
-    produits = models.ManyToManyField("Ecommerce.Produit")
 
-    def ajouter_produit(self, produit):
-        self.produits.add(produit)
-
-    def retirer_produit(self, produit):
-        self.produits.remove(produit)
-
-    def vider_panier(self):
-        self.produits.clear()
-
-    statut = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return "Panier N" + str(self.pk)
 
 class Ville(models.Model):
     nom = models.CharField(max_length=255)
@@ -217,6 +199,8 @@ class VariationProduit(models.Model):
     nom = models.CharField(max_length=255, null=True)
     produit = models.ForeignKey("Ecommerce.Produit", on_delete=models.CASCADE, related_name="Variation_Produit_ids")
     poids = models.FloatField(help_text="Poids en kilogrammes")
+    description = models.TextField(null=True)
+    images = models.ImageField(upload_to='Variant_produit', null=True)
     quantite = models.IntegerField(help_text="Quantité disponible")
     origine = models.CharField(max_length=255)
     mois_debut_recolte = models.IntegerField(choices=MOIS_CHOICES, help_text="Mois de début de la période de récolte")
@@ -251,6 +235,27 @@ class VariationProduit(models.Model):
 
     def __str__(self):
         return f"{self.produit.nom} - {self.qualite} - {self.poids} kg"
+    
+
+class Panier(models.Model):
+    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Panier_id")
+    produits = models.ManyToManyField("Ecommerce.VariationProduit")
+
+    def ajouter_produit(self, produit):
+        self.produits.add(produit)
+
+    def retirer_produit(self, produit):
+        self.produits.remove(produit)
+
+    def vider_panier(self):
+        self.produits.clear()
+
+    statut = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "Panier N" + str(self.pk)
 
 class Avis(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)

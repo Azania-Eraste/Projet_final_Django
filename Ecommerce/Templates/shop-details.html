@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block content %}
+{% block header %}
 <!-- Hero Section Begin -->
 <section class="hero hero-normal">
     <div class="container">
@@ -13,17 +13,9 @@
                         <span>All departments</span>
                     </div>
                     <ul>
-                        <li><a href="#">Fresh Meat</a></li>
-                        <li><a href="#">Vegetables</a></li>
-                        <li><a href="#">Fruit & Nut Gifts</a></li>
-                        <li><a href="#">Fresh Berries</a></li>
-                        <li><a href="#">Ocean Foods</a></li>
-                        <li><a href="#">Butter & Eggs</a></li>
-                        <li><a href="#">Fastfood</a></li>
-                        <li><a href="#">Fresh Onion</a></li>
-                        <li><a href="#">Papayaya & Crisps</a></li>
-                        <li><a href="#">Oatmeal</a></li>
-                        <li><a href="#">Fresh Bananas</a></li>
+                        {% for categorie in Categories %}
+                            <li><a href="#">{{ categorie.nom }}</a></li>   
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
@@ -54,6 +46,9 @@
     </div>
 </section>
 <!-- Hero Section End -->
+{% endblock %}
+
+{% block content %}
 
 <!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
@@ -82,23 +77,13 @@
                 <div class="product__details__pic">
                     <div class="product__details__pic__item">
                         <img class="product__details__pic__item--large"
-                            src="{% static 'img/product/details/product-details-1.jpg' %}" alt="">
-                    </div>
-                    <div class="product__details__pic__slider owl-carousel">
-                        <img data-imgbigurl="{% static 'img/product/details/product-details-2.jpg' %}"
-                            src="{% static 'img/product/details/thumb-1.jpg' %}" alt="">
-                        <img data-imgbigurl="{% static 'img/product/details/product-details-3.jpg' %}"
-                            src="{% static 'img/product/details/thumb-2.jpg' %}" alt="">
-                        <img data-imgbigurl="{% static 'img/product/details/product-details-5.jpg' %}"
-                            src="{% static 'img/product/details/thumb-3.jpg' %}" alt="">
-                        <img data-imgbigurl="{% static 'img/product/details/product-details-4.jpg' %}"
-                            src="{% static 'img/product/details/thumb-4.jpg' %}" alt="">
+                            src="{{ produit.images.url }}" alt="">
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__text">
-                    <h3>Vetgetable’s Package</h3>
+                    <h3>{{ produit.nom }}</h3>
                     <div class="product__details__rating">
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -107,10 +92,8 @@
                         <i class="fa fa-star-half-o"></i>
                         <span>(18 reviews)</span>
                     </div>
-                    <div class="product__details__price">$50.00</div>
-                    <p>Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ac diam sit amet quam
-                        vehicula elementum sed sit amet dui. Sed porttitor lectus nibh. Vestibulum ac diam sit amet
-                        quam vehicula elementum sed sit amet dui. Proin eget tortor risus.</p>
+                    <div class="product__details__price">{{ produit.prix }}</div>
+                    <p>{{ produit.description }}</p>
                     <div class="product__details__quantity">
                         <div class="quantity">
                             <div class="pro-qty">
@@ -118,12 +101,12 @@
                             </div>
                         </div>
                     </div>
-                    <a href="#" class="primary-btn">ADD TO CARD</a>
+                    <a href="{% url 'Ecommerce:board_add' produit.id %}" class="primary-btn">Ajouter au panier</a>
                     <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
                     <ul>
-                        <li><b>Availability</b> <span>In Stock</span></li>
+                        <li><b>Stock</b> <span>{{ produit.quantite }}</span></li>
                         <li><b>Shipping</b> <span>01 day shipping. <samp>Free pickup today</samp></span></li>
-                        <li><b>Weight</b> <span>0.5 kg</span></li>
+                        <li><b>Weight</b> <span>{{ produit.poids }}</span></li>
                         <li><b>Share on</b>
                             <div class="share">
                                 <a href="#"><i class="fa fa-facebook"></i></a>
