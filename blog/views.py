@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from blog.models import Article,Commentaire
 from django.contrib import messages
-from Ecommerce.models import VariationProduit
+from Ecommerce.models import VariationProduit,Panier,Favoris
 from blog.form import InfosGeneralesForm, ContenuForm, StandardsForm, CommentaireForm
 
 # Create your views here.
@@ -11,17 +11,43 @@ from blog.form import InfosGeneralesForm, ContenuForm, StandardsForm, Commentair
 def index(request):
 
     produit = VariationProduit.objects.filter(statut=True)
+    favoris , create = Favoris.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}
+        )
+
+
+    panier, created = Panier.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}  # Valeurs par défaut si créé
+    )
+
 
     datas = {
         'produits': produit,
+        'favoris_produit': favoris.produit,
+        'panier_produit': panier.produits,
         'active_page': 'accueil'
     }
 
     return render(request, 'index.html', datas)
 
 def contact(request):
+
+    favoris , create= Favoris.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}
+        )
+    
+    panier, created = Panier.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}  # Valeurs par défaut si créé
+    )
+
     datas = {
-        'active_page': 'contact'
+        'active_page': 'contact',
+        'favoris_produit': favoris.produit.all(),
+        'panier_produit': panier.produits.all(),
     }
 
     return render(request, 'contact.html', datas)
@@ -150,9 +176,21 @@ def blog(request):
     page_number = request.GET.get('page')  
     page_obj = paginator.get_page(page_number)
 
+    favoris , create= Favoris.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}
+        )
+    
+    panier, created = Panier.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}  # Valeurs par défaut si créé
+    )
+
     datas = {
         "articles" : articles,
         "page_obj": page_obj,
+        'favoris_produit': favoris.produit.all(),
+        'panier_produit': panier.produits.all(),
         'active_page': 'blog'
     }
 

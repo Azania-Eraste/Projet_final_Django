@@ -87,35 +87,42 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in produits %}
-                                    <tr>
-                                        <td class="shoping__cart__item">
-                                            <img src="{{ item.images.url }}" alt="">
-                                            <h5>{{ item.nom }}</h5>
-                                        </td>
-                                        <td class="shoping__cart__price" data-prix="{{ item.prix }}">
-                                            {{ item.prix }}
-                                        </td>
-                                        <td class="shoping__cart__quantity">
-                                            <div class="quantity">
-                                                <div class="pro-qty">
-                                                    <input type="number" class="qty-input" 
-                                                           value="{{ 1|default:1 }}" 
-                                                           min="1" 
-                                                           max="{{ item.quantite|default:1 }}" 
-                                                           data-max="{{ item.quantite|default:1 }}">
+                                {% if produits %}
+                                    {% for item in produits %}
+                                        <tr>
+                                            <td class="shoping__cart__item">
+                                                <img src="{{ item.images.url }}" alt="">
+                                                <h5>{{ item.nom }}</h5>
+                                            </td>
+                                            <td class="shoping__cart__price" data-prix="{{ item.prix }}">
+                                                {{ item.prix }}
+                                            </td>
+                                            <td class="shoping__cart__quantity">
+                                                <div class="quantity">
+                                                    <div class="pro-qty">
+                                                        <input type="number" class="qty-input" 
+                                                            value="{{ 1|default:1 }}" 
+                                                            min="1" 
+                                                            max="{{ item.quantite|default:1 }}" 
+                                                            data-max="{{ item.quantite|default:1 }}">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="shoping__cart__total" 
-                                            data-total="{{ item.prix|mul:item.quantite|default:item.prix }}">
-                                            {{ item.prix|mul:item.quantite|default:item.prix }}
-                                        </td>
-                                        <td class="shoping__cart__item__close">
-                                            <span class="icon_close"></span>
-                                        </td>
+                                            </td>
+                                            <td class="shoping__cart__total" 
+                                                data-total="{{ item.prix|mul:item.quantite|default:item.prix }}">
+                                                {{ item.prix|mul:item.quantite|default:item.prix }}
+                                            </td>
+                                            <td class="shoping__cart__item__close">
+                                                <a href="{% url 'Ecommerce:board_remove' item.id %}"><span class="icon_close"></span></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                {% else %}
+                                    <tr>
+                                        <h1>Aucun produit</h1>
                                     </tr>
-                                {% endfor %}
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>

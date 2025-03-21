@@ -285,7 +285,7 @@ class CodePromo(models.Model):
 
 class Favoris(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
-    produit = models.ForeignKey("Ecommerce.Produit", on_delete=models.CASCADE)
+    produit = models.ManyToManyField("Ecommerce.VariationProduit")
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

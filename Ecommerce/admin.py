@@ -224,7 +224,7 @@ class CodePromoAdmin(admin.ModelAdmin):
 
 @admin.register(Favoris)
 class FavorisAdmin(admin.ModelAdmin):
-    list_display = ("utilisateur", "produit")
+    list_display = ("utilisateur",)
     search_fields = ("utilisateur__username", "produit__nom")
     fieldsets = (
         ("Informations principales", {
