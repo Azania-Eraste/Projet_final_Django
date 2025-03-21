@@ -82,33 +82,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="shoping__cart__item">
-                                        <img src="{% static 'img/cart/cart-1.jpg' %}" alt="">
-                                        <h5>Vegetable’s Package</h5>
-                                    </td>
-                                    <td class="shoping__cart__item__close">
-                                        <span class="icon_close"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="shoping__cart__item">
-                                        <img src="{% static 'img/cart/cart-2.jpg' %}" alt="">
-                                        <h5>Fresh Garden Vegetable</h5>
-                                    </td>
-                                    <td class="shoping__cart__item__close">
-                                        <span class="icon_close"></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="shoping__cart__item">
-                                        <img src="{% static 'img/cart/cart-3.jpg' %}" alt="">
-                                        <h5>Organic Bananas</h5>
-                                    </td>
-                                    <td class="shoping__cart__item__close">
-                                        <span class="icon_close"></span>
-                                    </td>
-                                </tr>
+                                {% for produit in produits %}
+                                    <tr>
+                                        <td class="shoping__cart__item">
+                                            <img src="{{ produit.images.url }}" alt="">
+                                            <h5>{{ produit.nom }}</h5>
+                                        </td>
+                                        <td class="shoping__cart__item__close">
+                                            <a href="{% url 'Ecommerce:favorite_remove' produit.id %}"><span class="icon_close"></span></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
