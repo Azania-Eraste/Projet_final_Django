@@ -1,7 +1,8 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block content %}
+
+{% block header %}
 <!-- Hero Section Begin -->
 <section class="hero hero-normal">
     <div class="container">
@@ -13,17 +14,9 @@
                         <span>All departments</span>
                     </div>
                     <ul>
-                        <li><a href="#">Fresh Meat</a></li>
-                        <li><a href="#">Vegetables</a></li>
-                        <li><a href="#">Fruit & Nut Gifts</a></li>
-                        <li><a href="#">Fresh Berries</a></li>
-                        <li><a href="#">Ocean Foods</a></li>
-                        <li><a href="#">Butter & Eggs</a></li>
-                        <li><a href="#">Fastfood</a></li>
-                        <li><a href="#">Fresh Onion</a></li>
-                        <li><a href="#">Papayaya & Crisps</a></li>
-                        <li><a href="#">Oatmeal</a></li>
-                        <li><a href="#">Fresh Bananas</a></li>
+                        {% for categorie in Categories %}
+                            <li><a href="#">{{ categorie.nom }}</a></li>   
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
@@ -54,6 +47,10 @@
     </div>
 </section>
 <!-- Hero Section End -->
+{% endblock %}
+
+{% block content %}
+
 
 <!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
@@ -63,7 +60,7 @@
                 <div class="breadcrumb__text">
                     <h2>Organi Shop</h2>
                     <div class="breadcrumb__option">
-                        <a href="./index.html">Home</a>
+                        <a href="{% url 'blog:index' %}">Home</a>
                         <span>Shop</span>
                     </div>
                 </div>
@@ -82,16 +79,9 @@
                     <div class="sidebar__item">
                         <h4>Department</h4>
                         <ul>
-                            <li><a href="#">Fresh Meat</a></li>
-                            <li><a href="#">Vegetables</a></li>
-                            <li><a href="#">Fruit & Nut Gifts</a></li>
-                            <li><a href="#">Fresh Berries</a></li>
-                            <li><a href="#">Ocean Foods</a></li>
-                            <li><a href="#">Butter & Eggs</a></li>
-                            <li><a href="#">Fastfood</a></li>
-                            <li><a href="#">Fresh Onion</a></li>
-                            <li><a href="#">Papayaya & Crisps</a></li>
-                            <li><a href="#">Oatmeal</a></li>
+                            {% for categorie in Categories %}
+                                <li><a href="#">{{ categorie.nom }}</a></li>   
+                            {% endfor %}
                         </ul>
                     </div>
                     <div class="sidebar__item">
@@ -116,7 +106,7 @@
                             <h4>Latest Products</h4>
                             <div class="latest-product__slider owl-carousel">
                                 <div class="latest-prdouct__slider__item">
-                                    <a href="{% url 'Ecommerce:detail' %}" class="latest-product__item">
+                                    <a href="" class="latest-product__item">
                                         <div class="latest-product__item__pic">
                                             <img src="{% static 'img/latest-product/lp-1.jpg' %}" alt="">
                                         </div>
@@ -125,7 +115,7 @@
                                             <span>$30.00</span>
                                         </div>
                                     </a>
-                                    <a href="{% url 'Ecommerce:detail' %}" class="latest-product__item">
+                                    <a href="" class="latest-product__item">
                                         <div class="latest-product__item__pic">
                                             <img src="{% static 'img/latest-product/lp-2.jpg' %}" alt="">
                                         </div>
@@ -134,7 +124,7 @@
                                             <span>$30.00</span>
                                         </div>
                                     </a>
-                                    <a href="{% url 'Ecommerce:detail' %}" class="latest-product__item">
+                                    <a href="" class="latest-product__item">
                                         <div class="latest-product__item__pic">
                                             <img src="{% static 'img/latest-product/lp-3.jpg' %}" alt="">
                                         </div>
@@ -145,7 +135,7 @@
                                     </a>
                                 </div>
                                 <div class="latest-prdouct__slider__item">
-                                    <a href="{% url 'Ecommerce:detail' %}" class="latest-product__item">
+                                    <a href="" class="latest-product__item">
                                         <div class="latest-product__item__pic">
                                             <img src="{% static 'img/latest-product/lp-1.jpg' %}" alt="">
                                         </div>
@@ -154,7 +144,7 @@
                                             <span>$30.00</span>
                                         </div>
                                     </a>
-                                    <a href="{% url 'Ecommerce:detail' %}" class="latest-product__item">
+                                    <a href="" class="latest-product__item">
                                         <div class="latest-product__item__pic">
                                             <img src="{% static 'img/latest-product/lp-2.jpg' %}" alt="">
                                         </div>
@@ -163,7 +153,7 @@
                                             <span>$30.00</span>
                                         </div>
                                     </a>
-                                    <a href="{% url 'Ecommerce:detail' %}" class="latest-product__item">
+                                    <a href="" class="latest-product__item">
                                         <div class="latest-product__item__pic">
                                             <img src="{% static 'img/latest-product/lp-3.jpg' %}" alt="">
                                         </div>
@@ -193,14 +183,14 @@
                                             <div class="product__discount__percent">-20%</div>
                                             <ul class="product__item__pic__hover">
                                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                                
                                                 <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
                                             </ul>
                                         </div>
                                     
                                     <div class="product__discount__item__text">
                                         <span>Dried Fruit</span>
-                                        <h5><a href="{% url 'Ecommerce:detail' %}">Raisin’n’nuts</a></h5>
+                                        <h5><a href="">Raisin’n’nuts</a></h5>
                                         <div class="product__item__price">$30.00 <span>$36.00</span></div>
                                     </div>
                                 </div>
@@ -213,14 +203,14 @@
                                             <div class="product__discount__percent">-20%</div>
                                             <ul class="product__item__pic__hover">
                                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                                
                                                 <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
                                             </ul>
                                         </div>
                                     
                                     <div class="product__discount__item__text">
                                         <span>Vegetables</span>
-                                        <h5><a href="{% url 'Ecommerce:detail' %}">Vegetables’package</a></h5>
+                                        <h5><a href="">Vegetables’package</a></h5>
                                         <div class="product__item__price">$30.00 <span>$36.00</span></div>
                                     </div>
                                 </div>
@@ -233,14 +223,14 @@
                                             <div class="product__discount__percent">-20%</div>
                                             <ul class="product__item__pic__hover">
                                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                                
                                                 <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
                                             </ul>
                                         </div>
                                     
                                     <div class="product__discount__item__text">
                                         <span>Dried Fruit</span>
-                                        <h5><a href="{% url 'Ecommerce:detail' %}">Mixed Fruitss</a></h5>
+                                        <h5><a href="">Mixed Fruitss</a></h5>
                                         <div class="product__item__price">$30.00 <span>$36.00</span></div>
                                     </div>
                                 </div>
@@ -253,14 +243,14 @@
                                             <div class="product__discount__percent">-20%</div>
                                             <ul class="product__item__pic__hover">
                                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                                
                                                 <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
                                             </ul>
                                         </div>
                                    
                                     <div class="product__discount__item__text">
                                         <span>Dried Fruit</span>
-                                        <h5><a href="{% url 'Ecommerce:detail' %}">Raisin’n’nuts</a></h5>
+                                        <h5><a href="">Raisin’n’nuts</a></h5>
                                         <div class="product__item__price">$30.00 <span>$36.00</span></div>
                                     </div>
                                 </div>
@@ -273,14 +263,14 @@
                                             <div class="product__discount__percent">-20%</div>
                                             <ul class="product__item__pic__hover">
                                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                                
                                                 <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
                                             </ul>
                                         </div>
                                     
                                     <div class="product__discount__item__text">
                                         <span>Dried Fruit</span>
-                                        <h5><a href="{% url 'Ecommerce:detail' %}">Raisin’n’nuts</a></h5>
+                                        <h5><a href="">Raisin’n’nuts</a></h5>
                                         <div class="product__item__price">$30.00 <span>$36.00</span></div>
                                     </div>
                                 </div>
@@ -293,14 +283,14 @@
                                             <div class="product__discount__percent">-20%</div>
                                             <ul class="product__item__pic__hover">
                                                 <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                                
                                                 <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
                                             </ul>
                                         </div>
                                     
                                     <div class="product__discount__item__text">
                                         <span>Dried Fruit</span>
-                                        <h5><a href="{% url 'Ecommerce:detail' %}">Raisin’n’nuts</a></h5>
+                                        <h5><a href="">Raisin’n’nuts</a></h5>
                                         <div class="product__item__price">$30.00 <span>$36.00</span></div>
                                     </div>
                                 </div>
@@ -333,186 +323,23 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-1.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-2.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
+                    {% for produit in produits %}
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item">
+                                <div class="product__item__pic set-bg" data-setbg="{{ produit.images.url  }}">
+                                    <ul class="product__item__pic__hover">
+                                        <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                        
+                                        <li><a href="{% url 'Ecommerce:board_add' produit.id %}"><i class="fa fa-shopping-cart"></i></a></li>
+                                    </ul>
+                                </div>
+                                <div class="product__item__text">
+                                    <h6><a href="{% url 'Ecommerce:detail' produit.id %}">{{ produit.nom }}</a></h6>
+                                    <h5>{{ produit.prix }}</h5>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-3.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-4.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-5.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-6.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-7.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-8.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-9.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-10.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-11.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6">
-                        <div class="product__item">
-                            <div class="product__item__pic set-bg" data-setbg="{% static 'img/product/product-12.jpg' %}">
-                                <ul class="product__item__pic__hover">
-                                    <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product__item__text">
-                                <h6><a href="{% url 'Ecommerce:detail' %}">Crab Pool Security</a></h6>
-                                <h5>$30.00</h5>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
                 <div class="product__pagination">
                     <a href="#">1</a>

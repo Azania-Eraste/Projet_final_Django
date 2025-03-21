@@ -178,7 +178,7 @@ class VariationProduitAdmin(admin.ModelAdmin):
     search_fields = ("produit__nom",)
     fieldsets = (
         ("Informations principales", {
-            "fields": ("nom" ,"produit", "qualite", "poids", "quantite", "prix")
+            "fields": ("nom" ,"produit", "images","qualite", "poids", "quantite", "prix")
         }),
         ("Période de récolte", {
             "fields": ("mois_debut_recolte", "mois_fin_recolte", "origine"),

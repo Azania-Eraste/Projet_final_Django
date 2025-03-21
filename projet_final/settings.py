@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'rest_framework',
     'drf_yasg',
+    'mathfilters',
 
     'django.contrib.admin',
     'django.contrib.auth',
