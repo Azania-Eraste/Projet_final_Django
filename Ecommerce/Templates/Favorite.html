@@ -82,17 +82,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for produit in produits %}
+                                {% if produits %}
+                                    {% for produit in produits %}
+                                        <tr>
+                                            <td class="shoping__cart__item">
+                                                <img src="{{ produit.images.url }}" alt="">
+                                                <h5>{{ produit.nom }}</h5>
+                                            </td>
+                                            <td class="shoping__cart__item__close">
+                                                <a href="{% url 'Ecommerce:favorite_remove' produit.id %}"><span class="icon_close"></span></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                {% else %}
                                     <tr>
-                                        <td class="shoping__cart__item">
-                                            <img src="{{ produit.images.url }}" alt="">
-                                            <h5>{{ produit.nom }}</h5>
-                                        </td>
-                                        <td class="shoping__cart__item__close">
-                                            <a href="{% url 'Ecommerce:favorite_remove' produit.id %}"><span class="icon_close"></span></a>
-                                        </td>
+                                        <td colspan="5"><h1>Aucun produit</h1></td>
                                     </tr>
-                                {% endfor %}
+                                {% endif%}
                             </tbody>
                         </table>
                     </div>
