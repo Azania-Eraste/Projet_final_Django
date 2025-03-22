@@ -50,8 +50,6 @@
 {% endblock %}
 
 {% block content %}
-
-
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
         <div class="container">
@@ -73,91 +71,97 @@
     <!-- Shoping Cart Section Begin -->
     <section class="shoping-cart spad">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="shoping__cart__table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th class="shoping__product">Products</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if produits %}
-                                    {% for item in produits %}
-                                        <tr>
-                                            <td class="shoping__cart__item">
-                                                <img src="{{ item.images.url }}" alt="">
-                                                <h5>{{ item.nom }}</h5>
-                                            </td>
-                                            <td class="shoping__cart__price" data-prix="{{ item.prix }}">
-                                                {{ item.prix }}
-                                            </td>
-                                            <td class="shoping__cart__quantity">
-                                                <div class="quantity">
-                                                    <div class="pro-qty">
-                                                        <input type="number" class="qty-input" 
-                                                            value="{{ 1|default:1 }}" 
-                                                            min="1" 
-                                                            max="{{ item.quantite|default:1 }}" 
-                                                            data-max="{{ item.quantite|default:1 }}">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="shoping__cart__total" 
-                                                data-total="{{ item.prix|mul:item.quantite|default:item.prix }}">
-                                                {{ item.prix|mul:item.quantite|default:item.prix }}
-                                            </td>
-                                            <td class="shoping__cart__item__close">
-                                                <a href="{% url 'Ecommerce:board_remove' item.id %}"><span class="icon_close"></span></a>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-
-                                {% else %}
+            <form method="post" action="{% url 'Ecommerce:check' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="shoping__cart__table">
+                            <table>
+                                <thead>
                                     <tr>
-                                        <h1>Aucun produit</h1>
+                                        <th class="shoping__product">Products</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th></th>
                                     </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="shoping__cart__btns">
-                        <a href="{% url 'blog:index' %}" class="primary-btn cart-btn">Continué le Shopping</a>
-                        <a href="#" class="primary-btn cart-btn cart-btn-right update-cart-btn"><span class="icon_loading"></span>
-                            Mettre le panier à jour</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="shoping__continue">
-                        <div class="shoping__discount">
-                            <h5>Discount Codes</h5>
-                            <form action="#">
-                                <input type="text" placeholder="Enter your coupon code">
-                                <button type="submit" class="site-btn">APPLY COUPON</button>
-                            </form>
+                                </thead>
+                                <tbody>
+                                    {% if panier_items %}
+                                        {% for item in panier_items %}
+                                            <tr>
+                                                <td class="shoping__cart__item">
+                                                    <img src="{{ item.produit.images.url }}" alt="">
+                                                    <h5>{{ item.produit.nom }}</h5>
+                                                </td>
+                                                <td class="shoping__cart__price" data-prix="{{ item.produit.prix }}">
+                                                    {{ item.produit.prix }}
+                                                </td>
+                                                <td class="shoping__cart__quantity">
+                                                    <div class="quantity">
+                                                        <div class="pro-qty">
+                                                            <input type="number" 
+                                                                   name="{{ item.form.quantite.name }}" 
+                                                                   value="{{ item.form.quantite.value|default:1 }}" 
+                                                                   min="1" 
+                                                                   max="{{ item.produit.quantite|default:1 }}" 
+                                                                   data-max="{{ item.produit.quantite|default:1 }}" 
+                                                                   class="qty-input">
+                                                            {{ item.form.produit_id }}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="shoping__cart__total" 
+                                                    data-total="{{ item.produit.prix|mul:item.form.quantite.value|default:item.produit.prix }}">
+                                                    {{ item.produit.prix|mul:item.form.quantite.value|default:item.produit.prix }}
+                                                </td>
+                                                <td class="shoping__cart__item__close">
+                                                    <a href="{% url 'Ecommerce:board_remove' item.produit.id %}"><span class="icon_close"></span></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5"><h1>Aucun produit</h1></td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="shoping__checkout">
-                        <h5>Cart Total</h5>
-                        <ul>
-                            <li>Subtotal <span class="cart-subtotal">0.00</span></li>
-                            <li>Total <span class="cart-total">0.00</span></li>
-                        </ul>
-                        <a href="{% url 'Ecommerce:check' %}" class="primary-btn">PASSER LA COMMANDE</a>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="shoping__cart__btns">
+                            <a href="{% url 'blog:index' %}" class="primary-btn cart-btn">Continué le Shopping</a>
+                            <button type="button" name="update_cart" class="primary-btn cart-btn cart-btn-right update-cart-btn">
+                                <span class="icon_loading"></span> Mettre le panier à jour
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="shoping__continue">
+                            <div class="shoping__discount">
+                                <h5>Discount Codes</h5>
+                                <form action="#">
+                                    <input type="text" placeholder="Enter your coupon code">
+                                    <button type="submit" class="site-btn">APPLY COUPON</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="shoping__checkout">
+                            <h5>Cart Total</h5>
+                            <ul>
+                                <li>Subtotal <span class="cart-subtotal">0.00</span></li>
+                                <li>Total <span class="cart-total">0.00</span></li>
+                            </ul>
+                            <button type="submit" name="passer_commande" class="primary-btn">PASSER LA COMMANDE</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </section>
     <!-- Shoping Cart Section End -->
@@ -177,7 +181,7 @@
                 subtotal += total;
             });
             subtotalElement.textContent = subtotal.toFixed(2);
-            totalElement.textContent = subtotal.toFixed(2); // Ajouter des frais si nécessaire
+            totalElement.textContent = subtotal.toFixed(2);
         }
 
         function updateAllTotals() {
@@ -191,7 +195,6 @@
                     const prix = parseFloat(prixElement.getAttribute('data-prix'));
                     let quantite = parseInt(qtyInput.value) || 1;
 
-                    // Limiter la quantité au maximum
                     if (quantite > maxQuantite) {
                         quantite = maxQuantite;
                         qtyInput.value = maxQuantite;
@@ -201,12 +204,18 @@
                     totalElement.textContent = total.toFixed(2);
                 }
             });
-            updateCartTotal(); // Mettre à jour le total général
+            updateCartTotal();
         }
 
-        // Écouter le clic sur le bouton "Mettre le panier à jour"
+        // Mettre à jour les totaux en temps réel lorsqu’on change la quantité
+        rows.forEach(row => {
+            const qtyInput = row.querySelector('.qty-input');
+            qtyInput.addEventListener('input', updateAllTotals);
+        });
+
+        // Mettre à jour les totaux avec le bouton "Mettre le panier à jour"
         updateCartBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Empêcher le rechargement
+            e.preventDefault(); // Ne pas soumettre le formulaire
             updateAllTotals();
         });
 
@@ -214,5 +223,4 @@
         updateAllTotals();
     });
     </script>
-
 {% endblock %}
