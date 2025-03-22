@@ -5,7 +5,7 @@ from Ecommerce import views
 app_name="Ecommerce"
 
 urlpatterns = [
-    path("Dashboard/", views.darshbord, name="board"),
+    path("Dashboard/", views.dashboard, name="board"),
     path("Dashboard/delete/<int:id>", views.remove_dahboard, name="board_remove"),
     path("Dashboard/add/<int:id>", views.add_dashboard, name="board_add"),
     path("Dashboard/Chechout", views.checkout, name="check"),

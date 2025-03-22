@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from blog.models import Article,Commentaire
 from django.contrib import messages
-from Ecommerce.models import VariationProduit,Panier,Favoris
+from Ecommerce.models import VariationProduit,Panier,Favoris, CategorieProduit
 from blog.form import InfosGeneralesForm, ContenuForm, StandardsForm, CommentaireForm
 
 # Create your views here.
@@ -22,11 +22,13 @@ def index(request):
         defaults={'statut': True}  # Valeurs par défaut si créé
     )
 
+    categori = CategorieProduit.objects.filter(statut=True)
 
     datas = {
         'produits': produit,
         'favoris_produit': favoris.produit,
         'panier_produit': panier.produits,
+        'Categories': categori,
         'active_page': 'accueil'
     }
 
@@ -44,8 +46,11 @@ def contact(request):
         defaults={'statut': True}  # Valeurs par défaut si créé
     )
 
+    categori = CategorieProduit.objects.filter(statut=True)
+
     datas = {
         'active_page': 'contact',
+        'Categories': categori,
         'favoris_produit': favoris.produit.all(),
         'panier_produit': panier.produits.all(),
     }
@@ -186,9 +191,12 @@ def blog(request):
         defaults={'statut': True}  # Valeurs par défaut si créé
     )
 
+    categori = CategorieProduit.objects.filter(statut=True)
+
     datas = {
         "articles" : articles,
         "page_obj": page_obj,
+        'Categories': categori,
         'favoris_produit': favoris.produit.all(),
         'panier_produit': panier.produits.all(),
         'active_page': 'blog'
