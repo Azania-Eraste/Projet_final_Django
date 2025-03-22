@@ -8,6 +8,7 @@ from django.dispatch import receiver
 User = get_user_model()
 
 class StatutCommande(Enum):
+    EN_ATTENTE = "En attente"
     EN_COURS = "En cours"
     EXPEDIEE = "Expédiée"
     ANNULEE = "Annulée"
@@ -86,6 +87,17 @@ class Commande(models.Model):
 
     def __str__(self):
         return "Commande N" + str(self.pk)
+    
+class CommandeProduit(models.Model):
+    commande = models.ForeignKey('Ecommerce.Commande', on_delete=models.CASCADE)
+    produit = models.ForeignKey('Ecommerce.Produit', on_delete=models.CASCADE)
+    quantite = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ('commande', 'produit')
+
+    def __str__(self):
+        return f"{self.quantite} x {self.produit.nom} dans commande {self.commande.id}"
 
 class Livraison(models.Model):
     commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
@@ -237,6 +249,8 @@ class VariationProduit(models.Model):
         return f"{self.produit.nom} - {self.qualite} - {self.poids} kg"
     
 
+
+
 class Panier(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Panier_id")
     produits = models.ManyToManyField("Ecommerce.VariationProduit")
@@ -256,6 +270,7 @@ class Panier(models.Model):
 
     def __str__(self):
         return "Panier N" + str(self.pk)
+    
 
 class Avis(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
