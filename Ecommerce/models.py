@@ -73,7 +73,6 @@ class Commande(models.Model):
     date = models.DateField(auto_now_add=True)
     statut_commande = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutCommande])
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
-    produits = models.ManyToManyField(Produit)
     code_promo = models.ForeignKey('Ecommerce.CodePromo', on_delete=models.SET_NULL, null=True, blank=True)
     paiement = models.OneToOneField('Ecommerce.Paiement', on_delete=models.CASCADE, null=True, blank=True)
 
