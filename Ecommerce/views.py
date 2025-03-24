@@ -34,22 +34,29 @@ def dashboard(request):
             return redirect('Ecommerce:dashboard')
         elif 'passer_commande' in request.POST:
             # Créer une nouvelle commande
-            commande = Commande.objects.create(
-                utilisateur=user,
-                statut_commande=StatutCommande.EN_ATTENTE
-            )
-            # Ajouter les produits avec leurs quantités à la commande
-            for produit in produits:
-                form = PanierQuantiteForm(request.POST, prefix=str(produit.id))
-                if form.is_valid() and form.cleaned_data['produit_id'] == produit.id:
-                    CommandeProduit.objects.create(
-                        commande=commande,
-                        produit=produit,
-                        quantite=form.cleaned_data['quantite']
-                    )
-            # Vider le panier après création de la commande
-            panier.produits.clear()
-            return redirect('Ecommerce:check')
+
+            last_commande = Commande.objects.all().last()
+
+            if last_commande.statut_commande != StatutCommande.EN_ATTENTE : 
+                commande = Commande.objects.create(
+                    utilisateur=user,
+                    statut_commande=StatutCommande.EN_ATTENTE
+                )
+                # Ajouter les produits avec leurs quantités à la commande
+                for produit in produits:
+                    form = PanierQuantiteForm(request.POST, prefix=str(produit.id))
+                    if form.is_valid() and form.cleaned_data['produit_id'] == produit.id:
+                        CommandeProduit.objects.create(
+                            commande=commande,
+                            produit=produit,
+                            quantite=form.cleaned_data['quantite']
+                        )
+                # Vider le panier après création de la commande
+                panier.produits.clear()
+                return redirect('Ecommerce:check')
+            else :
+                messages.warning(request, "Vous avez deja une commande en attente")
+                return redirect('Ecommerce:board')
 
     # Charger les formulaires avec une quantité initiale de 1
     for produit in produits:
