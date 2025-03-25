@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (
     Role, Produit, CategorieProduit, Commande, Livraison, Mode, Paiement, 
-    Panier, Ville, Commune, Adresse, VariationProduit, Avis, CodePromo, Favoris
+    Panier, Ville, Commune, Adresse, VariationProduit, Avis, CodePromo, Favoris,
+    CommandeProduit
 )
 
 @admin.register(Role)
@@ -57,10 +58,10 @@ class CommandeAdmin(admin.ModelAdmin):
     search_fields = ("utilisateur__username",)
     fieldsets = (
         ("Informations principales", {
-            "fields": ("date", "statut_commande", "utilisateur")
+            "fields": ("statut_commande", "utilisateur")
         }),
         ("Détails de la commande", {
-            "fields": ("produits", "code_promo", "paiement"),
+            "fields": ("code_promo", "paiement"),
         }),
         ("Métadonnées", {
             "fields": ("est_actif",),  # Ajout de la virgule
@@ -156,6 +157,22 @@ class CommuneAdmin(admin.ModelAdmin):
             "classes": ("collapse",),
         }),
     )
+
+@admin.register(CommandeProduit)
+class CommandeProduitAdmin(admin.ModelAdmin):
+    list_display = ('commande','produit','quantite')
+    search_fields = ('produit',)
+
+    fieldsets = (
+        ("Informations principales", {
+            "fields": ("commande", "produit", "quantite")
+        }),
+        ("Métadonnées", {
+            "fields": ("statut",),  # Ajout de la virgule
+            "classes": ("collapse",),
+        }),
+    )
+
 
 @admin.register(Adresse)
 class AdresseAdmin(admin.ModelAdmin):
