@@ -88,9 +88,13 @@ class Commande(models.Model):
         return "Commande N" + str(self.pk)
     
 class CommandeProduit(models.Model):
-    commande = models.ForeignKey('Ecommerce.Commande', on_delete=models.CASCADE)
-    produit = models.ForeignKey('Ecommerce.Produit', on_delete=models.CASCADE)
+    commande = models.ForeignKey('Ecommerce.Commande', on_delete=models.CASCADE, related_name="Commande_Produit_ids")
+    produit = models.ForeignKey('Ecommerce.VariationProduit', on_delete=models.CASCADE)
     quantite = models.PositiveIntegerField(default=1)
+
+    est_actif = models.BooleanField(default=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    last_updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         unique_together = ('commande', 'produit')

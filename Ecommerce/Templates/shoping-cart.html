@@ -101,14 +101,16 @@
                                                     <div class="quantity">
                                                         <div class="pro-qty">
                                                             <input type="number" 
-                                                                   name="{{ item.form.quantite.name }}" 
+                                                                   name="quantite_{{ item.produit.id }}" 
                                                                    value="{{ item.form.quantite.value|default:1 }}" 
                                                                    min="1" 
                                                                    max="{{ item.produit.quantite|default:1 }}" 
                                                                    data-max="{{ item.produit.quantite|default:1 }}" 
                                                                    class="qty-input">
-                                                            {{ item.form.produit_id }}
                                                         </div>
+                                                        <input type="hidden" 
+                                                                   name="produit_id_{{ item.produit.id }}" 
+                                                                   value="{{ item.produit.id }}">
                                                     </div>
                                                 </td>
                                                 <td class="shoping__cart__total" 

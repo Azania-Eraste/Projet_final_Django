@@ -10,55 +10,57 @@ from Ecommerce.form import PanierQuantiteForm
 def dashboard(request):
     user = request.user
 
-    # Gestion des favoris
-    favoris, created = Favoris.objects.get_or_create(
-        utilisateur=user,
-        defaults={'statut': True}
-    )
-
-    # Gestion du panier
     panier, created = Panier.objects.get_or_create(
         utilisateur=user,
         defaults={'statut': True}
     )
-
-    # Récupérer les produits du panier
     produits = panier.produits.all()
-    categories = CategorieProduit.objects.filter(statut=True)
+    print("Produits dans le panier :", [p.id for p in produits])
 
-    # Gestion du formulaire
     panier_items = []
     if request.method == 'POST':
-        if 'update_cart' in request.POST:
-            # Pas de persistance côté serveur, mise à jour gérée par JS côté client
-            return redirect('Ecommerce:dashboard')
-        elif 'passer_commande' in request.POST:
-            # Créer une nouvelle commande
-
-            last_commande = Commande.objects.all().last()
-
-            if last_commande.statut_commande != StatutCommande.EN_ATTENTE : 
+        if 'passer_commande' in request.POST:
+            print("Données POST brutes :", request.POST)
+            last_commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
+            print(f"Dernière commande: {last_commande}")
+            if not last_commande or last_commande.statut_commande != StatutCommande.EN_ATTENTE:
                 commande = Commande.objects.create(
                     utilisateur=user,
                     statut_commande=StatutCommande.EN_ATTENTE
                 )
-                # Ajouter les produits avec leurs quantités à la commande
+                form_valid = True
                 for produit in produits:
-                    form = PanierQuantiteForm(request.POST, prefix=str(produit.id))
-                    if form.is_valid() and form.cleaned_data['produit_id'] == produit.id:
-                        CommandeProduit.objects.create(
-                            commande=commande,
-                            produit=produit,
-                            quantite=form.cleaned_data['quantite']
-                        )
-                # Vider le panier après création de la commande
-                panier.produits.clear()
-                return redirect('Ecommerce:check')
-            else :
-                messages.warning(request, "Vous avez deja une commande en attente")
+                    prefix = str(produit.id)
+                    form = PanierQuantiteForm(request.POST, prefix=prefix)
+                    print(f"Produit {produit.id} - Attendu: quantite_{prefix}, produit_id_{prefix}")
+                    print(f"Reçu: {request.POST.get(f'quantite_{prefix}')}, {request.POST.get(f'produit_id_{prefix}')}")
+                    print(f"Formulaire avant validation: {form.data}")
+                    print(f"Est lié (bound) ? {form.is_bound}")
+                    if form.is_valid():
+                        cleaned_quantite = form.cleaned_data['quantite']
+                        cleaned_produit_id = form.cleaned_data['produit_id']
+                        if cleaned_produit_id == produit.id:
+                            commande_produit = CommandeProduit.objects.create(
+                                commande=commande,
+                                produit=produit,
+                                quantite=cleaned_quantite
+                            )
+                            print(f"Créé: {commande_produit}")
+                        else:
+                            print(f"Échec: produit_id mismatch ({cleaned_produit_id} != {produit.id})")
+                            form_valid = False
+                    else:
+                        print(f"Échec: formulaire invalide - Erreurs: {form.errors}")
+                        form_valid = False
+                if form_valid:
+                    panier.produits.clear()
+                    return redirect('Ecommerce:check')
+                else:
+                    print("Échec global : au moins un formulaire est invalide")
+            else:
+                messages.warning(request, "Vous avez déjà une commande en attente")
                 return redirect('Ecommerce:board')
 
-    # Charger les formulaires avec une quantité initiale de 1
     for produit in produits:
         initial_data = {
             'quantite': 1,
@@ -66,22 +68,23 @@ def dashboard(request):
         }
         form = PanierQuantiteForm(initial=initial_data, prefix=str(produit.id))
         panier_items.append({'produit': produit, 'form': form})
+        print(f"Ajouté à panier_items: produit.id={produit.id}")
 
-    # Contexte pour le template
     datas = {
         'panier_items': panier_items,
-        'Categories': categories,
-        'favoris_produit': favoris.produit.all(),
+        'Categories': CategorieProduit.objects.filter(statut=True),
+        'favoris_produit': Favoris.objects.get_or_create(utilisateur=user, defaults={'statut': True})[0].produit.all(),
         'panier_produit': produits,
         'active_page': 'shop'
     }
-
     return render(request, 'shoping-cart.html', datas)
 
 @login_required(login_url='Authentification:login')
 def checkout(request):
 
     user = request.user
+
+
 
     # Gestion des favoris
     favoris, created = Favoris.objects.get_or_create(
@@ -95,8 +98,18 @@ def checkout(request):
         defaults={'statut': True}
     )
 
+    produit_commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
+
+    if not produit_commande:
+        messages.error(request, "Aucune commande en cours.")
+        return redirect("Ecommerce:board")  # Ou une autre page appropriée
+
+    produits_commande = produit_commande.Commande_Produit_ids.all()
+
     datas = {
-        'favoris_produit': favoris.produit.all() ,  # Gestion ForeignKey vs ManyToMany
+        'favoris_produit': favoris.produit.all(),  
+        'commande' : produit_commande,
+        'produits_commande' : produits_commande,
         'panier_produit': panier.produits.all(),
         'active_page': 'shop'
     }
@@ -116,7 +129,7 @@ def add_dashboard(request, id):
         panier.ajouter_produit(produit)
         messages.success(request, "Produit ajouté au panier")
         return redirect("Ecommerce:board")
-    except Produit.DoesNotExist:
+    except VariationProduit.DoesNotExist:
         messages.error(request, 'Produit non trouvé')
         return redirect("blog:index")
     except Exception as e:
@@ -137,7 +150,7 @@ def remove_dahboard(request, id):
         panier.retirer_produit(produit)
         messages.success(request, "Produit retiré du panier")
         return redirect("Ecommerce:board")
-    except Produit.DoesNotExist:
+    except VariationProduit.DoesNotExist:
         messages.error(request, 'Produit non trouvé')
         return redirect("blog:index")
     except Exception as e:
