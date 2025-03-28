@@ -101,41 +101,22 @@ def about(request):
     return render(request, 'about.html', datas)
 
 def blog(request):
-
     articles = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")
     
-    paginator = Paginator(articles, 6) 
-    page_number = request.GET.get('page')  
+    paginator = Paginator(articles, 6)
+    page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     panier_produits = None
     favoris_produits = None
 
-
     if request.user.is_authenticated:
-        # Gestion des favoris pour l'utilisateur connecté
         favoris, created = Favoris.objects.get_or_create(
             utilisateur=request.user,
             defaults={'statut': True}
         )
-        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+        favoris_produits = favoris.produit.all()
 
-        # Gestion du panier pour l'utilisateur connecté
-        panier, created = Panier.objects.get_or_create(
-            utilisateur=request.user,
-            defaults={'statut': True}
-        )
-        panier_produits = panier.produits.all()
-
-    if request.user.is_authenticated:
-        # Gestion des favoris pour l'utilisateur connecté
-        favoris, created = Favoris.objects.get_or_create(
-            utilisateur=request.user,
-            defaults={'statut': True}
-        )
-        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
-
-        # Gestion du panier pour l'utilisateur connecté
         panier, created = Panier.objects.get_or_create(
             utilisateur=request.user,
             defaults={'statut': True}
@@ -143,23 +124,20 @@ def blog(request):
         panier_produits = panier.produits.all()
 
     categori = CategorieProduit.objects.filter(statut=True)
-
-    categories_article = Categorie.objects.filter(statut=True)    
-
+    categories_article = Categorie.objects.filter(statut=True)
     tag = Tag.objects.filter(statut=True)
-
     recents = articles[:3]
 
     datas = {
-        "articles" : articles,
+        "articles": articles,
         "page_obj": page_obj,
         'Categories': categori,
         'Categories_article': categories_article,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
         'active_page': 'blog',
-        'Tags' : tag,
-        'recents' : recents,
+        'Tags': tag,
+        'recents': recents,
     }
 
     return render(request, 'blog.html', datas)
@@ -167,9 +145,19 @@ def blog(request):
 def blog_single(request, slug):
     article = get_object_or_404(Article, slug=slug)
     form = CommentaireForm()
+    categories_article = Categorie.objects.filter(statut=True)
+    tag = Tag.objects.filter(statut=True)
+    categori = CategorieProduit.objects.filter(statut=True)
+    recents = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")[:3]
+
+    
     datas = {
         "article" : article,
-        "form_comment" : form
+        "form_comment" : form,
+        'Categories': categori,
+        'Categories_article': categories_article,
+        'Tags': tag,
+        'recents': recents,
     }
 
     if request.method == "POST":
