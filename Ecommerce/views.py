@@ -40,10 +40,12 @@ def dashboard(request):
                         cleaned_quantite = form.cleaned_data['quantite']
                         cleaned_produit_id = form.cleaned_data['produit_id']
                         if cleaned_produit_id == produit.id:
+                            prix_produit = produit.prix * cleaned_quantite
                             commande_produit = CommandeProduit.objects.create(
                                 commande=commande,
                                 produit=produit,
-                                quantite=cleaned_quantite
+                                quantite=cleaned_quantite,
+                                prix=prix_produit
                             )
                             print(f"Créé: {commande_produit}")
                         else:
@@ -81,40 +83,38 @@ def dashboard(request):
 
 @login_required(login_url='Authentification:login')
 def checkout(request):
-
     user = request.user
 
-
-
-    # Gestion des favoris
-    favoris, created = Favoris.objects.get_or_create(
-        utilisateur=user,
-        defaults={'statut': True}
-    )
-
-    # Gestion du panier
-    panier, created = Panier.objects.get_or_create(
-        utilisateur=user,
-        defaults={'statut': True}
-    )
-
-    produit_commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
-
-    if not produit_commande:
+    # Récupérer la dernière commande
+    commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
+    if not commande:
         messages.error(request, "Aucune commande en cours.")
-        return redirect("Ecommerce:board")  # Ou une autre page appropriée
+        return redirect("Ecommerce:board")
 
-    produits_commande = produit_commande.Commande_Produit_ids.all()
+    # Récupérer les produits de la commande
+    produits_commande = commande.Commande_Produit_ids.all()
+    print("Produits de la commande :", produits_commande)
 
+    # Récupérer ou créer les favoris et le panier
+    favoris, _ = Favoris.objects.get_or_create(utilisateur=user, defaults={'statut': True})
+    panier, _ = Panier.objects.get_or_create(utilisateur=user, defaults={'statut': True})
+
+    # Calculer le total (optionnel, selon vos besoins)
+    total_commande = sum(
+        produit_commande.produit.prix * produit_commande.quantite 
+        for produit_commande in produits_commande
+    )
+
+    # Contexte pour le template
     datas = {
-        'favoris_produit': favoris.produit.all(),  
-        'commande' : produit_commande,
-        'produits_commande' : produits_commande,
+        'favoris_produit': favoris.produit.all(),
+        'commande': commande,
+        'produits_commande': produits_commande,
         'panier_produit': panier.produits.all(),
+        'total_commande': total_commande,
         'active_page': 'shop'
     }
     return render(request, 'checkout.html', datas)
-
 
 @login_required(login_url='Authentification:login')
 def add_dashboard(request, id):

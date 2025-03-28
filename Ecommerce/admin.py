@@ -168,7 +168,7 @@ class CommandeProduitAdmin(admin.ModelAdmin):
             "fields": ("commande", "produit", "quantite")
         }),
         ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
+            "fields": ("est_actif",),  # Ajout de la virgule
             "classes": ("collapse",),
         }),
     )

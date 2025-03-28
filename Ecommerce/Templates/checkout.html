@@ -164,10 +164,10 @@
                                 <div class="checkout__order__products">Products <span>Total</span></div>
                                 <ul>
                                     {% for produit in produits_commande %}
-                                        <li>{{ produit.nom }} <span>{{ produit.prix }}</span></li>
+                                        <li>{{ produit.produit }} <span>{{ produit.prix }}</span></li>
                                     {% endfor %}
                                 </ul>
-                                <div class="checkout__order__subtotal">Subtotal <span>$750.99</span></div>
+                                <div class="checkout__order__subtotal">Subtotal <span>{{ total_commande }}</span></div>
                                 <div class="checkout__order__total">Total <span>$750.99</span></div>
                                 <div class="checkout__input__checkbox">
                                     <label for="acc-or">
