@@ -2430,11 +2430,13 @@ ol {
 .blog__sidebar__recent__item {
 	overflow: hidden;
 	margin-bottom: 20px;
+	width: 100%;
 }
 
 .blog__sidebar__recent__item__pic {
 	float: left;
-	margin-right: 20px;
+	margin-right: 30px;
+	width: 35%;
 }
 
 .blog__sidebar__recent__item__text {

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from blog.models import Article,Commentaire
+from blog.models import Article, Commentaire, Categorie, Tag
 from django.contrib import messages
 from Ecommerce.models import VariationProduit,Panier,Favoris, CategorieProduit
 from blog.form import InfosGeneralesForm, ContenuForm, StandardsForm, CommentaireForm
@@ -31,14 +31,15 @@ def index(request):
         panier_produits = panier.produits.all()
 
     # Récupérer les catégories actives (disponibles pour tous)
-    categories = CategorieProduit.objects.filter(statut=True)
+    categories_produit = CategorieProduit.objects.filter(statut=True)
+
 
     # Contexte pour le template
     datas = {
         'produits': produits,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
-        'Categories': categories,
+        'categories_produit': categories_produit,
         'active_page': 'accueil'
     }
     
@@ -143,13 +144,22 @@ def blog(request):
 
     categori = CategorieProduit.objects.filter(statut=True)
 
+    categories_article = Categorie.objects.filter(statut=True)    
+
+    tag = Tag.objects.filter(statut=True)
+
+    recents = articles[:3]
+
     datas = {
         "articles" : articles,
         "page_obj": page_obj,
         'Categories': categori,
+        'Categories_article': categories_article,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
-        'active_page': 'blog'
+        'active_page': 'blog',
+        'Tags' : tag,
+        'recents' : recents,
     }
 
     return render(request, 'blog.html', datas)
