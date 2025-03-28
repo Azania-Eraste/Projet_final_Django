@@ -95,7 +95,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ['titre', 'resume', 'statut', 'created_at', 'last_updated_at', 'nombre_likes', 'est_publie']
+    list_display = ['titre', 'resume', 'statut', 'slug', 'created_at', 'last_updated_at', 'nombre_likes', 'est_publie']
 
     list_display_links = ['titre',]
 
