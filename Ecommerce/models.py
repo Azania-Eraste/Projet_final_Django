@@ -91,6 +91,7 @@ class CommandeProduit(models.Model):
     commande = models.ForeignKey('Ecommerce.Commande', on_delete=models.CASCADE, related_name="Commande_Produit_ids")
     produit = models.ForeignKey('Ecommerce.VariationProduit', on_delete=models.CASCADE)
     quantite = models.PositiveIntegerField(default=1)
+    prix = models.FloatField(null=True)
 
     est_actif = models.BooleanField(default=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
