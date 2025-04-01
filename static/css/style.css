@@ -1655,6 +1655,94 @@ ol {
 	margin-right: 0;
 }
 
+/*-------------------------
+	Feature Section (mise à jour)
+-------------------------*/
+/* Affichage en grille (par défaut) */
+.product-list .product__item {
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+}
+
+/* Affichage en liste */
+.product-list.list-view .product__item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.product-list.list-view .product__item__pic {
+    width: 200px;
+    height: 150px;
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.product-list.list-view .product__item__text {
+    flex-grow: 1;
+    padding-left: 20px;
+    text-align: left;
+}
+
+/* Style des icônes de mode */
+.filter__option .view-mode {
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0 5px;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.filter__option .view-mode.active {
+    background-color: #7fad39;
+    color: white;
+    border-radius: 3px;
+}
+
+/* Pagination (ajustements mineurs pour cohérence) */
+.product__pagination a {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #b2b2b2;
+    font-size: 14px;
+    color: #b2b2b2;
+    font-weight: 700;
+    line-height: 28px;
+    text-align: center;
+    margin-right: 16px;
+    transition: all 0.3s;
+}
+
+.product__pagination a:hover,
+.product__pagination a.active { /* Ajout de .active pour la page courante */
+    background: #7fad39;
+    border-color: #7fad39;
+    color: #ffffff;
+}
+
+/* Responsivité pour mode liste */
+@media only screen and (max-width: 767px) {
+    .product-list.list-view .product__item {
+        flex-direction: column; /* Passage en colonne sur mobile */
+        align-items: flex-start;
+    }
+    .product-list.list-view .product__item__pic {
+        width: 100%; /* Image pleine largeur */
+        height: 200px; /* Hauteur ajustée */
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    .product-list.list-view .product__item__text {
+        padding-left: 0;
+        text-align: center; /* Retour à l’alignement centré sur mobile */
+    }
+}
+
 /*---------------------
   Shop Details
 -----------------------*/

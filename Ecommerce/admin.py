@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Role, Produit, CategorieProduit, Commande, Livraison, Mode, Paiement, 
     Panier, Ville, Commune, Adresse, VariationProduit, Avis, CodePromo, Favoris,
-    CommandeProduit
+    CommandeProduit, Promotion
 )
 
 @admin.register(Role)
@@ -17,6 +17,20 @@ class RoleAdmin(admin.ModelAdmin):
             "classes": ("collapse",),
         }),
     )
+
+@admin.register(Promotion)
+class PromotionAdmin(admin.ModelAdmin):
+    list_display = ("nom",)
+    fieldsets = (
+        ("Informations principales", {
+            "fields": ("nom", "variations", "reduction", "date_debut", "date_fin", "active", "raison")
+        }),
+        ("Métadonnées", {
+            "fields": ("statut",),  # Ajout de la virgule
+            "classes": ("collapse",),
+        }),
+    )
+
 
 @admin.register(Produit)
 class ProduitAdmin(admin.ModelAdmin):

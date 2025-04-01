@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit
 from django.contrib import messages
+from django.core.paginator import Paginator
 from Ecommerce.form import PanierQuantiteForm
 
 # Create your views here.
@@ -218,6 +219,14 @@ def remove_favorite(request, id):
 def shop(request):
 
     produits = VariationProduit.objects.filter(statut=True)
+    promo_produit = produits.filter(promotions__active=True).distinct()
+    produits = produits.exclude(promotions__active=True).distinct()
+    latest_produits = VariationProduit.objects.filter(statut=True).order_by('-created_at')[:6]
+    paginator = Paginator(produits, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    view_mode = request.GET.get('view', 'grid')
+    print(view_mode)
     categori = CategorieProduit.objects.filter(statut=True)
 
     panier_produits = None
@@ -241,8 +250,12 @@ def shop(request):
     datas = {
         'Categories': categori,
         'produits' : produits,
+        "page_obj": page_obj,
+        "latest_produits":latest_produits,
+        'promotion_produit': promo_produit,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
+        'view_mode': view_mode,
         'active_page': 'shop'
     }
 

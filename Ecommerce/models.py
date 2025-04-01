@@ -182,7 +182,7 @@ class Promotion(models.Model):
     reduction = models.FloatField(help_text="Réduction en pourcentage (ex: 20 pour 20%)")
     date_debut = models.DateField(help_text="Début de la promotion")
     date_fin = models.DateField(help_text="Fin de la promotion")
-    active = models.BooleanField(default=True, help_text="Indique si la promotion est active")
+    active = models.BooleanField(default=False, help_text="Indique si la promotion est active")
     raison = models.CharField(max_length=255, default="Fin de période de récolte", help_text="Raison de la promotion")
 
     def est_active(self):
@@ -250,7 +250,7 @@ class VariationProduit(models.Model):
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.produit.nom} - {self.qualite} - {self.poids} kg"
+        return f"{self.produit.nom} - {self.nom} - {self.qualite} - {self.poids} kg"
     
 
 

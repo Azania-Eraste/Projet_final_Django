@@ -1,7 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-
 {% block header %}
 <!-- Hero Section Begin -->
 <section class="hero hero-normal">
@@ -50,8 +49,6 @@
 {% endblock %}
 
 {% block content %}
-
-
 <!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
     <div class="container">
@@ -105,64 +102,34 @@
                         <div class="latest-product__text">
                             <h4>Latest Products</h4>
                             <div class="latest-product__slider owl-carousel">
-                                <div class="latest-prdouct__slider__item">
-                                    <a href="" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="{% static 'img/latest-product/lp-1.jpg' %}" alt="">
+                                {% if latest_produits %}
+                                    {% for latest_produit in latest_produits %}
+                                        <div class="latest-prdouct__slider__item">
+                                            <a href="{% url 'Ecommerce:detail' latest_produit.id %}" class="latest-product__item">
+                                                <div class="latest-product__item__pic">
+                                                    <img src="{{ latest_produit.images.url }}" alt="">
+                                                </div>
+                                                <div class="latest-product__item__text">
+                                                    <h6>{{ latest_produit.nom }}</h6>
+                                                    <span>{{ latest_produit.prix_actuel }}</span>
+                                                </div>
+                                            </a>
                                         </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="{% static 'img/latest-product/lp-2.jpg' %}" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="{% static 'img/latest-product/lp-3.jpg' %}" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="latest-prdouct__slider__item">
-                                    <a href="" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="{% static 'img/latest-product/lp-1.jpg' %}" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="{% static 'img/latest-product/lp-2.jpg' %}" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                    <a href="" class="latest-product__item">
-                                        <div class="latest-product__item__pic">
-                                            <img src="{% static 'img/latest-product/lp-3.jpg' %}" alt="">
-                                        </div>
-                                        <div class="latest-product__item__text">
-                                            <h6>Crab Pool Security</h6>
-                                            <span>$30.00</span>
-                                        </div>
-                                    </a>
-                                </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="latest-prdouct__slider__item">
+                                        <a href="#" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="{% static 'img/latest-product/lp-1.jpg' %}" alt="">
+                                            </div>
+                                            <div class="latest-product__item__text">
+                                                <h6>Crab Pool Security</h6>
+                                                <span>$30.00</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <!-- Autres éléments statiques -->
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -175,126 +142,26 @@
                     </div>
                     <div class="row">
                         <div class="product__discount__slider owl-carousel">
+                            {% for produit in promotion_produit %}
                             <div class="col-lg-4">
                                 <div class="product__discount__item">
-                                    
-                                        <div class="product__discount__item__pic set-bg"
-                                            data-setbg="{% static 'img/product/discount/pd-1.jpg' %}">
-                                            <div class="product__discount__percent">-20%</div>
-                                            <ul class="product__item__pic__hover">
-                                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                
-                                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    
+                                    <div class="product__discount__item__pic set-bg" data-setbg="{{ produit.images.url }}">
+                                        <div class="product__discount__percent">-20%</div>
+                                        <ul class="product__item__pic__hover">
+                                            <li><a href="{% url 'Ecommerce:favorite_add' produit.id %}"><i class="fa fa-heart"></i></a></li>
+                                            <li><a href="{% url 'Ecommerce:board_add' produit.id %}"><i class="fa fa-shopping-cart"></i></a></li>
+                                        </ul>
+                                    </div>
                                     <div class="product__discount__item__text">
-                                        <span>Dried Fruit</span>
-                                        <h5><a href="">Raisin’n’nuts</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
+                                        <span>{{ produit.produit.categorie.nom }}</span>
+                                        <h5><a href="{% url 'Ecommerce:detail' produit.id %}">{{ produit.nom }}</a></h5>
+                                        <div class="product__item__price">{{ produit.prix_actuel }} <span>{{ produit.prix }}</span></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="product__discount__item">
-                                    
-                                        <div class="product__discount__item__pic set-bg"
-                                            data-setbg="{% static 'img/product/discount/pd-2.jpg' %}">
-                                            <div class="product__discount__percent">-20%</div>
-                                            <ul class="product__item__pic__hover">
-                                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                
-                                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    
-                                    <div class="product__discount__item__text">
-                                        <span>Vegetables</span>
-                                        <h5><a href="">Vegetables’package</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="product__discount__item">
-                                    
-                                        <div class="product__discount__item__pic set-bg"
-                                            data-setbg="{% static 'img/product/discount/pd-3.jpg' %}">
-                                            <div class="product__discount__percent">-20%</div>
-                                            <ul class="product__item__pic__hover">
-                                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                
-                                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    
-                                    <div class="product__discount__item__text">
-                                        <span>Dried Fruit</span>
-                                        <h5><a href="">Mixed Fruitss</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="product__discount__item">
-                                    
-                                        <div class="product__discount__item__pic set-bg"
-                                            data-setbg="{% static 'img/product/discount/pd-4.jpg' %}">
-                                            <div class="product__discount__percent">-20%</div>
-                                            <ul class="product__item__pic__hover">
-                                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                
-                                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                            </ul>
-                                        </div>
-                                   
-                                    <div class="product__discount__item__text">
-                                        <span>Dried Fruit</span>
-                                        <h5><a href="">Raisin’n’nuts</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="product__discount__item">
-                                    
-                                        <div class="product__discount__item__pic set-bg"
-                                            data-setbg="{% static 'img/product/discount/pd-5.jpg' %}">
-                                            <div class="product__discount__percent">-20%</div>
-                                            <ul class="product__item__pic__hover">
-                                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                
-                                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    
-                                    <div class="product__discount__item__text">
-                                        <span>Dried Fruit</span>
-                                        <h5><a href="">Raisin’n’nuts</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="product__discount__item">
-                                    
-                                        <div class="product__discount__item__pic set-bg"
-                                            data-setbg="{% static 'img/product/discount/pd-6.jpg' %}">
-                                            <div class="product__discount__percent">-20%</div>
-                                            <ul class="product__item__pic__hover">
-                                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                                                
-                                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    
-                                    <div class="product__discount__item__text">
-                                        <span>Dried Fruit</span>
-                                        <h5><a href="">Raisin’n’nuts</a></h5>
-                                        <div class="product__item__price">$30.00 <span>$36.00</span></div>
-                                    </div>
-                                </div>
-                            </div>
+                            {% empty %}
+                                <p>No products on sale.</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -305,52 +172,66 @@
                                 <span>Sort By</span>
                                 <select>
                                     <option value="0">Default</option>
-                                    <option value="0">Default</option>
+                                    <option value="1">Price: Low to High</option>
+                                    <option value="2">Price: High to Low</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-4">
                             <div class="filter__found">
-                                <h6><span>16</span> Products found</h6>
+                                <h6><span>{{ page_obj.paginator.count }}</span> Products found</h6>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-3">
                             <div class="filter__option">
-                                <span class="icon_grid-2x2"></span>
-                                <span class="icon_ul"></span>
+                                <a href="?view=grid{% if page_obj.number %}&page={{ page_obj.number }}{% endif %}" class="view-mode {% if view_mode == 'grid' %}active{% endif %}">
+                                    <span class="icon_grid-2x2"></span>
+                                </a>
+                                <a href="?view=list{% if page_obj.number %}&page={{ page_obj.number }}{% endif %}" class="view-mode {% if view_mode == 'list' %}active{% endif %}">
+                                    <span class="icon_ul"></span>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row product-list {% if view_mode == 'list' %}list-view{% endif %}">
                     {% for produit in produits %}
-                        <div class="col-lg-4 col-md-6 col-sm-6">
-                            <div class="product__item">
-                                <div class="product__item__pic set-bg" data-setbg="{{ produit.images.url  }}">
+                        <div class="col-lg-{% if view_mode == 'grid' %}4{% else %}12{% endif %} col-md-{% if view_mode == 'grid' %}6{% else %}12{% endif %} col-sm-{% if view_mode == 'grid' %}6{% else %}12{% endif %}">
+                            <div class="product__item {% if view_mode == 'list' %}list-item{% endif %}">
+                                <div class="product__item__pic set-bg" data-setbg="{{ produit.images.url }}">
                                     <ul class="product__item__pic__hover">
                                         <li><a href="{% url 'Ecommerce:favorite_add' produit.id %}"><i class="fa fa-heart"></i></a></li>
-                                        
                                         <li><a href="{% url 'Ecommerce:board_add' produit.id %}"><i class="fa fa-shopping-cart"></i></a></li>
                                     </ul>
                                 </div>
                                 <div class="product__item__text">
                                     <h6><a href="{% url 'Ecommerce:detail' produit.id %}">{{ produit.nom }}</a></h6>
-                                    <h5>{{ produit.prix }}</h5>
+                                    <h5>{{ produit.prix_actuel }}</h5> <!-- Utilisation de prix_actuel pour cohérence -->
                                 </div>
                             </div>
                         </div>
+                    {% empty %}
+                        <p>No products available.</p>
                     {% endfor %}
                 </div>
                 <div class="product__pagination">
-                    <a href="#">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <a href="#"><i class="fa fa-long-arrow-right"></i></a>
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if view_mode %}&view={{ view_mode }}{% endif %}">Previous</a>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <a href="?page={{ num }}{% if view_mode %}&view={{ view_mode }}{% endif %}" class="active">{{ num }}</a>
+                        {% else %}
+                            <a href="?page={{ num }}{% if view_mode %}&view={{ view_mode }}{% endif %}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if view_mode %}&view={{ view_mode }}{% endif %}">Next</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </section>
 <!-- Product Section End -->
-
 {% endblock %}
