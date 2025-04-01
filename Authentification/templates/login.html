@@ -5,7 +5,16 @@
 
     <div class="bg-white p-6 rounded-lg shadow-md w-96">
         <h2 id="form-title" class="text-2xl font-semibold text-center">Connexion</h2>
-        
+                <!-- Affichage des messages (succès ou erreur) -->
+            {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                        <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         <!-- Formulaire de connexion Django -->
         <form method="post" id="auth-form" class="mt-4">
             {% csrf_token %}
