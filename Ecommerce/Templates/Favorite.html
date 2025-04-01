@@ -2,6 +2,16 @@
 {% load static %}
 
 {% block header %}
+        <!-- Affichage des messages (succès ou erreur) -->
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            </div>
+        {% endif %}
 <!-- Hero Section Begin -->
 <section class="hero hero-normal">
     <div class="container">

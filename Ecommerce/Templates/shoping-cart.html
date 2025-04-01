@@ -50,6 +50,16 @@
 {% endblock %}
 
 {% block content %}
+            <!-- Affichage des messages (succès ou erreur) -->
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            </div>
+        {% endif %}
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
         <div class="container">
@@ -95,7 +105,7 @@
                                                     <h5>{{ item.produit.nom }}</h5>
                                                 </td>
                                                 <td class="shoping__cart__price" data-prix="{{ item.produit.prix }}">
-                                                    {{ item.produit.prix }}
+                                                    {{ item.produit.prix_actuel }}
                                                 </td>
                                                 <td class="shoping__cart__quantity">
                                                     <div class="quantity">
@@ -114,8 +124,8 @@
                                                     </div>
                                                 </td>
                                                 <td class="shoping__cart__total" 
-                                                    data-total="{{ item.produit.prix|mul:item.form.quantite.value|default:item.produit.prix }}">
-                                                    {{ item.produit.prix|mul:item.form.quantite.value|default:item.produit.prix }}
+                                                    data-total="{{ item.produit.prix_actuel |mul:item.form.quantite.value|default:item.produit.prix_actuel }}">
+                                                    {{ item.produit.prix_actuel |mul:item.form.quantite.value|default:item.produit.prix_actuel }}
                                                 </td>
                                                 <td class="shoping__cart__item__close">
                                                     <a href="{% url 'Ecommerce:board_remove' item.produit.id %}"><span class="icon_close"></span></a>
