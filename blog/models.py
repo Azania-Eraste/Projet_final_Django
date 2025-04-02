@@ -17,14 +17,20 @@ class Categorie(models.Model):
 
     nom = models.CharField(verbose_name="Nom", max_length=255)
     description = models.TextField()
+    slug = models.SlugField(unique=True, blank=True,)
 
     # Standards
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nom)  # Génère un slug basé sur le titre
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.nom
+        return self.nom + self.slug
     
 
 class Tag(models.Model):

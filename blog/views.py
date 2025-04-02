@@ -11,9 +11,10 @@ from blog.form import InfosGeneralesForm, ContenuForm, StandardsForm, Commentair
 def index(request):
     panier_produits = None
     favoris_produits = None
+    articles = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")[:3]
 
     # Récupérer tous les produits actifs (disponibles pour tous)
-    produits = VariationProduit.objects.filter(statut=True)
+    produits = VariationProduit.objects.filter(statut=True)[:6]
 
     if request.user.is_authenticated:
         # Gestion des favoris pour l'utilisateur connecté
@@ -37,6 +38,7 @@ def index(request):
     # Contexte pour le template
     datas = {
         'produits': produits,
+        'articles': articles,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
         'categories_produit': categories_produit,
