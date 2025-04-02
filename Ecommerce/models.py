@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.utils.text import slugify
 
 User = get_user_model()
 
@@ -58,6 +59,12 @@ class Produit(models.Model):
 class CategorieProduit(models.Model):
     nom = models.CharField(max_length=255)
     couverture = models.ImageField(upload_to="CategorieProduit")
+    slug=models.SlugField(unique=True, blank=True,)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nom)  # Génère un slug basé sur le titre
+        super().save(*args, **kwargs)
 
     def obtenir_produits(self):
         return Produit.objects.filter(categorie=self)

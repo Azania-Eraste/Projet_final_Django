@@ -4,7 +4,7 @@ from blog.models import Categorie, Tag, Article, Commentaire, Like
 
 class CategorieAdmin(admin.ModelAdmin):
 
-    list_display = ('nom', 'statut', 'created_at', 'last_updated_at')
+    list_display = ('nom', 'statut', 'created_at', 'last_updated_at', 'slug')
 
     list_display_links = ['nom',]
 

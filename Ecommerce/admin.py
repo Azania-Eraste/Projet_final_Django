@@ -53,7 +53,7 @@ class ProduitAdmin(admin.ModelAdmin):
 
 @admin.register(CategorieProduit)
 class CategorieProduitAdmin(admin.ModelAdmin):
-    list_display = ("nom",)
+    list_display = ("nom","slug")
     search_fields = ("nom",)
     fieldsets = (
         ("Informations principales", {
