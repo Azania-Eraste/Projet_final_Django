@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit
 from django.contrib import messages
 from django.core.paginator import Paginator
-from Ecommerce.form import PanierQuantiteForm
+from Ecommerce.form import PanierQuantiteForm, CheckForm
 
 # Create your views here.
 
@@ -85,6 +85,13 @@ def dashboard(request):
 @login_required(login_url='Authentification:login')
 def checkout(request):
     user = request.user
+    print(user)
+    form = CheckForm(initial={
+        'nom': user.last_name,
+        'prenom': user.first_name
+    })
+    print("user.first_name =", user.first_name)
+    print("user.last_name =", user.last_name)
 
     # Récupérer la dernière commande
     commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
@@ -110,6 +117,7 @@ def checkout(request):
     datas = {
         'favoris_produit': favoris.produit.all(),
         'commande': commande,
+        'form': form,  
         'produits_commande': produits_commande,
         'panier_produit': panier.produits.all(),
         'total_commande': total_commande,

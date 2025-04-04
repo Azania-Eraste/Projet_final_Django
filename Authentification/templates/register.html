@@ -2,65 +2,106 @@
 {% load socialaccount %}
 {% block content %}
 <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="bg-white p-6 rounded-lg shadow-md w-96">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-2xl">
         <h2 class="text-2xl font-semibold text-center">Inscription</h2>
-                <!-- Affichage des messages (succès ou erreur) -->
-            {% if messages %}
-                <div class="mb-4">
-                    {% for message in messages %}
-                        <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
-                            {{ message }}
-                        </p>
-                    {% endfor %}
-                </div>
-            {% endif %}
+        <!-- Affichage des messages (succès ou erreur) -->
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            </div>
+        {% endif %}
         <form method="POST" id="register-form" class="mt-4">
             {% csrf_token %}
-            <div class="mb-4">
-                <label for="username" class="block ml-5 text-sm font-medium text-gray-600">Nom d'utilisateur</label>
-                {{ form.username }}
-                {% if form.username.errors %}
-                    <ul class="text-red-500 text-sm mt-1">
-                        {% for error in form.username.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+            <div class="grid grid-cols-2 gap-6">
+                <!-- Colonne 1 : Nom, Prénom, Nom d'utilisateur -->
+                <div>
+                    <div class="mb-4">
+                        <label for="nom" class="block ml-5 text-sm font-medium text-gray-600">Nom</label>
+                        {{ form.nom }}
+                        {% if form.nom.errors %}
+                            <ul class="text-red-500 text-sm mt-1">
+                                {% for error in form.nom.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="prenom" class="block ml-5 text-sm font-medium text-gray-600">Prénom</label>
+                        {{ form.prenom }}
+                        {% if form.prenom.errors %}
+                            <ul class="text-red-500 text-sm mt-1">
+                                {% for error in form.prenom.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="username" class="block ml-5 text-sm font-medium text-gray-600">Nom d'utilisateur</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <ul class="text-red-500 text-sm mt-1">
+                                {% for error in form.username.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Colonne 2 : Email, Numéro, Mot de passe, Confirmer mot de passe -->
+                <div>
+                    <div class="mb-4">
+                        <label for="email" class="block ml-5 text-sm font-medium text-gray-600">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <ul class="text-red-500 text-sm mt-1">
+                                {% for error in form.email.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="number" class="block ml-5 text-sm font-medium text-gray-600">Numéro</label>
+                        {{ form.number }}
+                        {% if form.number.errors %}
+                            <ul class="text-red-500 text-sm mt-1">
+                                {% for error in form.number.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="block ml-5 text-sm font-medium text-gray-600">Mot de passe</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <ul class="text-red-500 text-sm mt-1">
+                                {% for error in form.password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="confirmpassword" class="block ml-5 text-sm font-medium text-gray-600">Confirmer le mot de passe</label>
+                        {{ form.confirmpassword }}
+                        {% if form.confirmpassword.errors %}
+                            <ul class="text-red-500 text-sm mt-1">
+                                {% for error in form.confirmpassword.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="email" class="block ml-5 text-sm font-medium text-gray-600">Email</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <ul class="text-red-500 text-sm mt-1">
-                        {% for error in form.email.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-            <div class="mb-4">
-                <label for="password" class="block ml-5 text-sm font-medium text-gray-600">Mot de passe</label>
-                {{ form.password }}
-                {% if form.password.errors %}
-                    <ul class="text-red-500 text-sm mt-1">
-                        {% for error in form.password.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-            <div class="mb-4">
-                <label for="confirmpassword" class="block ml-5 text-sm font-medium text-gray-600">Confirmer le mot de passe</label>
-                {{ form.confirmpassword }}
-                {% if form.confirmpassword.errors %}
-                    <ul class="text-red-500 text-sm mt-1">
-                        {% for error in form.confirmpassword.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg ">S'inscrire</button>
+            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">S'inscrire</button>
         </form>
 
         <p class="mt-4 text-center text-sm">

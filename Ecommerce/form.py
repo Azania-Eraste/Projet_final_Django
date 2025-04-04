@@ -1,23 +1,43 @@
 from django import forms
 
-
-
 class CheckForm(forms.Form):
-    firstname = forms.CharField(
-        widget=forms.TextInput()
+    nom = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nom'
+        })
     )
-    lastname = forms.CharField(
-        widget=forms.TextInput()
+    prenom = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Prenom'
+        })
     )
     ville = forms.CharField(
-        widget=forms.TextInput()
-    )
-    addresse = forms.CharField(
-        widget=forms.TextInput()
+        widget=forms.TextInput(attrs={
+            'class': 'form-control my-4',
+            'placeholder': 'Ville',
+        })
     )
     commune = forms.CharField(
-        widget=forms.TextInput()
+        widget=forms.TextInput(attrs={
+            'class': 'form-control checkout__input__add',
+            'placeholder': 'Commune'
+        })
     )
+    phone = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Phone'
+        })
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email'
+        })
+    )
+
 
 
 class PanierQuantiteForm(forms.Form):
