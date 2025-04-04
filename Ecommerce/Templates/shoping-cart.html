@@ -128,7 +128,7 @@
                                                     {{ item.produit.prix_actuel |mul:item.form.quantite.value|default:item.produit.prix_actuel }}
                                                 </td>
                                                 <td class="shoping__cart__item__close">
-                                                    <a href="{% url 'Ecommerce:board_remove' item.produit.id %}"><span class="icon_close"></span></a>
+                                                    <a href="{% url 'Ecommerce:board_remove' item.produit.slug %}"><span class="icon_close"></span></a>
                                                 </td>
                                             </tr>
                                         {% endfor %}

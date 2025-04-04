@@ -230,6 +230,13 @@ class VariationProduit(models.Model):
     mois_fin_recolte = models.IntegerField(choices=MOIS_CHOICES, help_text="Mois de fin de la période de récolte")
     prix = models.FloatField(help_text="Prix de la variation du produit")
     qualite = models.CharField(max_length=255, choices=[("Premium", "Premium"), ("Standard", "Standard")])
+    slug = models.SlugField( unique=True,blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nom)  # Génère un slug basé sur le titre
+        super().save(*args, **kwargs)
+
 
     def est_dans_periode_recolte(self):
         aujourd_hui = timezone.now().date()

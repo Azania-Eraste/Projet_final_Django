@@ -100,7 +100,7 @@
                                                 <h5>{{ produit.nom }}</h5>
                                             </td>
                                             <td class="shoping__cart__item__close">
-                                                <a href="{% url 'Ecommerce:favorite_remove' produit.id %}"><span class="icon_close"></span></a>
+                                                <a href="{% url 'Ecommerce:favorite_remove' produit.slug %}"><span class="icon_close"></span></a>
                                             </td>
                                         </tr>
                                     {% endfor %}
