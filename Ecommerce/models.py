@@ -257,7 +257,7 @@ class VariationProduit(models.Model):
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.produit.nom} - {self.nom} - {self.qualite} - {self.poids} kg"
+        return f"{self.nom} - {self.qualite} - {self.poids} kg"
     
 
 
