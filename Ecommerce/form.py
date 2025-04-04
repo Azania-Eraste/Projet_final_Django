@@ -1,5 +1,25 @@
 from django import forms
 
+
+
+class CheckForm(forms.Form):
+    firstname = forms.CharField(
+        widget=forms.TextInput()
+    )
+    lastname = forms.CharField(
+        widget=forms.TextInput()
+    )
+    ville = forms.CharField(
+        widget=forms.TextInput()
+    )
+    addresse = forms.CharField(
+        widget=forms.TextInput()
+    )
+    commune = forms.CharField(
+        widget=forms.TextInput()
+    )
+
+
 class PanierQuantiteForm(forms.Form):
     quantite = forms.IntegerField(min_value=1, required=True)
     produit_id = forms.IntegerField(required=True, widget=forms.HiddenInput())
