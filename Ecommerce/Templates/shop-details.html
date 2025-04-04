@@ -101,8 +101,8 @@
                             </div>
                         </div>
                     </div>
-                    <a href="{% url 'Ecommerce:board_add' produit.id %}" class="primary-btn">Ajouter au panier</a>
-                    <a href="{% url 'Ecommerce:favorite_add' produit.id %}" class="heart-icon"><span class="icon_heart_alt"></span></a>
+                    <a href="{% url 'Ecommerce:board_add' produit.slug %}" class="primary-btn">Ajouter au panier</a>
+                    <a href="{% url 'Ecommerce:favorite_add' produit.slug %}" class="heart-icon"><span class="icon_heart_alt"></span></a>
                     <ul>
                         <li><b>Stock</b> <span>{{ produit.quantite }}</span></li>
                         <li><b>Weight</b> <span>{{ produit.poids }}</span></li>
