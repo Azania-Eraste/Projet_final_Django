@@ -15,12 +15,25 @@ class RegisterForm(forms.Form):
         max_length=150,
         widget=forms.TextInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'Nom d’utilisateur'})
     )
+
+    nom = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'Nom'})
+    )
+
+    prenom = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'Prenom'})
+    )
+
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'Mot de passe'})
     )
 
+    number = forms.CharField(
+        widget=forms.NumberInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'Numero'})
+    )
+
     email = forms.CharField(
-        widget=forms.EmailInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'email'})
+        widget=forms.EmailInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'Email'})
     )
     confirmpassword = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500', 'placeholder': 'Comfirmer le mot de passe'})
