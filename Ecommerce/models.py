@@ -144,6 +144,7 @@ class Mode(models.Model):
 
 class Paiement(models.Model):
     montant = models.FloatField()
+    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     mode = models.ForeignKey("Ecommerce.Mode", on_delete=models.CASCADE, related_name="ModePaiement")
     statut_paiement = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutPaiement], null=True)
     est_actif = models.BooleanField(default=True)  # Statut booléen
