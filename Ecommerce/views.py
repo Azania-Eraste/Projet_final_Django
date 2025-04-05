@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit
+from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit, Paiement
 from django.contrib import messages
 from django.core.paginator import Paginator
 from Ecommerce.form import PanierQuantiteForm, CheckForm
@@ -303,13 +303,85 @@ def shop_detail(request, slug):
 @login_required(login_url='Authentification:login')
 def profile_view(request):
 
-    return render(request, 'profile.html')
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        panier_produits = panier.produits.all()
+
+    datas = {
+        'active_page': 'shop',
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+    }
+
+    return render(request, 'profile.html', datas)
 
 
 @login_required(login_url='Authentification:login')
 def commandes_view(request):
 
-    commandes = Commande.objects.filter(utilisateur=request.user).order_by('-id').Commande_Produit_ids.all()
-    
+    commande = Commande.objects.filter(utilisateur=request.user).order_by('-id')
 
-    return render(request, 'commandes.html', {'commandes': commandes})
+
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        panier_produits = panier.produits.all()
+
+    datas = {
+        'active_page': 'shop',
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+        'commandes': commande,
+    }
+
+    return render(request, 'commandes.html', datas)
+
+@login_required(login_url='Authentification:login')
+def paiement_view(request):
+
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        panier_produits = panier.produits.all()
+
+    paiements = Paiement.objects.filter(utilisateur=request.user)
+
+    datas = {
+        'active_page': 'shop',
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+        'paiements': paiements
+    }
+
+    return render(request, 'paiement.html', datas)

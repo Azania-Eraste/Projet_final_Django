@@ -44,7 +44,7 @@
         <div class="humberger__menu__widget">
             <div class="header__top__right__auth">
                 {% if request.user.is_authenticated %}
-                    <a href="" class="fa fa-user"> Dashboard</a>
+                    <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
                 {% else %}
                     <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
                 {% endif %}

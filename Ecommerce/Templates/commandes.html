@@ -87,7 +87,6 @@
                 </div>
                 <div class="col-lg-9">
                     <div class="shoping__cart__table">
-                        <h5>Mes Commandes</h5>
                         <table>
                             <thead>
                                 <tr>
@@ -103,9 +102,17 @@
                                     {% for commande in commandes %}
                                         <tr>
                                             <td>{{ commande.id }}</td>
-                                            <td>{{ commande.date_commande|date:"d M Y" }}</td>
-                                            <td>{{ commande.total }}</td>
-                                            <td>{{ commande.statut }}</td>
+                                            <td>{{ commande.date|date:"d M Y" }}</td>
+                                            <td>{{ commande.prix }}</td>
+                                            {% if statut_commande == StatutCommande.EN_ATTENTE %}
+                                                <td>En attente</td>
+                                            {% elif statut_commande == StatutCommande.EN_COURS %}
+                                                <td>En cours</td>
+                                            {% elif statut_commande == StatutCommande.EXPEDIEE %}
+                                                <td>Expédiée</td>
+                                            {% elif statut_commande == StatutCommande.ANNULEE %}
+                                                <td>Annulée</td>
+                                            {% endif %}
                                             <td><a href="#" class="primary-btn cart-btn">Détails</a></td>
                                         </tr>
                                     {% endfor %}
