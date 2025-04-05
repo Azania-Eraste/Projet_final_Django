@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block header %}
+<div></div>
+{% endblock %}
+
+{% block content %}
+
+
+    <!-- Profile Section Begin -->
+    <section class="shoping-cart spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span>Mon Compte</span>
+                        </div>
+                        <ul>
+                            <li class="active"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
+                            <li><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
+                            <li><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
+                            <li><a href="{% url 'Ecommerce:paiement' %}">Mode de Paiement</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="shoping__checkout">
+                        <h5>Mon Profil</h5>
+                        <form method="post" action="{% url 'Ecommerce:profile' %}">
+                            {% csrf_token %}
+                            <ul>
+                                <li>Nom d'utilisateur <span><input type="text" name="username" value="{{ request.user.username }}" class="form-control"></span></li>
+                                <li>Email <span><input type="email" name="email" value="{{ request.user.email }}" class="form-control"></span></li>
+                                <li>Date d'inscription <span>{{ request.user.date_joined|date:"d M Y" }}</span></li>
+                            </ul>
+                            <button type="submit" class="primary-btn">Mettre à jour</button>
+                        </form>
+                        <a href="{% url 'Authentification:logout' %}" class="primary-btn mt-3">Déconnexion</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Profile Section End -->
+{% endblock %}
