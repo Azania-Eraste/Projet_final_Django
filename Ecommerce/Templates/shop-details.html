@@ -101,7 +101,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="{% url 'Ecommerce:board_add' produit.slug %}" class="primary-btn">Ajouter au panier</a>
+                    <a href="{% url 'Ecommerce:panier_add' produit.slug %}" class="primary-btn">Ajouter au panier</a>
                     <a href="{% url 'Ecommerce:favorite_add' produit.slug %}" class="heart-icon"><span class="icon_heart_alt"></span></a>
                     <ul>
                         <li><b>Stock</b> <span>{{ produit.quantite }}</span></li>

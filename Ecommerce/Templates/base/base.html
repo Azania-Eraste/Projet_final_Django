@@ -38,22 +38,16 @@
         <div class="humberger__menu__cart">
             <ul>
                 <li><a href="{% url 'Ecommerce:favorite' %}"><i class="fa fa-heart"></i> <span>{{ favoris_produit.count }}</span></a></li>
-                <li><a href="{% url 'Ecommerce:board' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
+                <li><a href="{% url 'Ecommerce:panier' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
             </ul>
-            <div class="header__cart__price">item: <span>$150.00</span></div>
         </div>
         <div class="humberger__menu__widget">
-            <div class="header__top__right__language">
-                <img src="{% static 'img/language.png' %}" alt="">
-                <div>English</div>
-                <span class="arrow_carrot-down"></span>
-                <ul>
-                    <li><a href="#">Spanis</a></li>
-                    <li><a href="#">English</a></li>
-                </ul>
-            </div>
             <div class="header__top__right__auth">
-                <a href="#"><i class="fa fa-user"></i> Login</a>
+                {% if request.user.is_authenticated %}
+                    <a href="" class="fa fa-user"> Dashboard</a>
+                {% else %}
+                    <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
+                {% endif %}
             </div>
         </div>
         <nav class="humberger__menu__nav mobile-menu">
@@ -101,7 +95,7 @@
  
                             <div class="header__top__right__auth">
                                 {% if request.user.is_authenticated %}
-                                    <a href="{% url 'Authentification:logout' %}" class="fa fa-sign-out"> Deconnexion</a>
+                                <a href="" class="fa fa-user"> Dashboard</a>
                                 {% else %}
                                     <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
                                 {% endif %}
@@ -132,9 +126,8 @@
                     <div class="header__cart">
                         <ul>
                             <li><a href="{% url 'Ecommerce:favorite' %}"><i class="fa fa-heart"></i> <span>{{ favoris_produit.count }}</span></a></li>
-                            <li><a href="{% url 'Ecommerce:board' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
+                            <li><a href="{% url 'Ecommerce:panier' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
                         </ul>
-                        <div class="header__cart__price">item: <span>$150.00</span></div>
                     </div>
                 </div>
             </div>

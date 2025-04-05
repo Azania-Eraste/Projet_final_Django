@@ -14,10 +14,10 @@ class StatutCommande(Enum):
     EXPEDIEE = "Expédiée"
     ANNULEE = "Annulée"
 
-
 class StatutPaiement(Enum):
     EN_ATTENTE = "En attente"
     EFFECTUEE = "Effectué"
+
 class StatutLivraison(Enum):
     EN_COURS = "En cours"
     LIVREE = "Livrée"

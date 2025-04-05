@@ -41,7 +41,7 @@ def dashboard(request):
                         cleaned_quantite = form.cleaned_data['quantite']
                         cleaned_produit_id = form.cleaned_data['produit_id']
                         if cleaned_produit_id == produit.id:
-                            prix_produit = produit.prix * cleaned_quantite
+                            prix_produit = produit.prix_actuel * cleaned_quantite
                             commande_produit = CommandeProduit.objects.create(
                                 commande=commande,
                                 produit=produit,
@@ -87,11 +87,11 @@ def checkout(request):
     user = request.user
     print(user)
     form = CheckForm(initial={
-        'nom': user.last_name,
-        'prenom': user.first_name
+        'nom': user.nom,
+        'prenom': user.prenom
     })
-    print("user.first_name =", user.first_name)
-    print("user.last_name =", user.last_name)
+    print("user.first_name =", user.nom)
+    print("user.last_name =", user.prenom)
 
     # Récupérer la dernière commande
     commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
@@ -109,7 +109,7 @@ def checkout(request):
 
     # Calculer le total (optionnel, selon vos besoins)
     total_commande = sum(
-        produit_commande.produit.prix * produit_commande.quantite 
+        produit_commande.prix * produit_commande.quantite 
         for produit_commande in produits_commande
     )
 
@@ -126,14 +126,14 @@ def checkout(request):
     return render(request, 'checkout.html', datas)
 
 @login_required(login_url='Authentification:login')
-def add_dashboard(request, id):
+def add_dashboard(request, slug):
 
     datas = {
         'active_page': 'shop'
     }
     
     try:
-        produit = VariationProduit.objects.get(id=id)
+        produit = VariationProduit.objects.get(slug=slug)
         panier, created = Panier.objects.get_or_create(utilisateur=request.user)
         panier.ajouter_produit(produit)
         messages.success(request, "Produit ajouté au panier")
@@ -147,14 +147,14 @@ def add_dashboard(request, id):
 
 
 @login_required(login_url='Authentification:login')
-def remove_dahboard(request, id):
+def remove_dahboard(request, slug):
 
     datas = {
         'active_page': 'shop'
     }
 
     try:
-        produit = VariationProduit.objects.get(id=id)
+        produit = VariationProduit.objects.get(slug=slug)
         panier, created = Panier.objects.get_or_create(utilisateur=request.user)
         panier.retirer_produit(produit)
         messages.success(request, "Produit retiré du panier")
@@ -193,10 +193,10 @@ def favorite(request):
     return render(request, 'Favorite.html', datas)
 
 @login_required(login_url='Authentification:login')
-def add_favorite(request, id):
+def add_favorite(request, slug):
 
     try:
-        produit = VariationProduit.objects.get(id=id)
+        produit = VariationProduit.objects.get(slug=slug)
         favoris , create = Favoris.objects.get_or_create(utilisateur=request.user)
         favoris.produit.add(produit)
         messages.success(request, "Produit ajouté aux favoris")
@@ -209,10 +209,10 @@ def add_favorite(request, id):
         return redirect("blog:index")
     
 @login_required(login_url='Authentification:login')
-def remove_favorite(request, id):
+def remove_favorite(request, slug):
 
     try:
-        produit = VariationProduit.objects.get(id=id)
+        produit = VariationProduit.objects.get(slug=slug)
         favoris , create = Favoris.objects.get_or_create(utilisateur=request.user)
         favoris.produit.remove(produit)
         messages.success(request, "Produit rétiré des favoris")
@@ -269,10 +269,10 @@ def shop(request):
 
     return render(request, 'shop-grid.html', datas)
 
-def shop_detail(request, id):
+def shop_detail(request, slug):
 
     categori = CategorieProduit.objects.filter(statut=True)
-    produit = VariationProduit.objects.get(id=id)
+    produit = VariationProduit.objects.get(slug=slug)
 
     panier_produits = None
     favoris_produits = None
