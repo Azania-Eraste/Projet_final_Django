@@ -49,27 +49,16 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Affichage des messages (succès ou erreur) -->
-    {% if messages %}
-        <div class="mb-4">
-            {% for message in messages %}
-                <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
-                    {{ message }}
-                </p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <div class="breadcrumb__text">
-                        <h2>Mes Favoris</h2>
+                        <h2>Mes Commandes</h2>
                         <div class="breadcrumb__option">
                             <a href="{% url 'blog:index' %}">Home</a>
-                            <span>Mes Favoris</span>
+                            <span>Mes Commandes</span>
                         </div>
                     </div>
                 </div>
@@ -78,11 +67,10 @@
     </section>
     <!-- Breadcrumb Section End -->
 
-    <!-- Favoris Section Begin -->
+    <!-- Commandes Section Begin -->
     <section class="shoping-cart spad">
         <div class="container">
             <div class="row">
-                <!-- Sidebar -->
                 <div class="col-lg-3">
                     <div class="hero__categories">
                         <div class="hero__categories__all">
@@ -90,73 +78,48 @@
                             <span>Mon Compte</span>
                         </div>
                         <ul>
-                            <li><a href="{% url 'dashboard:profile' %}">Profil</a></li>
-                            <li><a href="{% url 'dashboard:commandes' %}">Mes Commandes</a></li>
-                            <li class="active"><a href="{% url 'dashboard:favoris' %}">Mes Favoris</a></li>
-                            <li><a href="{% url 'dashboard:paiement' %}">Mode de Paiement</a></li>
+                            <li><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
+                            <li class="active"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
+                            <li><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
+                            <li><a href="{% url 'Ecommerce:paiement' %}">Mode de Paiement</a></li>
                         </ul>
                     </div>
                 </div>
-
-                <!-- Contenu principal -->
                 <div class="col-lg-9">
                     <div class="shoping__cart__table">
-                        <h5>Mes Favoris</h5>
+                        <h5>Mes Commandes</h5>
                         <table>
                             <thead>
                                 <tr>
-                                    <th class="shoping__product">Produit</th>
-                                    <th>Prix</th>
-                                    <th>Disponibilité</th>
-                                    <th>Actions</th>
+                                    <th>ID Commande</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% if produits %}
-                                    {% for produit in produits %}
+                                {% if commandes %}
+                                    {% for commande in commandes %}
                                         <tr>
-                                            <td class="shoping__cart__item">
-                                                <img src="{{ produit.images.url }}" alt="{{ produit.nom }}" style="max-width: 80px;">
-                                                <h5>{{ produit.nom }}</h5>
-                                            </td>
-                                            <td class="shoping__cart__price">
-                                                {{ produit.prix_actuel }} €
-                                            </td>
-                                            <td>
-                                                {% if produit.quantite > 0 %}
-                                                    <span class="text-green-600">En stock</span>
-                                                {% else %}
-                                                    <span class="text-red-600">Rupture</span>
-                                                {% endif %}
-                                            </td>
-                                            <td class="shoping__cart__item__close">
-                                                <a href="{% url 'Ecommerce:panier_add' produit.slug %}" class="primary-btn cart-btn mr-2">
-                                                    <i class="fa fa-shopping-bag"></i> Ajouter
-                                                </a>
-                                                <a href="{% url 'Ecommerce:favorite_remove' produit.slug %}" class="icon_close" title="Supprimer des favoris"></a>
-                                            </td>
+                                            <td>{{ commande.id }}</td>
+                                            <td>{{ commande.date_commande|date:"d M Y" }}</td>
+                                            <td>{{ commande.total }}</td>
+                                            <td>{{ commande.statut }}</td>
+                                            <td><a href="#" class="primary-btn cart-btn">Détails</a></td>
                                         </tr>
                                     {% endfor %}
                                 {% else %}
                                     <tr>
-                                        <td colspan="4">
-                                            <h5>Aucun produit dans vos favoris</h5>
-                                            <p><a href="{% url 'Ecommerce:shop' %}" class="primary-btn mt-3">Découvrir nos produits</a></p>
-                                        </td>
+                                        <td colspan="5"><h5>Aucune commande</h5></td>
                                     </tr>
                                 {% endif %}
                             </tbody>
                         </table>
                     </div>
-                    {% if produits %}
-                        <div class="shoping__cart__btns mt-4">
-                            <a href="{% url 'Ecommerce:shop' %}" class="primary-btn cart-btn">Continuer les achats</a>
-                            <a href="{% url 'Ecommerce:panier' %}" class="primary-btn cart-btn cart-btn-right">Voir le panier</a>
-                        </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
     </section>
-    <!-- Favoris Section End -->
+    <!-- Commandes Section End -->
 {% endblock %}

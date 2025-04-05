@@ -8,7 +8,7 @@ from Ecommerce.form import PanierQuantiteForm, CheckForm
 # Create your views here.
 
 @login_required(login_url='Authentification:login')
-def dashboard(request):
+def panier(request):
     user = request.user
 
     panier, created = Panier.objects.get_or_create(
@@ -25,7 +25,7 @@ def dashboard(request):
             last_commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
             print(f"Dernière commande: {last_commande}")
             if not last_commande or last_commande.statut_commande != StatutCommande.EN_ATTENTE:
-                commande = Commande.objects.create(
+                commande = Commande(
                     utilisateur=user,
                     statut_commande=StatutCommande.EN_ATTENTE
                 )
@@ -48,6 +48,7 @@ def dashboard(request):
                                 quantite=cleaned_quantite,
                                 prix=prix_produit
                             )
+                            
                             print(f"Créé: {commande_produit}")
                         else:
                             print(f"Échec: produit_id mismatch ({cleaned_produit_id} != {produit.id})")
@@ -55,6 +56,7 @@ def dashboard(request):
                     else:
                         print(f"Échec: formulaire invalide - Erreurs: {form.errors}")
                         form_valid = False
+                commande.save()
                 if form_valid:
                     panier.produits.clear()
                     return redirect('Ecommerce:check')
@@ -107,12 +109,6 @@ def checkout(request):
     favoris, _ = Favoris.objects.get_or_create(utilisateur=user, defaults={'statut': True})
     panier, _ = Panier.objects.get_or_create(utilisateur=user, defaults={'statut': True})
 
-    # Calculer le total (optionnel, selon vos besoins)
-    total_commande = sum(
-        produit_commande.prix * produit_commande.quantite 
-        for produit_commande in produits_commande
-    )
-
     # Contexte pour le template
     datas = {
         'favoris_produit': favoris.produit.all(),
@@ -120,13 +116,13 @@ def checkout(request):
         'form': form,  
         'produits_commande': produits_commande,
         'panier_produit': panier.produits.all(),
-        'total_commande': total_commande,
+        'total_commande': commande.prix,
         'active_page': 'shop'
     }
     return render(request, 'checkout.html', datas)
 
 @login_required(login_url='Authentification:login')
-def add_dashboard(request, slug):
+def add_panier(request, slug):
 
     datas = {
         'active_page': 'shop'
@@ -147,7 +143,7 @@ def add_dashboard(request, slug):
 
 
 @login_required(login_url='Authentification:login')
-def remove_dahboard(request, slug):
+def remove_panier(request, slug):
 
     datas = {
         'active_page': 'shop'
@@ -303,3 +299,17 @@ def shop_detail(request, slug):
     }
 
     return render(request, 'shop-details.html', datas)
+
+@login_required(login_url='Authentification:login')
+def profile_view(request):
+
+    return render(request, 'profile.html')
+
+
+@login_required(login_url='Authentification:login')
+def commandes_view(request):
+
+    commandes = Commande.objects.filter(utilisateur=request.user).order_by('-id').Commande_Produit_ids.all()
+    
+
+    return render(request, 'commandes.html', {'commandes': commandes})

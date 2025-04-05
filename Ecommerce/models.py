@@ -82,10 +82,18 @@ class Commande(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
     code_promo = models.ForeignKey('Ecommerce.CodePromo', on_delete=models.SET_NULL, null=True, blank=True)
     paiement = models.OneToOneField('Ecommerce.Paiement', on_delete=models.CASCADE, null=True, blank=True)
+    prix = models.FloatField(null=True)
 
     def mettre_a_jour_statut(self, nouveau_statut):
         self.statut_commande = nouveau_statut
         self.save()
+
+    def save(self, *args, **kwargs):
+        self.prix = sum(
+        produit_commande.prix * produit_commande.quantite 
+        for produit_commande in self.Commande_Produit_ids.all()
+        )
+        super().save(*args, **kwargs)
 
     est_actif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -98,7 +106,7 @@ class CommandeProduit(models.Model):
     commande = models.ForeignKey('Ecommerce.Commande', on_delete=models.CASCADE, related_name="Commande_Produit_ids")
     produit = models.ForeignKey('Ecommerce.VariationProduit', on_delete=models.CASCADE)
     quantite = models.PositiveIntegerField(default=1)
-    prix = models.FloatField(null=True)
+    prix = models.FloatField()
 
     est_actif = models.BooleanField(default=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
