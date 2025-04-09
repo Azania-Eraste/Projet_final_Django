@@ -83,17 +83,11 @@ class Commande(models.Model):
     code_promo = models.ForeignKey('Ecommerce.CodePromo', on_delete=models.SET_NULL, null=True, blank=True)
     paiement = models.OneToOneField('Ecommerce.Paiement', on_delete=models.CASCADE, null=True, blank=True)
     prix = models.FloatField(null=True)
+    
 
     def mettre_a_jour_statut(self, nouveau_statut):
         self.statut_commande = nouveau_statut
         self.save()
-
-    def save(self, *args, **kwargs):
-        self.prix = sum(
-        produit_commande.prix * produit_commande.quantite 
-        for produit_commande in self.Commande_Produit_ids.all()
-        )
-        super().save(*args, **kwargs)
 
     est_actif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -119,7 +113,7 @@ class CommandeProduit(models.Model):
         return f"{self.quantite} x {self.produit.nom} dans commande {self.commande.id}"
 
 class Livraison(models.Model):
-    commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
+    commande = models.ForeignKey(Commande, on_delete=models.CASCADE, related_name='Livraison_id')
     transporteur = models.CharField(max_length=255)
     statut_livraison = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
     numero_suivi = models.CharField(max_length=255)
@@ -260,6 +254,7 @@ class VariationProduit(models.Model):
             return max(prix_reduit, 0)
         return self.prix
 
+    @property
     def prix_actuel(self):
         prix_base = self.prix_avec_reduction_saison()
         promotions_actives = self.promotions.filter(active=True)

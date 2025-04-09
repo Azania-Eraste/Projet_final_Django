@@ -1,10 +1,13 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit, Paiement
 from django.contrib import messages
 from django.core.paginator import Paginator
 from Ecommerce.form import PanierQuantiteForm, CheckForm
+from django.contrib.auth import get_user_model
 
+
+User = get_user_model()
 # Create your views here.
 
 @login_required(login_url='Authentification:login')
@@ -24,11 +27,15 @@ def panier(request):
             print("Données POST brutes :", request.POST)
             last_commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
             print(f"Dernière commande: {last_commande}")
-            if not last_commande or last_commande.statut_commande != StatutCommande.EN_ATTENTE:
+            if not last_commande or last_commande.statut_commande != 'EN_ATTENTE':  # Ajustez selon StatutCommande
+                # Étape 1 : Créer et sauvegarder la commande sans prix initial
                 commande = Commande(
                     utilisateur=user,
-                    statut_commande=StatutCommande.EN_ATTENTE
+                    statut_commande='EN_ATTENTE'  # Utilisez la valeur brute ou StatutCommande.EN_ATTENTE
                 )
+                commande.save()  # Première sauvegarde pour obtenir un id
+
+                # Étape 2 : Créer les CommandeProduit
                 form_valid = True
                 for produit in produits:
                     prefix = str(produit.id)
@@ -41,14 +48,14 @@ def panier(request):
                         cleaned_quantite = form.cleaned_data['quantite']
                         cleaned_produit_id = form.cleaned_data['produit_id']
                         if cleaned_produit_id == produit.id:
-                            prix_produit = produit.prix_actuel * cleaned_quantite
+                            prix_actuel = produit.prix_actuel() if callable(produit.prix_actuel) else produit.prix_actuel
+                            prix_produit = prix_actuel * cleaned_quantite
                             commande_produit = CommandeProduit.objects.create(
                                 commande=commande,
                                 produit=produit,
                                 quantite=cleaned_quantite,
                                 prix=prix_produit
                             )
-                            
                             print(f"Créé: {commande_produit}")
                         else:
                             print(f"Échec: produit_id mismatch ({cleaned_produit_id} != {produit.id})")
@@ -56,12 +63,20 @@ def panier(request):
                     else:
                         print(f"Échec: formulaire invalide - Erreurs: {form.errors}")
                         form_valid = False
-                commande.save()
+
+                # Étape 3 : Recalculer et sauvegarder le prix après création des CommandeProduit
                 if form_valid:
+                    commande.prix = sum(
+                        produit_commande.prix * produit_commande.quantite
+                        for produit_commande in commande.Commande_Produit_ids.all()
+                    )
+                    commande.save()  # Deuxième sauvegarde pour mettre à jour le prix
                     panier.produits.clear()
                     return redirect('Ecommerce:check')
                 else:
                     print("Échec global : au moins un formulaire est invalide")
+                    commande.delete()  # Supprimer la commande si échec
+
             else:
                 messages.warning(request, "Vous avez déjà une commande en attente")
                 return redirect('Ecommerce:board')
@@ -84,16 +99,23 @@ def panier(request):
     }
     return render(request, 'shoping-cart.html', datas)
 
+
 @login_required(login_url='Authentification:login')
 def checkout(request):
-    user = request.user
-    print(user)
+    user = request.user  # Instance de CustomUser
+    print("Utilisateur :", user)
+    print("Nom :", user.nom)
+    print("Prénom :", user.prenom)
+    print("Numéro :", user.number)
+    print("Email :", user.email)
+
+    # Initialisation du formulaire
     form = CheckForm(initial={
         'nom': user.nom,
-        'prenom': user.prenom
+        'prenom': user.prenom,
+        'email': user.email,
+        'phone': user.number
     })
-    print("user.first_name =", user.nom)
-    print("user.last_name =", user.prenom)
 
     # Récupérer la dernière commande
     commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
@@ -113,7 +135,7 @@ def checkout(request):
     datas = {
         'favoris_produit': favoris.produit.all(),
         'commande': commande,
-        'form': form,  
+        'form': form,
         'produits_commande': produits_commande,
         'panier_produit': panier.produits.all(),
         'total_commande': commande.prix,
@@ -133,11 +155,12 @@ def add_panier(request, slug):
         panier, created = Panier.objects.get_or_create(utilisateur=request.user)
         panier.ajouter_produit(produit)
         messages.success(request, "Produit ajouté au panier")
-        return redirect("Ecommerce:board")
+        return redirect("Ecommerce:panier")
     except VariationProduit.DoesNotExist:
         messages.error(request, 'Produit non trouvé')
         return redirect("blog:index")
     except Exception as e:
+        print(f"Erreur: {str(e)}")
         messages.error(request, f"Erreur: {str(e)}")
         return redirect("blog:index")
 
@@ -154,7 +177,7 @@ def remove_panier(request, slug):
         panier, created = Panier.objects.get_or_create(utilisateur=request.user)
         panier.retirer_produit(produit)
         messages.success(request, "Produit retiré du panier")
-        return redirect("Ecommerce:board")
+        return redirect("Ecommerce:panier")
     except VariationProduit.DoesNotExist:
         messages.error(request, 'Produit non trouvé')
         return redirect("blog:index")
@@ -482,6 +505,46 @@ def innovation_view(request):
     }
 
     return render(request, 'innovation.html', datas)
+
+@login_required(login_url='Authentification:login')
+def commande_detail_view(request, commande_id):
+
+    commande = get_object_or_404(Commande, id=commande_id)
+    panier_produits = None
+    favoris_produits = None
+
+
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        panier_produits = panier.produits.all()
+
+    datas = {
+        'active_page': 'about',
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+        'commande': commande
+    }
+
+    return render(request, 'commande_detail.html', datas)
+
+@login_required(login_url='Authentification:login')
+def commande_cancel_view(request, commande_id):
+    commande = get_object_or_404(Commande, id=commande_id)
+    if commande.statut == StatutCommande.EN_ATTENTE:
+        commande.statut = StatutCommande.ANNULEE
+        commande.save()
+    return redirect('Ecommerce:commandes')
 
 @login_required(login_url='Authentification:login')
 def paiement_view(request):
