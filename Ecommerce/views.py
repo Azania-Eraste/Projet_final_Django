@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit, Paiement
+from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit, Paiement, Adresse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from Ecommerce.form import PanierQuantiteForm, CheckForm
@@ -344,7 +344,7 @@ def profile_view(request):
         )
         panier_produits = panier.produits.all()
 
-        
+    adresse = Adresse.objects.filter(utilisateur=request.user)
 
     datas = {
         'active_page': 'shop',
