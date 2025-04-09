@@ -41,7 +41,7 @@ def index(request):
         'articles': articles,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
-        'categories_produit': categories_produit,
+        'Categories': categories_produit,
         'active_page': 'accueil'
     }
     
