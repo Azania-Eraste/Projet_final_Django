@@ -95,12 +95,7 @@ def contact(request):
 
     return render(request, 'contact.html', datas)
 
-def about(request):
-    datas = {
 
-    }
-
-    return render(request, 'about.html', datas)
 
 def blog(request):
     articles = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")

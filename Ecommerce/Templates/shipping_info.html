@@ -55,10 +55,10 @@
             <div class="row">
                 <div class="col-lg-12 text-center">
                     <div class="breadcrumb__text">
-                        <h2>À Propos de Nous</h2>
+                        <h2>Informations de Livraison</h2>
                         <div class="breadcrumb__option">
                             <a href="{% url 'blog:index' %}">Accueil</a>
-                            <span>À Propos</span>
+                            <span>Livraison</span>
                         </div>
                     </div>
                 </div>
@@ -67,65 +67,78 @@
     </section>
     <!-- Breadcrumb Section End -->
 
-    <!-- About Us Section Begin -->
+    <!-- Shipping Info Section Begin -->
     <section class="shoping-cart spad">
         <div class="container">
             <!-- Introduction -->
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h3>Qui Sommes-Nous ?</h3>
-                    <p class="lead">Ogani, une plateforme dédiée à la valorisation des produits vivriers en Côte d'Ivoire.</p>
+                    <h3>Nos Services de Livraison</h3>
+                    <p class="lead">Chez Ogani, nous vous apportons vos produits vivriers où que vous soyez en Côte d'Ivoire, avec efficacité et fiabilité.</p>
                 </div>
             </div>
 
-            <!-- Mission -->
+            <!-- Livraison partout en Côte d'Ivoire -->
             <div class="row mt-5">
                 <div class="col-lg-6">
-                    <h4>Notre Mission</h4>
+                    <h4>Livraison Partout en Côte d'Ivoire</h4>
                     <p>
-                        Chez Ogani, nous croyons en la richesse des terres ivoiriennes et au travail acharné des planteurs qui les cultivent. Notre mission est de connecter les agriculteurs locaux aux consommateurs, en facilitant l’évacuation et la vente de leurs produits vivriers tels que le manioc, l’igname, la banane plantain et bien d’autres. Nous offrons une solution simple et efficace pour que les récoltes ne restent pas invendues et que chaque planteur puisse prospérer.
+                        Que vous soyez à Abidjan, Bouaké, Yamoussoukro, ou dans les villages les plus reculés, Ogani s’engage à livrer vos produits vivriers directement à votre porte. Grâce à notre réseau logistique étendu et nos partenariats avec des transporteurs locaux, aucune distance n’est trop grande. Nous couvrons les 31 régions de la Côte d'Ivoire pour que les produits frais des planteurs arrivent jusqu’à vous, où que vous soyez.
                     </p>
-                    <a href="{% url 'Ecommerce:shop' %}" class="primary-btn mt-3">Découvrez nos produits</a>
                 </div>
                 <div class="col-lg-6">
-                    <img src="{% static 'img/about/farmer.jpg' %}" alt="Planteur ivoirien" class="img-fluid rounded">
+                    <img src="{% static 'img/shipping/map_ci.jpg' %}" alt="Carte de Côte d'Ivoire" class="img-fluid rounded">
                 </div>
             </div>
 
-            <!-- Vision -->
+            <!-- En gros et en détail -->
             <div class="row mt-5">
                 <div class="col-lg-6 order-lg-2">
-                    <h4>Notre Vision</h4>
+                    <h4>En Gros et en Détail</h4>
                     <p>
-                        Nous aspirons à devenir le pont incontournable entre les planteurs et les marchés en Côte d'Ivoire. En utilisant une plateforme moderne et accessible, Ogani permet aux agriculteurs d’écouler leurs produits rapidement, réduisant ainsi les pertes après récolte et augmentant leurs revenus. Nous visons un avenir où chaque planteur peut vivre dignement de son travail, tout en offrant aux consommateurs des produits frais et locaux.
+                        Ogani s’adapte à tous vos besoins. Vous êtes un particulier cherchant quelques kilos d’ignames pour votre famille ? Ou un commerçant ayant besoin de tonnes de manioc pour votre marché ? Nous livrons aussi bien en petites quantités qu’en gros volumes. Nos options flexibles permettent aux planteurs d’écouler leurs récoltes facilement, tandis que vous bénéficiez de tarifs compétitifs et d’une logistique simplifiée, que ce soit pour une commande modeste ou une grande échelle.
                     </p>
+                    <a href="{% url 'Ecommerce:shop' %}" class="primary-btn mt-3">Commander maintenant</a>
                 </div>
                 <div class="col-lg-6 order-lg-1">
-                    <img src="{% static 'img/about/market.jpg' %}" alt="Marché de produits vivriers" class="img-fluid rounded">
+                    <img src="{% static 'img/shipping/wholesale.jpg' %}" alt="Livraison en gros" class="img-fluid rounded">
                 </div>
             </div>
 
-            <!-- Valeurs -->
+            <!-- Livraison sécurisée -->
+            <div class="row mt-5">
+                <div class="col-lg-6">
+                    <h4>Livraison Sécurisée</h4>
+                    <p>
+                        Votre tranquillité d’esprit est notre priorité. Chaque produit est soigneusement emballé pour préserver sa fraîcheur et sa qualité pendant le transport. Nos livreurs sont formés pour manipuler les produits vivriers avec soin, et nous utilisons des véhicules adaptés pour garantir qu’ils arrivent intacts. De plus, notre système de suivi vous permet de savoir exactement où se trouve votre commande à tout moment, pour une expérience sans stress.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{% static 'img/shipping/secure_delivery.jpg' %}" alt="Livraison sécurisée" class="img-fluid rounded">
+                </div>
+            </div>
+
+            <!-- Avantages supplémentaires -->
             <div class="row mt-5">
                 <div class="col-lg-12">
-                    <h4>Nos Valeurs</h4>
+                    <h4>Pourquoi Choisir Notre Service de Livraison ?</h4>
                 </div>
                 <div class="col-lg-4">
                     <div class="shoping__checkout text-center">
-                        <h5>Soutenir les Planteurs</h5>
-                        <p>Nous plaçons les agriculteurs au cœur de notre démarche, en leur offrant des outils pour réussir.</p>
+                        <h5>Rapidité</h5>
+                        <p>Des délais optimisés pour que vos produits arrivent frais et à temps.</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="shoping__checkout text-center">
-                        <h5>Qualité Locale</h5>
-                        <p>Des produits vivriers frais, cultivés avec soin et issus directement des terres ivoiriennes.</p>
+                        <h5>Fiabilité</h5>
+                        <p>Un service testé et approuvé par des milliers de clients à travers le pays.</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="shoping__checkout text-center">
-                        <h5>Accessibilité</h5>
-                        <p>Une plateforme simple pour acheter et vendre, accessible à tous, partout en Côte d'Ivoire.</p>
+                        <h5>Soutien Local</h5>
+                        <p>Chaque livraison aide les planteurs ivoiriens à prospérer.</p>
                     </div>
                 </div>
             </div>
@@ -133,12 +146,12 @@
             <!-- Call to Action -->
             <div class="row mt-5">
                 <div class="col-lg-12 text-center">
-                    <h4>Rejoignez la Communauté Ogani</h4>
-                    <p>Que vous soyez planteur ou consommateur, ensemble nous pouvons transformer la chaîne des produits vivriers en Côte d'Ivoire.</p>
-                    <a href="{% url 'blog:contact' %}" class="primary-btn">Contactez-nous</a>
+                    <h4>Prêt à Recevoir Vos Produits ?</h4>
+                    <p>Faites confiance à Ogani pour une livraison rapide, sécurisée et adaptée à vos besoins.</p>
+                    <a href="{% url 'Ecommerce:panier' %}" class="primary-btn">Passer une commande</a>
                 </div>
             </div>
         </div>
     </section>
-    <!-- About Us Section End -->
+    <!-- Shipping Info Section End -->
 {% endblock %}
