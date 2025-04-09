@@ -50,16 +50,16 @@
 {% endblock %}
 
 {% block content %}
-            <!-- Affichage des messages (succès ou erreur) -->
-        {% if messages %}
-            <div class="mb-4">
-                {% for message in messages %}
-                    <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
-                        {{ message }}
-                    </p>
-                {% endfor %}
-            </div>
-        {% endif %}
+    <!-- Affichage des messages (succès ou erreur) -->
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
         <div class="container">
@@ -104,7 +104,7 @@
                                                     <img src="{{ item.produit.images.url }}" alt="">
                                                     <h5>{{ item.produit.nom }}</h5>
                                                 </td>
-                                                <td class="shoping__cart__price" data-prix="{{ item.produit.prix }}">
+                                                <td class="shoping__cart__price" data-prix="{{ item.produit.prix_actuel }}">
                                                     {{ item.produit.prix_actuel }}
                                                 </td>
                                                 <td class="shoping__cart__quantity">
@@ -119,12 +119,13 @@
                                                                    class="qty-input">
                                                         </div>
                                                         <input type="hidden" 
-                                                                   name="produit_id_{{ item.produit.id }}" 
-                                                                   value="{{ item.produit.id }}">
+                                                               name="produit_id_{{ item.produit.id }}" 
+                                                               value="{{ item.produit.id }}">
                                                     </div>
                                                 </td>
                                                 <td class="shoping__cart__total" 
-                                                    data-total="{{ item.produit.prix_actuel |mul:item.form.quantite.value|default:item.produit.prix_actuel }}">
+                                                    data-prix="{{ item.produit.prix_actuel }}"
+                                                    data-quantite="{{ item.form.quantite.value|default:1 }}">
                                                     {{ item.produit.prix_actuel |mul:item.form.quantite.value|default:item.produit.prix_actuel }}
                                                 </td>
                                                 <td class="shoping__cart__item__close">
@@ -145,7 +146,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="shoping__cart__btns">
-                            <a href="{% url 'blog:index' %}" class="primary-btn cart-btn">Continué le Shopping</a>
+                            <a href="{% url 'blog:index' %}" class="primary-btn cart-btn">Continuer le Shopping</a>
                             <button type="button" name="update_cart" class="primary-btn cart-btn cart-btn-right update-cart-btn">
                                 <span class="icon_loading"></span> Mettre le panier à jour
                             </button>
@@ -193,7 +194,7 @@
                 subtotal += total;
             });
             subtotalElement.textContent = subtotal.toFixed(2);
-            totalElement.textContent = subtotal.toFixed(2);
+            totalElement.textContent = subtotal.toFixed(2); // Ajoutez frais de livraison si nécessaire
         }
 
         function updateAllTotals() {
@@ -204,9 +205,10 @@
                 const maxQuantite = parseInt(qtyInput.getAttribute('data-max')) || 1;
 
                 if (prixElement && qtyInput && totalElement) {
-                    const prix = parseFloat(prixElement.getAttribute('data-prix'));
+                    const prix = parseFloat(prixElement.getAttribute('data-prix')) || 0;
                     let quantite = parseInt(qtyInput.value) || 1;
 
+                    // Limiter la quantité au maximum disponible
                     if (quantite > maxQuantite) {
                         quantite = maxQuantite;
                         qtyInput.value = maxQuantite;
@@ -214,6 +216,7 @@
 
                     const total = prix * quantite;
                     totalElement.textContent = total.toFixed(2);
+                    totalElement.setAttribute('data-total', total.toFixed(2)); // Mettre à jour l'attribut
                 }
             });
             updateCartTotal();

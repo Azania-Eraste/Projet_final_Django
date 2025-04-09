@@ -2,50 +2,7 @@
 {% load static %}
 
 {% block header %}
-<!-- Hero Section Begin -->
-<section class="hero hero-normal">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="hero__categories">
-                    <div class="hero__categories__all">
-                        <i class="fa fa-bars"></i>
-                        <span>All departments</span>
-                    </div>
-                    <ul>
-                        {% for categorie in Categories %}
-                            <li><a href="#">{{ categorie.nom }}</a></li>   
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <div class="hero__search">
-                    <div class="hero__search__form">
-                        <form action="#">
-                            <div class="hero__search__categories">
-                                All Categories
-                                <span class="arrow_carrot-down"></span>
-                            </div>
-                            <input type="text" placeholder="What do you need?">
-                            <button type="submit" class="site-btn">SEARCH</button>
-                        </form>
-                    </div>
-                    <div class="hero__search__phone">
-                        <div class="hero__search__phone__icon">
-                            <i class="fa fa-phone"></i>
-                        </div>
-                        <div class="hero__search__phone__text">
-                            <h5>+65 11.188.888</h5>
-                            <span>support 24/7 time</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- Hero Section End -->
+<div></div>
 {% endblock %}
 
 {% block content %}
@@ -92,7 +49,26 @@
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <label>Carte de crédit/débit</label>
+                                    <label for="payment_method">Choisir un mode de paiement</label>
+                                    <select name="payment_method" id="payment_method" class="form-control mb-3" onchange="togglePaymentFields()">
+                                        <option value="wave">Wave</option>
+                                        <option value="orange_money">Orange Money</option>
+                                        <option value="mtn_money">MTN Money</option>
+                                        <option value="moov_money">Moov Money</option>
+                                        <option value="card">Carte de crédit/débit</option>
+                                        <option value="prepaid_card">Carte prépayée</option>
+                                    </select>
+                                </div>
+
+                                <!-- Champs pour Mobile Money (Wave, Orange Money, MTN Money, Moov Money) -->
+                                <div class="col-lg-12 payment-fields" id="mobile_money_fields" style="display: none;">
+                                    <label>Numéro de téléphone</label>
+                                    <input type="text" name="phone_number" placeholder="Ex: +225 01 23 45 67" class="form-control mb-3">
+                                </div>
+
+                                <!-- Champs pour Carte de crédit/débit -->
+                                <div class="col-lg-12 payment-fields" id="card_fields" style="display: none;">
+                                    <label>Numéro de carte</label>
                                     <input type="text" name="card_number" placeholder="Numéro de carte" class="form-control mb-3">
                                     <div class="row">
                                         <div class="col-lg-6">
@@ -103,16 +79,23 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Champs pour Carte prépayée -->
+                                <div class="col-lg-12 payment-fields" id="prepaid_card_fields" style="display: none;">
+                                    <label>Code de la carte prépayée</label>
+                                    <input type="text" name="prepaid_code" placeholder="Entrez le code de la carte" class="form-control mb-3">
+                                </div>
                             </div>
                             <button type="submit" class="primary-btn">Ajouter un mode de paiement</button>
                         </form>
+
                         <div class="shoping__cart__table mt-4">
                             <h5>Modes enregistrés</h5>
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Type</th>
-                                        <th>Numéro</th>
+                                        <th>Identifiant</th>
                                         <th>Expiration</th>
                                         <th>Action</th>
                                     </tr>
@@ -121,10 +104,18 @@
                                     {% if paiements %}
                                         {% for paiement in paiements %}
                                             <tr>
-                                                <td>Carte</td>
-                                                <td>{{ paiement.numero|slice:"12:" }}</td>
-                                                <td>{{ paiement.expiration }}</td>
-                                                <td><a href="#" class="primary-btn cart-btn">Supprimer</a></td>
+                                                <td>{{ paiement.type }}</td>
+                                                <td>
+                                                    {% if paiement.type == "Carte" %}
+                                                        {{ paiement.numero|slice:"12:" }}
+                                                    {% elif paiement.type == "Carte prépayée" %}
+                                                        {{ paiement.code|slice:"4:" }}
+                                                    {% else %}
+                                                        {{ paiement.phone_number|slice:"7:" }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ paiement.expiration|default:"N/A" }}</td>
+                                                <td><a href="{% url 'Ecommerce:paiement_remove' paiement.id %}" class="primary-btn cart-btn">Supprimer</a></td>
                                             </tr>
                                         {% endfor %}
                                     {% else %}
@@ -141,4 +132,32 @@
         </div>
     </section>
     <!-- Paiement Section End -->
+
+    <!-- Script JavaScript pour afficher/masquer les champs -->
+    <script>
+        function togglePaymentFields() {
+            const paymentMethod = document.getElementById('payment_method').value;
+            const mobileMoneyFields = document.getElementById('mobile_money_fields');
+            const cardFields = document.getElementById('card_fields');
+            const prepaidCardFields = document.getElementById('prepaid_card_fields');
+
+            // Masquer tous les champs par défaut
+            mobileMoneyFields.style.display = 'none';
+            cardFields.style.display = 'none';
+            prepaidCardFields.style.display = 'none';
+
+            // Afficher les champs correspondants
+            if (paymentMethod === 'wave' || paymentMethod === 'orange_money' || 
+                paymentMethod === 'mtn_money' || paymentMethod === 'moov_money') {
+                mobileMoneyFields.style.display = 'block';
+            } else if (paymentMethod === 'card') {
+                cardFields.style.display = 'block';
+            } else if (paymentMethod === 'prepaid_card') {
+                prepaidCardFields.style.display = 'block';
+            }
+        }
+
+        // Initialiser l'affichage au chargement de la page
+        document.addEventListener('DOMContentLoaded', togglePaymentFields);
+    </script>
 {% endblock %}

@@ -7,11 +7,13 @@ app_name="Ecommerce"
 urlpatterns = [
     path("Dashboard/Profile/", views.profile_view, name="profile"),
     path("Dashboard/Commandes/", views.commandes_view, name="commandes"),
+    path('Dashboard/Commandes/<int:commande_id>/', views.commande_detail_view, name='commande_detail'),
+    path('Dashboard/Commandes/<int:commande_id>/cancel/', views.commande_cancel_view, name='commande_cancel'),
     path("Dashboard/Paiement/", views.paiement_view, name="paiement"),
     path("Panier/", views.panier, name="panier"),
     path("Panier/delete/<slug:slug>/", views.remove_panier, name="panier_remove"),
     path("Panier/add/<slug:slug>/", views.add_panier, name="panier_add"),
-    path("Panier/Chechout/", views.checkout, name="check"),
+    path("Panier/Checkout/", views.checkout, name="check"),
     path("Dashboard/Favorite/", views.favorite, name="favorite"),
     path("Dashboard/Favorite/add/<slug:slug>/", views.add_favorite, name="favorite_add"),
     path("Dashboard/Favorite/delete/<slug:slug>/", views.remove_favorite, name="favorite_remove"),
@@ -21,4 +23,5 @@ urlpatterns = [
     path('shipping/', views.shipping_info_view, name='shipping'),
     path('privacy/', views.privacy_policy_view, name='privacy'),
     path('innovation/', views.innovation_view, name='innovation'),
+
 ]
