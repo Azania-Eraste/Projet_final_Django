@@ -166,7 +166,7 @@ class Ville(models.Model):
 
 class Commune(models.Model):
     nom = models.CharField(max_length=255)
-    ville = models.ForeignKey("Ecommerce.Ville", on_delete=models.CASCADE, related_name="Commune_ville_ids")
+    ville = models.ForeignKey("Ecommerce.Ville", on_delete=models.CASCADE, related_name="Commune_ville_id")
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -176,7 +176,8 @@ class Commune(models.Model):
         return self.nom
 
 class Adresse(models.Model):
-    code_postal = models.CharField(max_length=10)
+    nom = models.CharField(max_length=255, null=True)
+    utilisateur = models.ManyToManyField(User, related_name='Adresse_ids')
     commune = models.ForeignKey("Ecommerce.Commune", on_delete=models.CASCADE, related_name="Adresse_Commune_ids")
 
     statut = models.BooleanField(default=True)

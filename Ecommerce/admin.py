@@ -190,11 +190,11 @@ class CommandeProduitAdmin(admin.ModelAdmin):
 
 @admin.register(Adresse)
 class AdresseAdmin(admin.ModelAdmin):
-    list_display = ("code_postal", "commune")
-    search_fields = ("code_postal", "commune__nom")
+    list_display = ("commune",)
+    search_fields = ("commune__nom",)
     fieldsets = (
         ("Informations principales", {
-            "fields": ("code_postal", "commune")
+            "fields": ("commune",)
         }),
         ("Métadonnées", {
             "fields": ("statut",),  # Ajout de la virgule

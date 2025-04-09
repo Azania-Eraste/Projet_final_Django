@@ -116,11 +116,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="checkout__input">
-                                <p>Order notes<span>*</span></p>
-                                <input type="text"
-                                    placeholder="Notes about your order, e.g. special notes for delivery.">
-                            </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
                             <div class="checkout__order">
@@ -131,12 +126,8 @@
                                         <li>{{ produit.produit }} <span>{{ produit.prix }}</span></li>
                                     {% endfor %}
                                 </ul>
-                                <div class="checkout__order__subtotal">Subtotal <span>{{ total_commande }}</span></div>
-                                <div class="checkout__order__total">Total <span>$750.99</span></div>
-                                <div class="checkout__input__checkbox">
-                                </div>
-                                <p>Lorem ipsum dolor sit amet, consectetur adip elit, sed do eiusmod tempor incididunt
-                                    ut labore et dolore magna aliqua.</p>
+                                <div class="checkout__order__total">Subtotal <span>{{ total_commande }}</span></div>
+
                                 <div class="checkout__input__checkbox">
                                     <label for="payment">
                                         Check Payment
