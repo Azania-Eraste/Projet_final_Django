@@ -40,11 +40,12 @@
                 <li><a href="{% url 'Ecommerce:favorite' %}"><i class="fa fa-heart"></i> <span>{{ favoris_produit.count }}</span></a></li>
                 <li><a href="{% url 'Ecommerce:panier' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
             </ul>
+            
         </div>
         <div class="humberger__menu__widget">
             <div class="header__top__right__auth">
                 {% if request.user.is_authenticated %}
-                    <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
+                    <a href="" class="fa fa-user"> Dashboard</a>
                 {% else %}
                     <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
                 {% endif %}
@@ -56,6 +57,7 @@
                 <li><a href="{% url 'Ecommerce:shop' %}">Shop</a></li>
                 <li><a href="{% url 'blog:blog' %}">Blog</a></li>
                 <li><a href="{% url 'blog:contact' %}">Contact</a></li>
+                <li><a href="{% url 'Ecommerce:about' %}">About Us</a></li>
             </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
@@ -65,12 +67,7 @@
             <a href="#"><i class="fa fa-linkedin"></i></a>
             <a href="#"><i class="fa fa-pinterest-p"></i></a>
         </div>
-        <div class="humberger__menu__contact">
-            <ul>
-                <li><i class="fa fa-envelope"></i> hello@colorlib.com</li>
-                <li>Free Shipping for all Order of $99</li>
-            </ul>
-        </div>
+
     </div>
     <!-- Humberger End -->
 
@@ -119,6 +116,7 @@
                             <li class="{% if active_page == 'shop' %}active{% endif %}"><a href="{% url 'Ecommerce:shop' %}">Shop</a></li>
                             <li class="{% if active_page == 'blog' %}active{% endif %}"><a href="{% url 'blog:blog' %}">Blog</a></li>
                             <li class="{% if active_page == 'contact' %}active{% endif %}"><a href="{% url 'blog:contact' %}">Contact</a></li>
+                            <li class="{% if active_page == 'about' %}active{% endif %}"><a href="{% url 'Ecommerce:about' %}">About Us</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -128,6 +126,7 @@
                             <li><a href="{% url 'Ecommerce:favorite' %}"><i class="fa fa-heart"></i> <span>{{ favoris_produit.count }}</span></a></li>
                             <li><a href="{% url 'Ecommerce:panier' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
                         </ul>
+                        
                     </div>
                 </div>
             </div>
@@ -183,7 +182,7 @@
                                 <span>FRUIT FRESH</span>
                                 <h2>Vegetable <br />100% Organic</h2>
                                 <p>Free Pickup and Delivery Available</p>
-                                <a href="#" class="primary-btn">SHOP NOW</a>
+                                <a href="{% url 'Ecommerce:shop' %}" class="primary-btn">SHOP NOW</a>
                             </div>
                         </div>
                     </div>
@@ -228,7 +227,7 @@
                                 <li><a href="#">Who We Are</a></li>
                                 <li><a href="#">Our Services</a></li>
                                 <li><a href="#">Projects</a></li>
-                                <li><a href="#">Contact</a></li>
+                                <li><a href="{% url 'blog:contact' %}">Contact</a></li>
                                 <li><a href="#">Innovation</a></li>
                                 <li><a href="#">Testimonials</a></li>
                             </ul>

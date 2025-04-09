@@ -33,6 +33,8 @@
                             {% csrf_token %}
                             <ul>
                                 <li>Nom d'utilisateur <span><input type="text" name="username" value="{{ request.user.username }}" class="form-control"></span></li>
+                                <li>Nom <span><input type="text" name="nom" value="{{ request.user.nom }}" class="form-control"></span></li>
+                                <li>Prenom <span><input type="text" name="prenom" value="{{ request.user.prenom }}" class="form-control"></span></li>
                                 <li>Email <span><input type="email" name="email" value="{{ request.user.email }}" class="form-control"></span></li>
                                 <li>Date d'inscription <span>{{ request.user.date_joined|date:"d M Y" }}</span></li>
                             </ul>

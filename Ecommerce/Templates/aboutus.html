@@ -1,0 +1,144 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block header %}
+<!-- Hero Section Begin -->
+<section class="hero hero-normal">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="hero__categories">
+                    <div class="hero__categories__all">
+                        <i class="fa fa-bars"></i>
+                        <span>All departments</span>
+                    </div>
+                    <ul>
+                        {% for categorie in Categories %}
+                            <li><a href="#">{{ categorie.nom }}</a></li>   
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="hero__search">
+                    <div class="hero__search__form">
+                        <form action="#">
+                            <div class="hero__search__categories">
+                                All Categories
+                                <span class="arrow_carrot-down"></span>
+                            </div>
+                            <input type="text" placeholder="What do you need?">
+                            <button type="submit" class="site-btn">SEARCH</button>
+                        </form>
+                    </div>
+                    <div class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__search__phone__text">
+                            <h5>+65 11.188.888</h5>
+                            <span>support 24/7 time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Section End -->
+{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>À Propos de Nous</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'blog:index' %}">Accueil</a>
+                            <span>À Propos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- About Us Section Begin -->
+    <section class="shoping-cart spad">
+        <div class="container">
+            <!-- Introduction -->
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h3>Qui Sommes-Nous ?</h3>
+                    <p class="lead">Ogani, une plateforme dédiée à la valorisation des produits vivriers en Côte d'Ivoire.</p>
+                </div>
+            </div>
+
+            <!-- Mission -->
+            <div class="row mt-5">
+                <div class="col-lg-6">
+                    <h4>Notre Mission</h4>
+                    <p>
+                        Chez Ogani, nous croyons en la richesse des terres ivoiriennes et au travail acharné des planteurs qui les cultivent. Notre mission est de connecter les agriculteurs locaux aux consommateurs, en facilitant l’évacuation et la vente de leurs produits vivriers tels que le manioc, l’igname, la banane plantain et bien d’autres. Nous offrons une solution simple et efficace pour que les récoltes ne restent pas invendues et que chaque planteur puisse prospérer.
+                    </p>
+                    <a href="{% url 'Ecommerce:shop' %}" class="primary-btn mt-3">Découvrez nos produits</a>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{% static 'img/about/farmer.jpg' %}" alt="Planteur ivoirien" class="img-fluid rounded">
+                </div>
+            </div>
+
+            <!-- Vision -->
+            <div class="row mt-5">
+                <div class="col-lg-6 order-lg-2">
+                    <h4>Notre Vision</h4>
+                    <p>
+                        Nous aspirons à devenir le pont incontournable entre les planteurs et les marchés en Côte d'Ivoire. En utilisant une plateforme moderne et accessible, Ogani permet aux agriculteurs d’écouler leurs produits rapidement, réduisant ainsi les pertes après récolte et augmentant leurs revenus. Nous visons un avenir où chaque planteur peut vivre dignement de son travail, tout en offrant aux consommateurs des produits frais et locaux.
+                    </p>
+                </div>
+                <div class="col-lg-6 order-lg-1">
+                    <img src="{% static 'img/about/market.jpg' %}" alt="Marché de produits vivriers" class="img-fluid rounded">
+                </div>
+            </div>
+
+            <!-- Valeurs -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>Nos Valeurs</h4>
+                </div>
+                <div class="col-lg-4">
+                    <div class="shoping__checkout text-center">
+                        <h5>Soutenir les Planteurs</h5>
+                        <p>Nous plaçons les agriculteurs au cœur de notre démarche, en leur offrant des outils pour réussir.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="shoping__checkout text-center">
+                        <h5>Qualité Locale</h5>
+                        <p>Des produits vivriers frais, cultivés avec soin et issus directement des terres ivoiriennes.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="shoping__checkout text-center">
+                        <h5>Accessibilité</h5>
+                        <p>Une plateforme simple pour acheter et vendre, accessible à tous, partout en Côte d'Ivoire.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="row mt-5">
+                <div class="col-lg-12 text-center">
+                    <h4>Rejoignez la Communauté Ogani</h4>
+                    <p>Que vous soyez planteur ou consommateur, ensemble nous pouvons transformer la chaîne des produits vivriers en Côte d'Ivoire.</p>
+                    <a href="{% url 'blog:contact' %}" class="primary-btn">Contactez-nous</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- About Us Section End -->
+{% endblock %}

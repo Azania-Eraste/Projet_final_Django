@@ -17,4 +17,5 @@ urlpatterns = [
     path("Dashboard/Favorite/delete/<slug:slug>/", views.remove_favorite, name="favorite_remove"),
     path("Shop/", views.shop, name="shop"),
     path("Shop/detail/<slug:slug>/", views.shop_detail, name="detail"),
+    path("About_us/", views.about_us_view, name="about")
 ]
