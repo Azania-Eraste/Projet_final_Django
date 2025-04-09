@@ -1,0 +1,164 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block header %}
+<!-- Hero Section Begin -->
+<section class="hero hero-normal">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="hero__categories">
+                    <div class="hero__categories__all">
+                        <i class="fa fa-bars"></i>
+                        <span>All departments</span>
+                    </div>
+                    <ul>
+                        {% for categorie in Categories %}
+                            <li><a href="#">{{ categorie.nom }}</a></li>   
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="hero__search">
+                    <div class="hero__search__form">
+                        <form action="#">
+                            <div class="hero__search__categories">
+                                All Categories
+                                <span class="arrow_carrot-down"></span>
+                            </div>
+                            <input type="text" placeholder="What do you need?">
+                            <button type="submit" class="site-btn">SEARCH</button>
+                        </form>
+                    </div>
+                    <div class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__search__phone__text">
+                            <h5>+65 11.188.888</h5>
+                            <span>support 24/7 time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Section End -->
+{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Innovation</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'blog:index' %}">Accueil</a>
+                            <span>Innovation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Innovation Section Begin -->
+    <section class="shoping-cart spad">
+        <div class="container">
+            <!-- Introduction -->
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h3>Notre Approche Innovante</h3>
+                    <p class="lead">
+                        Chez Ogani, nous utilisons la technologie pour transformer la vente des produits vivriers en Côte d'Ivoire, même hors saison.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Contexte et problématique -->
+            <div class="row mt-5">
+                <div class="col-lg-6">
+                    <h4>Une Solution aux Défis Saisonniers</h4>
+                    <p>
+                        En Côte d'Ivoire, les produits vivriers comme le manioc, l’igname ou la banane plantain ont des périodes de vente optimales. Hors saison, les planteurs peinent souvent à écouler leurs stocks, ce qui entraîne des pertes importantes. Chez Ogani, nous avons développé une approche innovante pour renverser cette tendance : des algorithmes intelligents qui maximisent la vente des produits, même lorsqu’ils ne sont plus à leur pic de demande.
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{% static 'img/innovation/seasonal_products.jpg' %}" alt="Produits vivriers hors saison" class="img-fluid rounded">
+                </div>
+            </div>
+
+            <!-- Fonctionnement des algorithmes -->
+            <div class="row mt-5">
+                <div class="col-lg-6 order-lg-2">
+                    <h4>Comment Nos Algorithmes Fonctionnent</h4>
+                    <p>
+                        Nos algorithmes analysent plusieurs facteurs clés : les tendances d’achat passées, la localisation des stocks, les prévisions météorologiques et les besoins des consommateurs. Lorsqu’un produit sort de sa période de vente, notre système propose automatiquement des stratégies adaptées :
+                    </p>
+                    <ul>
+                        <li><strong>Promotions ciblées</strong> : Réductions intelligentes pour stimuler la demande.</li>
+                        <li><strong>Recommandations personnalisées</strong> : Suggestions aux clients basées sur leurs préférences.</li>
+                        <li><strong>Redirection logistique</strong> : Transfert des produits vers les zones où la demande reste forte.</li>
+                    </ul>
+                    <p>Cela permet aux planteurs d’écouler leurs récoltes toute l’année.</p>
+                </div>
+                <div class="col-lg-6 order-lg-1">
+                    <img src="{% static 'img/innovation/algorithm.jpg' %}" alt="Algorithme en action" class="img-fluid rounded">
+                </div>
+            </div>
+
+            <!-- Avantages -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>Les Avantages de Notre Innovation</h4>
+                </div>
+                <div class="col-lg-4">
+                    <div class="shoping__checkout text-center">
+                        <h5>Moins de Pertes</h5>
+                        <p>Les planteurs réduisent le gaspillage en vendant leurs produits hors saison.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="shoping__checkout text-center">
+                        <h5>Revenus Stables</h5>
+                        <p>Des ventes continues assurent une stabilité financière aux agriculteurs.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="shoping__checkout text-center">
+                        <h5>Accessibilité</h5>
+                        <p>Les consommateurs profitent de produits disponibles toute l’année.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>Un Impact Réel</h4>
+                    <p>
+                        Grâce à cette technologie, Ogani révolutionne le commerce des produits vivriers en Côte d'Ivoire. Les planteurs ne sont plus limités par les saisons, et les consommateurs ont accès à une variété de produits frais en toute période. Par exemple, un surplus d’ignames en saison sèche peut être vendu à des prix attractifs dans les zones urbaines, tandis que des promotions ciblées maintiennent l’intérêt pour le manioc en période de faible demande.
+                    </p>
+                    <img src="{% static 'img/innovation/impact.jpg' %}" alt="Impact sur les planteurs" class="img-fluid rounded mt-3">
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="row mt-5">
+                <div class="col-lg-12 text-center">
+                    <h4>Découvrez l’Avenir de la Vente Vivrière</h4>
+                    <p>
+                        Avec Ogani, l’innovation est au service des planteurs et des consommateurs. Explorez notre plateforme et participez à cette révolution.
+                    </p>
+                    <a href="{% url 'Ecommerce:shop' %}" class="primary-btn">Visitez notre boutique</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Innovation Section End -->
+{% endblock %}
