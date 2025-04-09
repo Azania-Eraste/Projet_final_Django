@@ -384,7 +384,7 @@ def about_us_view(request):
     }
 
 
-    return render(request, 'about_us.html')
+    return render(request, 'about_us.html', datas)
 
 @login_required(login_url='Authentification:login')
 def paiement_view(request):
