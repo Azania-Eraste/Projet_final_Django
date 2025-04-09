@@ -45,7 +45,7 @@
         <div class="humberger__menu__widget">
             <div class="header__top__right__auth">
                 {% if request.user.is_authenticated %}
-                    <a href="" class="fa fa-user"> Dashboard</a>
+                    <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
                 {% else %}
                     <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
                 {% endif %}
@@ -92,7 +92,7 @@
  
                             <div class="header__top__right__auth">
                                 {% if request.user.is_authenticated %}
-                                <a href="" class="fa fa-user"> Dashboard</a>
+                                <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
                                 {% else %}
                                     <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
                                 {% endif %}
@@ -172,7 +172,7 @@
                                     <i class="fa fa-phone"></i>
                                 </div>
                                 <div class="hero__search__phone__text">
-                                    <h5>+65 11.188.888</h5>
+                                    <h5>+225 0778177333</h5>
                                     <span>support 24/7 time</span>
                                 </div>
                             </div>
@@ -203,27 +203,24 @@
                     <div class="col-lg-3 col-md-6 col-sm-6">
                         <div class="footer__about">
                             <div class="footer__about__logo">
-                                <a href="./index.html"><img src="{% static 'img/logo.png' %}" alt=""></a>
+                                <a href="{% url 'blog:index' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
                             </div>
                             <ul>
-                                <li>Address: 60-49 Road 11378 New York</li>
-                                <li>Phone: +65 11.188.888</li>
+                                <li>adresse: 60-49 Road 11378 New York</li>
+                                <li>Numero: +225 0778177333</li>
                                 <li>Email: hello@colorlib.com</li>
                             </ul>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
                         <div class="footer__widget">
-                            <h6>Useful Links</h6>
+                            <h6>Lien utils</h6>
                             <ul>
                                 <li><a href="{% url 'Ecommerce:about' %}">A propos de nous</a></li>
                                 <li><a href="{% url 'Ecommerce:shipping' %}">Information de livraison</a></li>
                                 <li><a href="{% url 'Ecommerce:privacy' %}">Police de Confidentialité</a></li>
-                                <li><a href="#">Our Sitemap</a></li>
                             </ul>
                             <ul>
-                                <li><a href="#">Our Services</a></li>
-                                <li><a href="#">Projects</a></li>
                                 <li><a href="{% url 'blog:contact' %}">Contact</a></li>
                                 <li><a href="{% url 'Ecommerce:innovation' %}">Innovation</a></li>
                             </ul>
