@@ -11,3 +11,5 @@ class CustomUser(AbstractUser):
     nom = models.TextField()
     prenom = models.TextField()
     number = models.TextField()
+
+    
