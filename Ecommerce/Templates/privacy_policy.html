@@ -1,0 +1,145 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block header %}
+<div></div>
+{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Politique de Confidentialité</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'blog:index' %}">Accueil</a>
+                            <span>Confidentialité</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Privacy Policy Section Begin -->
+    <section class="shoping-cart spad">
+        <div class="container">
+            <!-- Introduction -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>Politique de Confidentialité d'Ogani</h3>
+                    <p>
+                        Chez Ogani, nous nous engageons à protéger la vie privée de nos clients, planteurs et partenaires en Côte d'Ivoire. Cette politique explique comment nous collectons, utilisons et protégeons vos informations personnelles lorsque vous utilisez notre plateforme de vente de produits vivriers. Dernière mise à jour : 9 avril 2025.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Collecte des informations -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>1. Informations que nous collectons</h4>
+                    <p>Nous collectons les informations suivantes pour améliorer votre expérience et assurer le bon fonctionnement de nos services :</p>
+                    <ul>
+                        <li><strong>Informations personnelles</strong> : Nom, adresse, numéro de téléphone, email, fournies lors de la création d’un compte ou d’une commande.</li>
+                        <li><strong>Informations de paiement</strong> : Détails nécessaires pour traiter vos paiements (ex. : numéros de carte ou informations Mobile Money), bien que ceux-ci soient sécurisés par nos partenaires de paiement.</li>
+                        <li><strong>Données de navigation</strong> : Adresse IP, type de navigateur, pages visitées, pour optimiser notre site.</li>
+                        <li><strong>Informations des planteurs</strong> : Localisation des exploitations et détails des produits pour faciliter la logistique.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Utilisation des informations -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>2. Comment nous utilisons vos informations</h4>
+                    <p>Vos données sont utilisées dans les buts suivants :</p>
+                    <ul>
+                        <li>Traitement des commandes et organisation des livraisons à travers la Côte d'Ivoire.</li>
+                        <li>Communication avec vous (confirmation de commande, suivi de livraison, support client).</li>
+                        <li>Amélioration de notre plateforme grâce à l’analyse des données de navigation.</li>
+                        <li>Soutien aux planteurs en optimisant la gestion de leurs stocks et livraisons.</li>
+                        <li>Envoi d’offres promotionnelles ou newsletters (avec votre consentement préalable).</li>
+                    </ul>
+                    <p>Nous ne vendons ni ne louons vos informations à des tiers à des fins commerciales.</p>
+                </div>
+            </div>
+
+            <!-- Protection des données -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>3. Protection de vos données</h4>
+                    <p>
+                        Nous utilisons des technologies de pointe pour sécuriser vos informations :
+                    </p>
+                    <ul>
+                        <li>Chiffrement des données sensibles (ex. : SSL pour les transactions).</li>
+                        <li>Accès restreint à vos informations, limité à notre personnel autorisé.</li>
+                        <li>Partenariats avec des prestataires de paiement fiables conformes aux normes internationales.</li>
+                    </ul>
+                    <p>En cas de violation de données, nous vous informerons dans les plus brefs délais, conformément aux lois applicables.</p>
+                </div>
+            </div>
+
+            <!-- Partage des informations -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>4. Partage des informations</h4>
+                    <p>
+                        Nous partageons vos données uniquement dans les cas suivants :
+                    </p>
+                    <ul>
+                        <li>Avec nos livreurs pour assurer la livraison de vos produits vivriers.</li>
+                        <li>Avec des partenaires logistiques pour coordonner l’évacuation des récoltes des planteurs.</li>
+                        <li>Avec les autorités compétentes si la loi l’exige en Côte d'Ivoire.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Vos droits -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>5. Vos droits</h4>
+                    <p>
+                        Vous avez le contrôle sur vos données personnelles. Vous pouvez :
+                    </p>
+                    <ul>
+                        <li>Accéder à vos informations via votre compte Ogani.</li>
+                        <li>Demander la correction ou la suppression de vos données.</li>
+                        <li>Vous désinscrire des communications marketing à tout moment.</li>
+                    </ul>
+                    <p>Pour exercer ces droits, contactez-nous à <a href="mailto:support@ogani.ci">support@ogani.ci</a>.</p>
+                </div>
+            </div>
+
+            <!-- Cookies -->
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <h4>6. Cookies et technologies similaires</h4>
+                    <p>
+                        Nous utilisons des cookies pour :
+                    </p>
+                    <ul>
+                        <li>Mémoriser vos préférences (ex. : panier d’achat).</li>
+                        <li>Analyser l’utilisation du site pour l’améliorer.</li>
+                    </ul>
+                    <p>Vous pouvez désactiver les cookies via les paramètres de votre navigateur, mais cela peut affecter certaines fonctionnalités.</p>
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="row mt-5">
+                <div class="col-lg-12 text-center">
+                    <h4>Nous Contacter</h4>
+                    <p>
+                        Pour toute question sur cette politique ou sur la gestion de vos données, écrivez-nous à <a href="mailto:support@ogani.ci">support@ogani.ci</a> ou appelez-nous au +225 01 23 45 67 89.
+                    </p>
+                    <a href="{% url 'blog:contact' %}" class="primary-btn">Contactez-nous</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Privacy Policy Section End -->
+{% endblock %}

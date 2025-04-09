@@ -17,5 +17,7 @@ urlpatterns = [
     path("Dashboard/Favorite/delete/<slug:slug>/", views.remove_favorite, name="favorite_remove"),
     path("Shop/", views.shop, name="shop"),
     path("Shop/detail/<slug:slug>/", views.shop_detail, name="detail"),
-    path("About_us/", views.about_us_view, name="about")
+    path("About_us/", views.about_us_view, name="about"),
+    path('shipping/', views.shipping_info_view, name='shipping'),
+    path('privacy/', views.privacy_policy_view, name='privacy'),
 ]
