@@ -303,6 +303,9 @@ def shop_detail(request, slug):
 @login_required(login_url='Authentification:login')
 def profile_view(request):
 
+    panier_produits = None
+    favoris_produits = None
+
     if request.user.is_authenticated:
         # Gestion des favoris pour l'utilisateur connecté
         favoris, created = Favoris.objects.get_or_create(
@@ -331,6 +334,9 @@ def profile_view(request):
 
 @login_required(login_url='Authentification:login')
 def commandes_view(request):
+
+    panier_produits = None
+    favoris_produits = None
 
     commande = Commande.objects.filter(utilisateur=request.user).order_by('-id')
 
@@ -362,6 +368,9 @@ def commandes_view(request):
 
 def about_us_view(request):
 
+    panier_produits = None
+    favoris_produits = None
+
     if request.user.is_authenticated:
         # Gestion des favoris pour l'utilisateur connecté
         favoris, created = Favoris.objects.get_or_create(
@@ -385,6 +394,64 @@ def about_us_view(request):
 
 
     return render(request, 'about_us.html', datas)
+
+def shipping_info_view(request):
+
+    panier_produits = None
+    favoris_produits = None
+
+
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        panier_produits = panier.produits.all()
+
+    datas = {
+        'active_page': 'about',
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+    }
+
+    return render(request, 'shipping_info.html', datas)
+
+def privacy_policy_view(request):
+
+    panier_produits = None
+    favoris_produits = None
+
+
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        panier_produits = panier.produits.all()
+
+    datas = {
+        'active_page': 'about',
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+    }
+
+    return render(request, 'privacy_policy.html', datas)
 
 @login_required(login_url='Authentification:login')
 def paiement_view(request):
