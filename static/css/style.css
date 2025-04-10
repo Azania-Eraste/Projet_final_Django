@@ -2990,6 +2990,127 @@ ol {
 	letter-spacing: 2px;
 }
 
+.progress-bar-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.stepper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    width: 80%;
+    max-width: 600px;
+}
+
+.stepper-step {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.stepper-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stepper-head-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: #000;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.stepper-step.stepper-active .stepper-head-icon {
+    background-color: #ff6200;
+    color: #fff;
+    border-color: #ff6200;
+}
+
+.stepper-head-text {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.stepper-step.stepper-active .stepper-head-text {
+    color: #ff6200;
+}
+
+.stepper-content {
+    display: none;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.stepper-step.stepper-active .stepper-content {
+    display: block;
+}
+
+/* Ligne de connexion unique avec gradient */
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 4px;
+    background: linear-gradient(
+        to right,
+        #ff6200 0%,
+        #ff6200 calc((var(--active-step) * 25%) - 0.1%),
+        #ddd calc((var(--active-step) * 25%) + 0.1%),
+        #ddd 100%
+    );
+    z-index: 0;
+}
+
+/* Définir la variable --active-step en fonction de l'attribut data-active-step */
+.stepper[data-active-step="1"] {
+    --active-step: 1;
+}
+
+.stepper[data-active-step="2"] {
+    --active-step: 2;
+}
+
+.stepper[data-active-step="3"] {
+    --active-step: 3;
+}
+
+.stepper[data-active-step="4"] {
+    --active-step: 4;
+}
+
+.stepper[data-active-step="5"] {
+    --active-step: 5;
+}
+
+.stepper[data-active-step="0"] {
+    --active-step: 0;
+}
+
 /*--------------------------------- Responsive Media Quaries -----------------------------*/
 
 @media only screen and (min-width: 1200px) {

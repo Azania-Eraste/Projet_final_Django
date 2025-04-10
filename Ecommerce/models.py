@@ -16,7 +16,6 @@ class TypePaiement(Enum):
 class StatutCommande(Enum):
     EN_ATTENTE = "En attente"
     EN_COURS = "En cours"
-    EXPEDIEE = "Expédiée"
     ANNULEE = "Annulée"
 
 class StatutPaiement(Enum):
@@ -26,6 +25,7 @@ class StatutPaiement(Enum):
 class StatutLivraison(Enum):
     EN_ATTENTE = "En attente"
     EN_COURS = "En cours"
+    EXPEDIEE = "Expédiée"  # Ajout
     LIVREE = "Livrée"
     RETOURNEE = "Retournée"
 

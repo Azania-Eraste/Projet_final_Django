@@ -60,8 +60,16 @@
                                         <tr>
                                             <td>{{ commande.id }}</td>
                                             <td>{{ commande.date|date:"d M Y" }}</td>
-                                            <td>{{ commande.prix }}</td>
-                                            <td>{{ commande.statut_commande }}</td>
+                                            <td>{{ commande.prix_total }}</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if commande.statut_commande == 'EXPEDIEE' %}badge-success
+                                                    {% elif commande.statut_commande == 'EN_ATTENTE' %}badge-warning
+                                                    {% elif commande.statut_commande == 'ANNULEE' %}badge-danger
+                                                    {% else %}badge-secondary{% endif %}">
+                                                    {{ commande.statut_commande }}
+                                                </span>
+                                            </td>
                                             <td class="shoping__cart__item__close">
                                                 <a href="{% url 'Ecommerce:commande_detail' commande.id %}" class="primary-btn cart-btn">Détails</a>
                                                 <a href="{% url 'Ecommerce:commande_cancel' commande.id %}" class="icon_close" title="Supprimer des favoris"></a>
