@@ -32,80 +32,79 @@
                     <h6><span class="icon_tag_alt"></span> Have a coupon? <a href="#">Click here</a> to enter your code</h6>
                 </div>
             </div>
-<div class="checkout__form">
-    <h4>Details de facture</h4>
-    <form method="post" action="{% url 'Ecommerce:check' %}">
-        {% csrf_token %}
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                <ul>
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>{{ field.label }} : {{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
+            <div class="checkout__form">
+                <h4>Details de facture</h4>
+                <form method="post" action="{% url 'Ecommerce:check' %}">
+                    {% csrf_token %}
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ field.label }} : {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Nom<span>*</span></p>
+                                        {{ form.nom }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Prénom<span>*</span></p>
+                                        {{ form.prenom }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="checkout__input">
+                                        <p>Adresse<span>*</span></p>
+                                        {{ form.adresse }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Numéro<span>*</span></p>
+                                        {{ form.phone }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Email<span>*</span></p>
+                                        {{ form.email }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="checkout__order">   
+                                <h4>Vos achats</h4>
+                                <div class="checkout__order__products">Produit <span>Total</span></div>
+                                <ul>
+                                    {% for produit in produits_commande %}
+                                        <li>{{ produit.produit }} <span>{{ produit.prix }} FCFA</span></li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="checkout__order__total">Total <span>{{ total_avec_frais }} FCFA</span></div>
+                                <button type="submit" class="site-btn">Passer la commande</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-        {% endif %}
-        <div class="row">
-            <div class="col-lg-8 col-md-6">
-                <!-- Champs du formulaire -->
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="checkout__input">
-                            <p>Nom<span>*</span></p>
-                            {{ form.nom }}
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="checkout__input">
-                            <p>Prénom<span>*</span></p>
-                            {{ form.prenom }}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="checkout__input">
-                            <p>Adresse<span>*</span></p>
-                            {{ form.adresse }}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="checkout__input">
-                            <p>Numéro<span>*</span></p>
-                            {{ form.phone }}
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="checkout__input">
-                            <p>Email<span>*</span></p>
-                            {{ form.email }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="checkout__order">   
-                    <h4>Vos achats</h4>
-                    <div class="checkout__order__products">Produit <span>Total</span></div>
-                    <ul>
-                        {% for produit in produits_commande %}
-                            <li>{{ produit.produit }} <span>{{ produit.prix }}</span></li>
-                        {% endfor %}
-                    </ul>
-                    <div class="checkout__order__total">Total <span>{{ total_commande }}</span></div>
-                    <button type="submit" class="site-btn">Passer la commande</button>
-                </div>
-            </div>
-        </div>
-    </form>
-</div>
         </div>
     </section>
     <!-- Checkout Section End -->

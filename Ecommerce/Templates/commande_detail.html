@@ -99,13 +99,13 @@
                                 <ul>
                                     <li><strong>Date de commande :</strong> <span>{{ commande.created_at|date:"d M Y, H:i" }}</span></li>
                                     <li><strong>Statut de la commande :</strong> 
-                                        <span class="{% if commande.statut_commande == StatutCommande.EXPEDIEE %}text-green-600{% else %}text-orange-600{% endif %}">
+                                        <span class="{% if commande.statut_commande == StatutCommande.EXPEDIEE.name %}text-green-600{% else %}text-orange-600{% endif %}">
                                             {{ commande.statut_commande }}
                                         </span>
                                     </li>
                                     <li><strong>Statut de la livraison :</strong> 
-                                        <span class="{% if commande.statut_commande == StatutLivraison.LIVREE %}text-green-600{% else %}text-orange-600{% endif %}">
-                                            {{ commande.Livraison_id }}
+                                        <span class="{% if commande.statut_commande == StatutLivraison.LIVREE.name %}text-green-600{% else %}text-orange-600{% endif %}">
+                                            {{ livraison.statut_livraison }}
                                         </span>
                                     </li>
                                     <li><strong>Mode de paiement :</strong> <span>{{ commande.paiement.mode.nom }}</span></li>
@@ -113,8 +113,8 @@
                             </div>
                             <div class="col-lg-6">
                                 <ul>
-                                    <li><strong>Adresse de livraison :</strong> <span>{{ commande.adresse_livraison }}</span></li>
-                                    <li><strong>Téléphone :</strong> <span>{{ commande.telephone }}</span></li>
+                                    <li><strong>Adresse de livraison :</strong> <span>{{ livraison.adresse.nom }}</span></li>
+                                    <li><strong>Téléphone :</strong> <span>{{ livraison.numero_tel }}</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -163,9 +163,9 @@
                                 <div class="shoping__checkout">
                                     <h5>Résumé</h5>
                                     <ul>
-                                        <li>Sous-total <span>{{ commande.sous_total }} FCFA</span></li>
-                                        <li>Frais de livraison <span>{{ commande.frais_livraison|default:"Gratuit" }}</span></li>
-                                        <li><strong>Total</strong> <span>{{ commande.prix }} FCFA</span></li>
+                                        <li>Sous-total <span>{{ commande.prix }} FCFA</span></li>
+                                        <li>Frais de livraison <span>{{ livraison.frais_livraison|default:"Gratuit" }}</span></li>
+                                        <li><strong>Total</strong> <span>{{ commande.prix_total }} FCFA</span></li>
                                     </ul>
                                 </div>
                             </div>
