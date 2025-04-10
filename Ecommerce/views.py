@@ -107,13 +107,12 @@ def panier(request):
 def checkout(request):
     user = request.user  # Instance de CustomUser
 
-    # Initialisation du formulaire
+    # Initialisation du formulaire avec les adresses disponibles
     form = CheckForm(initial={
         'nom': user.nom,
         'prenom': user.prenom,
         'email': user.email,
         'phone': user.number,
-        'adresse': Adresse.objects.filter(statut=True)
     })
 
     # Récupérer la dernière commande
@@ -131,21 +130,33 @@ def checkout(request):
     panier, _ = Panier.objects.get_or_create(utilisateur=user, defaults={'statut': True})
 
     if request.method == 'POST':
-        form = CheckForm(request.POST, user=request.user)
+        form = CheckForm(request.POST)
         if form.is_valid():
-            # Traiter les données, par exemple créer une commande
-            nom = form.cleaned_data['nom']
-            prenom = form.cleaned_data['prenom']
-            phone = form.cleaned_data['phone']
-            email = form.cleaned_data['email']
-            adresse = form.cleaned_data['adresse']
+            # Récupérer les données du formulaire
+            commune = form.cleaned_data['adresse']  # Supposons que 'adresse' soit un champ de sélection de commune
+
+            # Créer l'adresse sans assigner l'utilisateur directement
+            adresse = Adresse.objects.create(
+                nom=f"{commune.nom} {commune.ville.nom}",  # Exemple : nom basé sur l'utilisateur
+                commune=commune,
+                statut=True
+            )
+            # Associer l'utilisateur à l'adresse via la relation ManyToMany
+            adresse.utilisateur.set([user])  # Utilisation de .set() pour ManyToManyField
+
+            # Créer la livraison
             livraison = Livraison.objects.create(
                 commande=commande,
                 statut_livraison=StatutLivraison.EN_COURS,
-                adresse=adresse
+                adresse=adresse,
+                numero_tel=form.cleaned_data['phone']  
             )
-        redirect("Ecommerce:commandes")
+            messages.success(request, "Commande passée avec succès !")
+            return redirect("Ecommerce:commandes")  # Retour après succès
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
 
+    # Rendre certains champs en lecture seule
     form.fields['nom'].widget.attrs['readonly'] = 'readonly'
     form.fields['prenom'].widget.attrs['readonly'] = 'readonly'
     form.fields['email'].widget.attrs['readonly'] = 'readonly'
@@ -161,6 +172,7 @@ def checkout(request):
         'active_page': 'shop'
     }
     return render(request, 'checkout.html', datas)
+
 
 @login_required(login_url='Authentification:login')
 def add_panier(request, slug):

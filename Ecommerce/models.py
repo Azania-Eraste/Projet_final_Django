@@ -121,7 +121,7 @@ class Livraison(models.Model):
     commande = models.ForeignKey(Commande, on_delete=models.CASCADE, related_name='Livraison_id')
     statut_livraison = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
     adresse = models.ForeignKey('Adresse', on_delete=models.CASCADE, null=True)
-
+    numero_tel = models.CharField(max_length=255)
 
     est_actif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -204,7 +204,7 @@ class Adresse(models.Model):
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.code_postal} {self.commune}"
+        return f"{self.commune}"
 
 class Promotion(models.Model):
     nom = models.CharField(max_length=255, help_text="Nom de la promotion, ex: '20% fin de récolte'")
