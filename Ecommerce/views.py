@@ -1,6 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit, Paiement, Adresse, Mode
+from .models import (
+    Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, 
+    Commande, CommandeProduit, Paiement, Adresse, Mode, Livraison, Avis, StatutLivraison, StatutPaiement
+    )
 from django.contrib import messages
 from django.core.paginator import Paginator
 from Ecommerce.form import PanierQuantiteForm, CheckForm, ModePaiementForm
@@ -109,7 +112,8 @@ def checkout(request):
         'nom': user.nom,
         'prenom': user.prenom,
         'email': user.email,
-        'phone': user.number
+        'phone': user.number,
+        'adresse': Adresse.objects.filter(statut=True)
     })
 
     # Récupérer la dernière commande
@@ -127,8 +131,24 @@ def checkout(request):
     panier, _ = Panier.objects.get_or_create(utilisateur=user, defaults={'statut': True})
 
     if request.method == 'POST':
-        
+        form = CheckForm(request.POST, user=request.user)
+        if form.is_valid():
+            # Traiter les données, par exemple créer une commande
+            nom = form.cleaned_data['nom']
+            prenom = form.cleaned_data['prenom']
+            phone = form.cleaned_data['phone']
+            email = form.cleaned_data['email']
+            adresse = form.cleaned_data['adresse']
+            livraison = Livraison.objects.create(
+                commande=commande,
+                statut_livraison=StatutLivraison.EN_COURS,
+                adresse=adresse
+            )
         redirect("Ecommerce:commandes")
+
+    form.fields['nom'].widget.attrs['readonly'] = 'readonly'
+    form.fields['prenom'].widget.attrs['readonly'] = 'readonly'
+    form.fields['email'].widget.attrs['readonly'] = 'readonly'
 
     # Contexte pour le template
     datas = {

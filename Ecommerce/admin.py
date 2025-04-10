@@ -78,22 +78,19 @@ class CommandeAdmin(admin.ModelAdmin):
             "fields": ("code_promo", "paiement"),
         }),
         ("Métadonnées", {
-            "fields": ("est_actif",),  # Ajout de la virgule
+            "fields": ("statut",),  # Ajout de la virgule
             "classes": ("collapse",),
         }),
     )
 
 @admin.register(Livraison)
 class LivraisonAdmin(admin.ModelAdmin):
-    list_display = ("commande", "transporteur", "statut_livraison", "numero_suivi")
+    list_display = ("commande",  "statut_livraison",)
     list_filter = ("statut_livraison",)
     search_fields = ("numero_suivi",)
     fieldsets = (
         ("Informations principales", {
-            "fields": ("commande", "transporteur", "statut_livraison")
-        }),
-        ("Suivi", {
-            "fields": ("numero_suivi",),  # Déjà correct
+            "fields": ("commande", "statut_livraison")
         }),
         ("Métadonnées", {
             "fields": ("est_actif",),  # Ajout de la virgule
