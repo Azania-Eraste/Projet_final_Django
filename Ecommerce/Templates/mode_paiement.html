@@ -38,53 +38,79 @@
                             <li><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
                             <li><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
                             <li><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
-                            <li class="active"><a href="{% url 'Ecommerce:paiement' %}">Mode de Paiement</a></li>
+                            <li class="active"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
                         </ul>
                     </div>
                 </div>
                 <div class="col-lg-9">
                     <div class="shoping__checkout">
                         <h5>Mes Modes de Paiement</h5>
-                        <form method="post" action="{% url 'Ecommerce:paiement' %}">
+                        <form method="post" action="{% url 'Ecommerce:mode_paiement' %}">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <label for="payment_method">Choisir un mode de paiement</label>
-                                    <select name="payment_method" id="payment_method" class="form-control mb-3" onchange="togglePaymentFields()">
-                                        <option value="wave">Wave</option>
-                                        <option value="orange_money">Orange Money</option>
-                                        <option value="mtn_money">MTN Money</option>
-                                        <option value="moov_money">Moov Money</option>
-                                        <option value="card">Carte de crédit/débit</option>
-                                        <option value="prepaid_card">Carte prépayée</option>
-                                    </select>
+                                    {{ form.nom.label_tag }}
+                                    {{ form.nom }}
+                                    {% if form.nom.errors %}
+                                        <p class="text-red-600">{{ form.nom.errors }}</p>
+                                    {% endif %}
                                 </div>
 
-                                <!-- Champs pour Mobile Money (Wave, Orange Money, MTN Money, Moov Money) -->
+                                <!-- Champs pour Mobile Money -->
                                 <div class="col-lg-12 payment-fields" id="mobile_money_fields" style="display: none;">
-                                    <label>Numéro de téléphone</label>
-                                    <input type="text" name="phone_number" placeholder="Ex: +225 01 23 45 67" class="form-control mb-3">
+                                    {{ form.numero_tel.label_tag }}
+                                    {{ form.numero_tel }}
+                                    {% if form.numero_tel.errors %}
+                                        <p class="text-red-600">{{ form.numero_tel.errors }}</p>
+                                    {% endif %}
                                 </div>
 
                                 <!-- Champs pour Carte de crédit/débit -->
                                 <div class="col-lg-12 payment-fields" id="card_fields" style="display: none;">
-                                    <label>Numéro de carte</label>
-                                    <input type="text" name="card_number" placeholder="Numéro de carte" class="form-control mb-3">
+                                    {{ form.numero.label_tag }}
+                                    {{ form.numero }}
+                                    {% if form.numero.errors %}
+                                        <p class="text-red-600">{{ form.numero.errors }}</p>
+                                    {% endif %}
                                     <div class="row">
                                         <div class="col-lg-6">
-                                            <input type="text" name="expiry" placeholder="MM/AA" class="form-control mb-3">
+                                            {{ form.expiration.label_tag }}
+                                            {{ form.expiration }}
+                                            {% if form.expiration.errors %}
+                                                <p class="text-red-600">{{ form.expiration.errors }}</p>
+                                            {% endif %}
                                         </div>
                                         <div class="col-lg-6">
-                                            <input type="text" name="cvc" placeholder="CVC" class="form-control mb-3">
+                                            {{ form.code.label_tag }}
+                                            {{ form.code }}
+                                            {% if form.code.errors %}
+                                                <p class="text-red-600">{{ form.code.errors }}</p>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Champs pour Carte prépayée -->
                                 <div class="col-lg-12 payment-fields" id="prepaid_card_fields" style="display: none;">
-                                    <label>Code de la carte prépayée</label>
-                                    <input type="text" name="prepaid_code" placeholder="Entrez le code de la carte" class="form-control mb-3">
+                                    {{ form.code.label_tag }}
+                                    {{ form.code }}
+                                    {% if form.code.errors %}
+                                        <p class="text-red-600">{{ form.code.errors }}</p>
+                                    {% endif %}
                                 </div>
+
+                                <!-- Champ description -->
+                                <div class="col-lg-12">
+                                    {{ form.description.label_tag }}
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <p class="text-red-600">{{ form.description.errors }}</p>
+                                    {% endif %}
+                                </div>
+
+                                {% if form.non_field_errors %}
+                                    <p class="text-red-600">{{ form.non_field_errors }}</p>
+                                {% endif %}
                             </div>
                             <button type="submit" class="primary-btn">Ajouter un mode de paiement</button>
                         </form>
@@ -101,21 +127,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% if paiements %}
-                                        {% for paiement in paiements %}
+                                    {% if modes %}
+                                        {% for mode in modes %}
                                             <tr>
-                                                <td>{{ paiement.type }}</td>
+                                                <td>{{ mode.nom }}</td>
                                                 <td>
-                                                    {% if paiement.type == "Carte" %}
-                                                        {{ paiement.numero|slice:"12:" }}
-                                                    {% elif paiement.type == "Carte prépayée" %}
-                                                        {{ paiement.code|slice:"4:" }}
-                                                    {% else %}
-                                                        {{ paiement.phone_number|slice:"7:" }}
+                                                    {% if mode.type_paiement == 'CREDIT_CARD' %}
+                                                        {{ mode.numero|slice:"12:" }}
+                                                    {% elif mode.type_paiement == 'PREPAID_CARD' %}
+                                                        {{ mode.code|slice:"4:" }}
+                                                    {% elif mode.type_paiement == 'MOBILE_MONEY' %}
+                                                        {{ mode.numero_tel }}
                                                     {% endif %}
                                                 </td>
-                                                <td>{{ paiement.expiration|default:"N/A" }}</td>
-                                                <td><a href="{% url 'Ecommerce:paiement_remove' paiement.id %}" class="primary-btn cart-btn">Supprimer</a></td>
+                                                <td>{{ mode.expiration|default:"N/A" }}</td>
+                                                <td><a href="{% url 'Ecommerce:mode_paiement_remove' mode.id %}" class="primary-btn cart-btn">Supprimer</a></td>
                                             </tr>
                                         {% endfor %}
                                     {% else %}
@@ -136,28 +162,24 @@
     <!-- Script JavaScript pour afficher/masquer les champs -->
     <script>
         function togglePaymentFields() {
-            const paymentMethod = document.getElementById('payment_method').value;
+            const paymentMethod = document.getElementById('id_nom').value.toLowerCase();
             const mobileMoneyFields = document.getElementById('mobile_money_fields');
             const cardFields = document.getElementById('card_fields');
             const prepaidCardFields = document.getElementById('prepaid_card_fields');
 
-            // Masquer tous les champs par défaut
             mobileMoneyFields.style.display = 'none';
             cardFields.style.display = 'none';
             prepaidCardFields.style.display = 'none';
 
-            // Afficher les champs correspondants
-            if (paymentMethod === 'wave' || paymentMethod === 'orange_money' || 
-                paymentMethod === 'mtn_money' || paymentMethod === 'moov_money') {
+            if (['wave', 'orange money', 'mtn money', 'moov money'].includes(paymentMethod)) {
                 mobileMoneyFields.style.display = 'block';
-            } else if (paymentMethod === 'card') {
+            } else if (paymentMethod === 'carte de crédit/débit') {
                 cardFields.style.display = 'block';
-            } else if (paymentMethod === 'prepaid_card') {
+            } else if (paymentMethod === 'carte prépayée') {
                 prepaidCardFields.style.display = 'block';
             }
         }
 
-        // Initialiser l'affichage au chargement de la page
         document.addEventListener('DOMContentLoaded', togglePaymentFields);
     </script>
 {% endblock %}
