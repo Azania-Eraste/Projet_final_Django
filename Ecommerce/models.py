@@ -119,9 +119,7 @@ class CommandeProduit(models.Model):
 
 class Livraison(models.Model):
     commande = models.ForeignKey(Commande, on_delete=models.CASCADE, related_name='Livraison_id')
-    transporteur = models.CharField(max_length=255)
     statut_livraison = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
-    numero_suivi = models.CharField(max_length=255)
     adresse = models.ForeignKey('Adresse', on_delete=models.CASCADE, null=True)
 
 

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Mode, TypePaiement
+from .models import Mode, TypePaiement, Commune
 
 class CheckForm(forms.Form):
     nom = forms.CharField(
@@ -11,25 +11,13 @@ class CheckForm(forms.Form):
     prenom = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Prenom'
-        })
-    )
-    ville = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control my-4',
-            'placeholder': 'Ville',
-        })
-    )
-    commune = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control checkout__input__add',
-            'placeholder': 'Commune'
+            'placeholder': 'Prénom'
         })
     )
     phone = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Phone'
+            'placeholder': 'Téléphone'
         })
     )
     email = forms.EmailField(
@@ -38,6 +26,18 @@ class CheckForm(forms.Form):
             'placeholder': 'Email'
         })
     )
+    adresse = forms.ModelChoiceField(
+        queryset=Commune.objects.none(),  # Sera mis à jour dans la vue
+        label="Adresse de livraison",
+        empty_label="Sélectionnez une adresse",
+        widget=forms.Select(attrs={
+            'class': 'form-control my-4',
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['adresse'].queryset = Commune.objects.filter(statut=True)
 
 
 
