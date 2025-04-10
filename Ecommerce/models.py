@@ -8,6 +8,11 @@ from django.utils.text import slugify
 
 User = get_user_model()
 
+class TypePaiement(Enum):
+    MOBILE_MONEY = 'Mobile Money'
+    CREDIT_CARD = 'Carte de crédit/débit'
+    PREPAID_CARD = 'Carte prépayée'
+
 class StatutCommande(Enum):
     EN_ATTENTE = "En attente"
     EN_COURS = "En cours"
@@ -117,6 +122,8 @@ class Livraison(models.Model):
     transporteur = models.CharField(max_length=255)
     statut_livraison = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
     numero_suivi = models.CharField(max_length=255)
+    adresse = models.ForeignKey('Adresse', on_delete=models.CASCADE, null=True)
+
 
     est_actif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -126,15 +133,29 @@ class Livraison(models.Model):
         return "Livraison N" + str(self.pk)
 
 class Mode(models.Model):
-    nom = models.CharField(max_length=255)
-    description = models.TextField()
+    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    nom = models.CharField(max_length=255)  # Ex: "Wave", "Carte de crédit/débit"
+    description = models.TextField(blank=True, null=True)
+    type_paiement = models.CharField(
+        max_length=20,
+        choices=[(tag.name, tag.value) for tag in TypePaiement],
+        default=TypePaiement.MOBILE_MONEY.name
+    )
+    numero_tel = models.CharField(max_length=255, blank=True, null=True)
+    numero = models.CharField(max_length=255, blank=True, null=True)
+    expiration = models.CharField(max_length=6, blank=True, null=True)
+    code = models.CharField(max_length=6, blank=True, null=True)
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.nom
+        return f"{self.nom} - {self.utilisateur.username}"
+
+    class Meta:
+        verbose_name = "Mode de paiement"
+        verbose_name_plural = "Modes de paiement"
 
 class Paiement(models.Model):
     montant = models.FloatField()

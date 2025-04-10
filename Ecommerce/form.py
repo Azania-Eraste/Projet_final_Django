@@ -1,4 +1,5 @@
 from django import forms
+from .models import Mode, TypePaiement
 
 class CheckForm(forms.Form):
     nom = forms.CharField(
@@ -72,3 +73,65 @@ class PanierQuantiteForm(forms.Form):
         print(f"Données nettoyées ajustées : {cleaned_data}")
         print(f"Erreurs après ajustement : {self.errors}")
         return cleaned_data
+    
+
+class ModePaiementForm(forms.ModelForm):
+    class Meta:
+        model = Mode
+        fields = ['nom', 'description', 'numero_tel', 'numero', 'expiration', 'code']
+        widgets = {
+            'nom': forms.Select(
+                choices=[
+                    ('Wave', 'Wave'),
+                    ('Orange Money', 'Orange Money'),
+                    ('MTN Money', 'MTN Money'),
+                    ('Moov Money', 'Moov Money'),
+                    ('Carte de crédit/débit', 'Carte de crédit/débit'),
+                    ('Carte prépayée', 'Carte prépayée'),
+                ],
+                attrs={'class': 'form-control mb-3', 'onchange': 'togglePaymentFields()'}
+            ),
+            'description': forms.Textarea(attrs={'class': 'form-control mb-3', 'rows': 2}),
+            'numero_tel': forms.TextInput(attrs={'class': 'form-control mb-3', 'placeholder': 'Ex: +225 01 23 45 67'}),
+            'numero': forms.TextInput(attrs={'class': 'form-control mb-3', 'placeholder': 'Numéro de carte'}),
+            'expiration': forms.TextInput(attrs={'class': 'form-control mb-3', 'placeholder': 'MM/AA'}),
+            'code': forms.TextInput(attrs={'class': 'form-control mb-3', 'placeholder': 'CVC ou code'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        nom = cleaned_data.get('nom')
+        numero_tel = cleaned_data.get('numero_tel')
+        numero = cleaned_data.get('numero')
+        expiration = cleaned_data.get('expiration')
+        code = cleaned_data.get('code')
+
+        # Validation conditionnelle avec l’énumération
+        if nom in ['Wave', 'Orange Money', 'MTN Money', 'Moov Money']:
+            cleaned_data['type_paiement'] = TypePaiement.MOBILE_MONEY.name
+            if not numero_tel:
+                self.add_error('numero_tel', "Le numéro de téléphone est requis pour ce mode.")
+            cleaned_data['numero'] = None
+            cleaned_data['expiration'] = None
+            cleaned_data['code'] = None
+        elif nom == 'Carte de crédit/débit':
+            cleaned_data['type_paiement'] = TypePaiement.CREDIT_CARD.name
+            if not numero or not expiration or not code:
+                self.add_error(None, "Tous les champs de carte sont requis.")
+            cleaned_data['numero_tel'] = None
+        elif nom == 'Carte prépayée':
+            cleaned_data['type_paiement'] = TypePaiement.PREPAID_CARD.name
+            if not code:
+                self.add_error('code', "Le code de la carte est requis.")
+            cleaned_data['numero_tel'] = None
+            cleaned_data['numero'] = None
+            cleaned_data['expiration'] = None
+        return cleaned_data
+
+    def save(self, commit=True, utilisateur=None):
+        instance = super().save(commit=False)
+        instance.utilisateur = utilisateur
+        instance.type_paiement = self.cleaned_data['type_paiement']
+        if commit:
+            instance.save()
+        return instance
