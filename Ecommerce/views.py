@@ -1,9 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit, Paiement, Adresse
+from .models import Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, Commande, CommandeProduit, Paiement, Adresse, Mode
 from django.contrib import messages
 from django.core.paginator import Paginator
-from Ecommerce.form import PanierQuantiteForm, CheckForm
+from Ecommerce.form import PanierQuantiteForm, CheckForm, ModePaiementForm
 from django.contrib.auth import get_user_model
 
 
@@ -67,7 +67,7 @@ def panier(request):
                 # Étape 3 : Recalculer et sauvegarder le prix après création des CommandeProduit
                 if form_valid:
                     commande.prix = sum(
-                        produit_commande.prix * produit_commande.quantite
+                        produit_commande.prix 
                         for produit_commande in commande.Commande_Produit_ids.all()
                     )
                     commande.save()  # Deuxième sauvegarde pour mettre à jour le prix
@@ -79,7 +79,7 @@ def panier(request):
 
             else:
                 messages.warning(request, "Vous avez déjà une commande en attente")
-                return redirect('Ecommerce:board')
+                return redirect('Ecommerce:panier')
 
     for produit in produits:
         initial_data = {
@@ -103,11 +103,6 @@ def panier(request):
 @login_required(login_url='Authentification:login')
 def checkout(request):
     user = request.user  # Instance de CustomUser
-    print("Utilisateur :", user)
-    print("Nom :", user.nom)
-    print("Prénom :", user.prenom)
-    print("Numéro :", user.number)
-    print("Email :", user.email)
 
     # Initialisation du formulaire
     form = CheckForm(initial={
@@ -121,7 +116,7 @@ def checkout(request):
     commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
     if not commande:
         messages.error(request, "Aucune commande en cours.")
-        return redirect("Ecommerce:board")
+        return redirect("Ecommerce:panier")
 
     # Récupérer les produits de la commande
     produits_commande = commande.Commande_Produit_ids.all()
@@ -130,6 +125,10 @@ def checkout(request):
     # Récupérer ou créer les favoris et le panier
     favoris, _ = Favoris.objects.get_or_create(utilisateur=user, defaults={'statut': True})
     panier, _ = Panier.objects.get_or_create(utilisateur=user, defaults={'statut': True})
+
+    if request.method == 'POST':
+        
+        redirect("Ecommerce:commandes")
 
     # Contexte pour le template
     datas = {
@@ -146,9 +145,6 @@ def checkout(request):
 @login_required(login_url='Authentification:login')
 def add_panier(request, slug):
 
-    datas = {
-        'active_page': 'shop'
-    }
     
     try:
         produit = VariationProduit.objects.get(slug=slug)
@@ -168,9 +164,6 @@ def add_panier(request, slug):
 @login_required(login_url='Authentification:login')
 def remove_panier(request, slug):
 
-    datas = {
-        'active_page': 'shop'
-    }
 
     try:
         produit = VariationProduit.objects.get(slug=slug)
@@ -541,13 +534,41 @@ def commande_detail_view(request, commande_id):
 @login_required(login_url='Authentification:login')
 def commande_cancel_view(request, commande_id):
     commande = get_object_or_404(Commande, id=commande_id)
-    if commande.statut == StatutCommande.EN_ATTENTE:
-        commande.statut = StatutCommande.ANNULEE
-        commande.save()
+    if commande.statut_commande == StatutCommande.EN_ATTENTE.name:
+        commande.mettre_a_jour_statut(StatutCommande.ANNULEE.name)
+        print(commande.statut_commande)
+    print(commande.statut_commande)
     return redirect('Ecommerce:commandes')
+
+
+
+@login_required(login_url='Authentification:login')
+def paiement(request):
+
+    return render(request, 'paiement.html', {
+
+    })
+
+@login_required(login_url='Authentification:login')
+def paiement_remove(request, mode_id):
+    mode = Mode.objects.get(id=mode_id, utilisateur=request.user)
+    mode.statut = False
+    mode.save()
+    return redirect('Ecommerce:paiement')
 
 @login_required(login_url='Authentification:login')
 def paiement_view(request):
+
+    if request.method == 'POST':
+        form = ModePaiementForm(request.POST)
+        if form.is_valid():
+            form.save(utilisateur=request.user)
+            return redirect('Ecommerce:mode_paiement')
+    else:
+        form = ModePaiementForm()
+
+    modes = Mode.objects.filter(utilisateur=request.user, statut=True)
+
 
     if request.user.is_authenticated:
         # Gestion des favoris pour l'utilisateur connecté
@@ -564,13 +585,14 @@ def paiement_view(request):
         )
         panier_produits = panier.produits.all()
 
-    paiements = Paiement.objects.filter(utilisateur=request.user)
-
     datas = {
         'active_page': 'shop',
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
-        'paiements': paiements
+        'form': form,
+        'modes': modes,
     }
 
-    return render(request, 'paiement.html', datas)
+    return render(request, 'mode_paiement.html', datas)
+
+
