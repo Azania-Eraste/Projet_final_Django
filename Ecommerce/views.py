@@ -161,7 +161,7 @@ def checkout(request):
             # Créer la livraison avec les frais en FCFA
             livraison = Livraison.objects.create(
                 commande=commande,
-                statut_livraison=StatutLivraison.EN_COURS,
+                statut_livraison=StatutLivraison.EN_COURS.value,
                 adresse=adresse,
                 numero_tel=form.cleaned_data['phone'],
                 frais_livraison=frais_livraison
@@ -580,7 +580,7 @@ def commande_detail_view(request, commande_id):
             defaults={'statut': True}
         )
         panier_produits = panier.produits.all()
-
+        print(livraison.statut_livraison)
     datas = {
         'active_page': 'about',
         'favoris_produit': favoris_produits,

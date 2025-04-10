@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'mathfilters',
+    'django_filters',
 
     'django.contrib.admin',
     'django.contrib.auth',

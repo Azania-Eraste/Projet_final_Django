@@ -2,50 +2,7 @@
 {% load static %}
 
 {% block header %}
-<!-- Hero Section Begin -->
-<section class="hero hero-normal">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3">
-                <div class="hero__categories">
-                    <div class="hero__categories__all">
-                        <i class="fa fa-bars"></i>
-                        <span>All departments</span>
-                    </div>
-                    <ul>
-                        {% for categorie in Categories %}
-                            <li><a href="#">{{ categorie.nom }}</a></li>   
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <div class="hero__search">
-                    <div class="hero__search__form">
-                        <form action="#">
-                            <div class="hero__search__categories">
-                                All Categories
-                                <span class="arrow_carrot-down"></span>
-                            </div>
-                            <input type="text" placeholder="What do you need?">
-                            <button type="submit" class="site-btn">SEARCH</button>
-                        </form>
-                    </div>
-                    <div class="hero__search__phone">
-                        <div class="hero__search__phone__icon">
-                            <i class="fa fa-phone"></i>
-                        </div>
-                        <div class="hero__search__phone__text">
-                            <h5>+65 11.188.888</h5>
-                            <span>support 24/7 time</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- Hero Section End -->
+<div></div>
 {% endblock %}
 
 {% block content %}
@@ -104,7 +61,7 @@
                                         </span>
                                     </li>
                                     <li><strong>Statut de la livraison :</strong> 
-                                        <span class="{% if commande.statut_commande == StatutLivraison.LIVREE.name %}text-green-600{% else %}text-orange-600{% endif %}">
+                                        <span class="{% if livraison.statut_livraison == 'LIVREE' %}text-green-600{% else %}text-orange-600{% endif %}">
                                             {{ livraison.statut_livraison }}
                                         </span>
                                     </li>
@@ -117,6 +74,63 @@
                                     <li><strong>Téléphone :</strong> <span>{{ livraison.numero_tel }}</span></li>
                                 </ul>
                             </div>
+                        </div>
+
+                        <!-- Step Progress Bar -->
+                        <div class="progress-bar-container mt-4">
+                            <h5>Suivi de la commande</h5>
+                            <ul class="stepper" data-active-step="{% if livraison.statut_livraison == 'EN_ATTENTE' %}1{% elif livraison.statut_livraison == 'EN_COURS' %}2{% elif livraison.statut_livraison == 'EXPEDIEE' %}3{% elif livraison.statut_livraison == 'LIVREE' %}4{% elif livraison.statut_livraison == 'RETOURNEE' %}5{% else %}0{% endif %}">
+                                <!-- Étape 1 : En attente -->
+                                <li class="stepper-step {% if livraison.statut_livraison == 'En attente' or livraison.statut_livraison == 'EN_COURS' or livraison.statut_livraison == 'EXPEDIEE' or livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                    <div class="stepper-head">
+                                        <span class="stepper-head-icon">1</span>
+                                        <span class="stepper-head-text">En attente</span>
+                                    </div>
+                                    <div class="stepper-content py-3">
+                                        <p>Votre commande a été reçue et est en attente de traitement.</p>
+                                    </div>
+                                </li>
+                                <!-- Étape 2 : EN_COURS -->
+                                <li class="stepper-step {% if livraison.statut_livraison == 'EN_COURS' or livraison.statut_livraison == 'EXPEDIEE' or livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                    <div class="stepper-head">
+                                        <span class="stepper-head-icon">2</span>
+                                        <span class="stepper-head-text">En cours</span>
+                                    </div>
+                                    <div class="stepper-content py-3">
+                                        <p>Votre commande est en cours de préparation.</p>
+                                    </div>
+                                </li>
+                                <!-- Étape 3 : EXPEDIEE -->
+                                <li class="stepper-step {% if livraison.statut_livraison == 'EXPEDIEE' or livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                    <div class="stepper-head">
+                                        <span class="stepper-head-icon">3</span>
+                                        <span class="stepper-head-text">Expédiée</span>
+                                    </div>
+                                    <div class="stepper-content py-3">
+                                        <p>Votre commande a été expédiée et est en route.</p>
+                                    </div>
+                                </li>
+                                <!-- Étape 4 : LIVREE -->
+                                <li class="stepper-step {% if livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                    <div class="stepper-head">
+                                        <span class="stepper-head-icon">4</span>
+                                        <span class="stepper-head-text">Livrée</span>
+                                    </div>
+                                    <div class="stepper-content py-3">
+                                        <p>Votre commande a été livrée à l'adresse indiquée.</p>
+                                    </div>
+                                </li>
+                                <!-- Étape 5 : RETOURNEE -->
+                                <li class="stepper-step {% if livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                    <div class="stepper-head">
+                                        <span class="stepper-head-icon">5</span>
+                                        <span class="stepper-head-text">Retournée</span>
+                                    </div>
+                                    <div class="stepper-content py-3">
+                                        <p>Votre commande a été retournée.</p>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
 
                         <!-- Liste des produits -->
@@ -164,7 +178,7 @@
                                     <h5>Résumé</h5>
                                     <ul>
                                         <li>Sous-total <span>{{ commande.prix }} FCFA</span></li>
-                                        <li>Frais de livraison <span>{{ livraison.frais_livraison|default:"Gratuit" }}</span></li>
+                                        <li>Frais de livraison <span>{{ livraison.frais_livraison|default:"Gratuit" }} FCFA</span></li>
                                         <li><strong>Total</strong> <span>{{ commande.prix_total }} FCFA</span></li>
                                     </ul>
                                 </div>
