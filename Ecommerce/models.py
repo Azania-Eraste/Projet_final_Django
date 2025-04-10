@@ -24,6 +24,7 @@ class StatutPaiement(Enum):
     EFFECTUEE = "Effectué"
 
 class StatutLivraison(Enum):
+    EN_ATTENTE = "En attente"
     EN_COURS = "En cours"
     LIVREE = "Livrée"
     RETOURNEE = "Retournée"
@@ -88,6 +89,7 @@ class Commande(models.Model):
     code_promo = models.ForeignKey('Ecommerce.CodePromo', on_delete=models.SET_NULL, null=True, blank=True)
     paiement = models.OneToOneField('Ecommerce.Paiement', on_delete=models.CASCADE, null=True, blank=True)
     prix = models.FloatField(null=True)
+    prix_total = models.FloatField(null=True)
     
 
     def mettre_a_jour_statut(self, nouveau_statut):
@@ -122,6 +124,7 @@ class Livraison(models.Model):
     statut_livraison = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
     adresse = models.ForeignKey('Adresse', on_delete=models.CASCADE, null=True)
     numero_tel = models.CharField(max_length=255)
+    frais_livraison = models.FloatField(null=True)
 
     est_actif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -186,6 +189,12 @@ class Ville(models.Model):
 class Commune(models.Model):
     nom = models.CharField(max_length=255)
     ville = models.ForeignKey("Ecommerce.Ville", on_delete=models.CASCADE, related_name="Commune_ville_id")
+    frais_livraison = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,  # Pas de décimales, car le franc CFA est généralement en unités entières
+        default=2500,  # Par défaut 2500 FCFA, ajustable selon vos besoins
+        help_text="Frais de livraison en francs CFA pour cette commune"
+    )
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -195,7 +204,7 @@ class Commune(models.Model):
         return self.nom
 
 class Adresse(models.Model):
-    nom = models.CharField(max_length=255, null=True)
+    nom = models.CharField(max_length=255, null=True, unique=True)
     utilisateur = models.ManyToManyField(User, related_name='Adresse_ids')
     commune = models.ForeignKey("Ecommerce.Commune", on_delete=models.CASCADE, related_name="Adresse_Commune_ids")
 
@@ -204,7 +213,7 @@ class Adresse(models.Model):
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.commune}"
+        return f"{self.nom}"
 
 class Promotion(models.Model):
     nom = models.CharField(max_length=255, help_text="Nom de la promotion, ex: '20% fin de récolte'")

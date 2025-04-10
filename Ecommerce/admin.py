@@ -157,11 +157,11 @@ class VilleAdmin(admin.ModelAdmin):
 
 @admin.register(Commune)
 class CommuneAdmin(admin.ModelAdmin):
-    list_display = ("nom", "ville")
+    list_display = ("nom", "ville", "frais_livraison")
     search_fields = ("nom", "ville__nom")
     fieldsets = (
         ("Informations principales", {
-            "fields": ("nom", "ville")
+            "fields": ("nom", "ville", "frais_livraison")
         }),
         ("Métadonnées", {
             "fields": ("statut",),  # Ajout de la virgule
@@ -187,7 +187,7 @@ class CommandeProduitAdmin(admin.ModelAdmin):
 
 @admin.register(Adresse)
 class AdresseAdmin(admin.ModelAdmin):
-    list_display = ("commune",)
+    list_display = ("nom","commune",)
     search_fields = ("commune__nom",)
     fieldsets = (
         ("Informations principales", {

@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from Ecommerce.form import PanierQuantiteForm, CheckForm, ModePaiementForm
 from django.contrib.auth import get_user_model
+from decimal import Decimal
 
 
 User = get_user_model()
@@ -107,7 +108,7 @@ def panier(request):
 def checkout(request):
     user = request.user  # Instance de CustomUser
 
-    # Initialisation du formulaire avec les adresses disponibles
+    # Initialisation du formulaire
     form = CheckForm(initial={
         'nom': user.nom,
         'prenom': user.prenom,
@@ -129,30 +130,49 @@ def checkout(request):
     favoris, _ = Favoris.objects.get_or_create(utilisateur=user, defaults={'statut': True})
     panier, _ = Panier.objects.get_or_create(utilisateur=user, defaults={'statut': True})
 
+    # Calcul du sous-total des produits (convertir en Decimal)
+    sous_total = Decimal(str(commande.prix))  # Convertir float en Decimal
+    frais_livraison = Decimal('0')  # Initialisé en Decimal
+
     if request.method == 'POST':
         form = CheckForm(request.POST)
         if form.is_valid():
-            # Récupérer les données du formulaire
-            commune = form.cleaned_data['adresse']  # Supposons que 'adresse' soit un champ de sélection de commune
+            commune = form.cleaned_data['adresse']  # Instance de Commune
+            frais_livraison = commune.frais_livraison  # Déjà un Decimal
+            print(f"Frais de livraison : {frais_livraison}")
 
-            # Créer l'adresse sans assigner l'utilisateur directement
-            adresse = Adresse.objects.create(
-                nom=f"{commune.nom} {commune.ville.nom}",  # Exemple : nom basé sur l'utilisateur
+            # Vérifier si une adresse existe déjà
+            adresse_existante = Adresse.objects.filter(
+                utilisateur=user,
                 commune=commune,
                 statut=True
-            )
-            # Associer l'utilisateur à l'adresse via la relation ManyToMany
-            adresse.utilisateur.set([user])  # Utilisation de .set() pour ManyToManyField
+            ).first()
 
-            # Créer la livraison
+            if adresse_existante:
+                adresse = adresse_existante
+            else:
+                adresse = Adresse.objects.create(
+                    nom=f"{commune.nom} {commune.ville.nom}",
+                    commune=commune,
+                    statut=True
+                )
+                adresse.utilisateur.set([user])
+
+            # Créer la livraison avec les frais en FCFA
             livraison = Livraison.objects.create(
                 commande=commande,
                 statut_livraison=StatutLivraison.EN_COURS,
                 adresse=adresse,
-                numero_tel=form.cleaned_data['phone']  
+                numero_tel=form.cleaned_data['phone'],
+                frais_livraison=frais_livraison
             )
+
+            # Calculer et enregistrer le prix total
+            commande.prix_total = Decimal(str(commande.prix)) + frais_livraison
+            commande.save()  # Sauvegarder la mise à jour dans la base
+
             messages.success(request, "Commande passée avec succès !")
-            return redirect("Ecommerce:commandes")  # Retour après succès
+            return redirect("Ecommerce:commandes")
         else:
             messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
 
@@ -161,6 +181,9 @@ def checkout(request):
     form.fields['prenom'].widget.attrs['readonly'] = 'readonly'
     form.fields['email'].widget.attrs['readonly'] = 'readonly'
 
+    # Calcul du total avec les frais (pour affichage initial)
+    total_avec_frais = sous_total + frais_livraison
+
     # Contexte pour le template
     datas = {
         'favoris_produit': favoris.produit.all(),
@@ -168,10 +191,13 @@ def checkout(request):
         'form': form,
         'produits_commande': produits_commande,
         'panier_produit': panier.produits.all(),
-        'total_commande': commande.prix,
+        'sous_total': sous_total,
+        'frais_livraison': frais_livraison,  # Ajout pour affichage si nécessaire
+        'total_avec_frais': total_avec_frais,
         'active_page': 'shop'
     }
     return render(request, 'checkout.html', datas)
+
 
 
 @login_required(login_url='Authentification:login')
@@ -538,7 +564,8 @@ def commande_detail_view(request, commande_id):
     panier_produits = None
     favoris_produits = None
 
-
+    livraison,_= Livraison.objects.get_or_create(commande=commande)
+    print(livraison)
     if request.user.is_authenticated:
         # Gestion des favoris pour l'utilisateur connecté
         favoris, created = Favoris.objects.get_or_create(
@@ -558,7 +585,8 @@ def commande_detail_view(request, commande_id):
         'active_page': 'about',
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
-        'commande': commande
+        'commande': commande,
+        'livraison': livraison,
     }
 
     return render(request, 'commande_detail.html', datas)
