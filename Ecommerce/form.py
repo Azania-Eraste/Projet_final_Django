@@ -28,7 +28,7 @@ class CheckForm(forms.Form):
     )
     adresse = forms.ModelChoiceField(
         queryset=Commune.objects.none(),  # Sera mis à jour dans la vue
-        label="Adresse de livraison",
+        label="Endroid de livraison",
         empty_label="Sélectionnez une adresse",
         widget=forms.Select(attrs={
             'class': 'form-control my-4',
