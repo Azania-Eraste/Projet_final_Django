@@ -38,7 +38,7 @@
                             <li><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
                             <li class="active"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
                             <li><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
-                            <li><a href="{% url 'Ecommerce:paiement' %}">Mode de Paiement</a></li>
+                            <li><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
                         </ul>
                     </div>
                 </div>
@@ -61,16 +61,11 @@
                                             <td>{{ commande.id }}</td>
                                             <td>{{ commande.date|date:"d M Y" }}</td>
                                             <td>{{ commande.prix }}</td>
-                                            {% if statut_commande == StatutCommande.EN_ATTENTE %}
-                                                <td>En attente</td>
-                                            {% elif statut_commande == StatutCommande.EN_COURS %}
-                                                <td>En cours</td>
-                                            {% elif statut_commande == StatutCommande.EXPEDIEE %}
-                                                <td>Expédiée</td>
-                                            {% elif statut_commande == StatutCommande.ANNULEE %}
-                                                <td>Annulée</td>
-                                            {% endif %}
-                                            <td><a href="{% url 'Ecommerce:commande_detail' commande.id %}" class="primary-btn cart-btn">Détails</a></td>
+                                            <td>{{ commande.statut_commande }}</td>
+                                            <td class="shoping__cart__item__close">
+                                                <a href="{% url 'Ecommerce:commande_detail' commande.id %}" class="primary-btn cart-btn">Détails</a>
+                                                <a href="{% url 'Ecommerce:commande_cancel' commande.id %}" class="icon_close" title="Supprimer des favoris"></a>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 {% else %}
