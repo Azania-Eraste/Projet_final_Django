@@ -27,19 +27,43 @@ class CheckForm(forms.Form):
         })
     )
     adresse = forms.ModelChoiceField(
-        queryset=Commune.objects.none(),  # Sera mis à jour dans la vue
-        label="Endroid de livraison",
+        queryset=Commune.objects.none(),
+        label="Endroit de livraison",
         empty_label="Sélectionnez une adresse",
         widget=forms.Select(attrs={
             'class': 'form-control my-4',
         })
     )
 
+
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Récupérer l'utilisateur passé en paramètre
         super().__init__(*args, **kwargs)
         self.fields['adresse'].queryset = Commune.objects.filter(statut=True)
 
 
+
+class ModePaiementPanierForm(forms.Form):
+    mode_paiement = forms.ModelChoiceField(
+        queryset=Mode.objects.none(),
+        label="Mode de paiement",
+        empty_label="Sélectionnez un mode de paiement",
+        widget=forms.Select(attrs={
+            'class': 'form-control my-4',
+        }),
+        required=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['mode_paiement'].queryset = Mode.objects.filter(
+                utilisateur=user,
+                statut=True
+            )
+        else:
+            self.fields['mode_paiement'].queryset = Mode.objects.none()
 
 class PanierQuantiteForm(forms.Form):
     quantite = forms.IntegerField(min_value=1, required=True)

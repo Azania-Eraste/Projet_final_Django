@@ -127,6 +127,22 @@
                                 <li>Subtotal <span class="cart-subtotal">0.00</span></li>
                                 <li>Total <span class="cart-total">0.00</span></li>
                             </ul>
+                            <!-- Ajout du sélecteur de mode de paiement -->
+                            <div class="form-group my-4">
+                                {{ mode_paiement_form.mode_paiement.label_tag }}
+                                {{ mode_paiement_form.mode_paiement }}
+                                {% if mode_paiement_form.mode_paiement.errors %}
+                                    <div class="text-red-600 text-sm">
+                                        {{ mode_paiement_form.mode_paiement.errors }}
+                                    </div>
+                                {% endif %}
+                                {% if not mode_paiement_form.mode_paiement.queryset %}
+                                    <p class="text-red-600 text-sm mt-2">
+                                        Aucun mode de paiement disponible. 
+                                        <a href="{% url 'Ecommerce:mode_paiement' %}" class="text-blue-600 underline">Ajouter un mode de paiement</a>
+                                    </p>
+                                {% endif %}
+                            </div>
                             <button type="submit" name="passer_commande" class="primary-btn">PASSER LA COMMANDE</button>
                         </div>
                     </div>
@@ -151,7 +167,7 @@
                 subtotal += total;
             });
             subtotalElement.textContent = subtotal.toFixed(2);
-            totalElement.textContent = subtotal.toFixed(2); // Ajoutez frais de livraison si nécessaire
+            totalElement.textContent = subtotal.toFixed(2);
         }
 
         function updateAllTotals() {
@@ -165,7 +181,6 @@
                     const prix = parseFloat(prixElement.getAttribute('data-prix')) || 0;
                     let quantite = parseInt(qtyInput.value) || 1;
 
-                    // Limiter la quantité au maximum disponible
                     if (quantite > maxQuantite) {
                         quantite = maxQuantite;
                         qtyInput.value = maxQuantite;
@@ -173,25 +188,22 @@
 
                     const total = prix * quantite;
                     totalElement.textContent = total.toFixed(2);
-                    totalElement.setAttribute('data-total', total.toFixed(2)); // Mettre à jour l'attribut
+                    totalElement.setAttribute('data-total', total.toFixed(2));
                 }
             });
             updateCartTotal();
         }
 
-        // Mettre à jour les totaux en temps réel lorsqu’on change la quantité
         rows.forEach(row => {
             const qtyInput = row.querySelector('.qty-input');
             qtyInput.addEventListener('input', updateAllTotals);
         });
 
-        // Mettre à jour les totaux avec le bouton "Mettre le panier à jour"
         updateCartBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Ne pas soumettre le formulaire
+            e.preventDefault();
             updateAllTotals();
         });
 
-        // Calcul initial au chargement
         updateAllTotals();
     });
     </script>
