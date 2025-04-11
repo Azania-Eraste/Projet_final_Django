@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block header %}
+<div></div>
+{% endblock %}
+
+{% block content %}
+    <!-- Affichage des messages -->
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Confirmation de commande</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'blog:index' %}">Home</a>
+                            <span>Confirmation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Confirmation Section Begin -->
+    <section class="checkout spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Merci pour votre commande !</h2>
+                    <p>Votre commande a été confirmée avec succès.</p>
+                    <div class="checkout__order">
+                        <h4>Détails de la commande</h4>
+                        <ul>
+                            <li>ID Commande: <span>{{ commande.id }}</span></li>
+                            <li>Date: <span>{{ commande.date|date:"d M Y" }}</span></li>
+                            <li>Total: <span>{{ commande.prix_total }} CFA</span></li>
+                            <li>Statut: <span>{{ commande.statut_commande }}</span></li>
+                            <li>Mode de paiement: <span>{{ commande.mode.type_paiement }}</span></li>
+                        </ul>
+                        <a href="{% url 'Ecommerce:commandes' %}" class="site-btn">Voir mes commandes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Confirmation Section End -->
+{% endblock %}

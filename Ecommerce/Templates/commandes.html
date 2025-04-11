@@ -51,6 +51,7 @@
                                     <th>Date</th>
                                     <th>Total</th>
                                     <th>Statut</th>
+                                    <th>Statut du Paiement</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -70,7 +71,21 @@
                                                     <span class="badge badge-danger">Annulée</span>
                                                 {% endif %}
                                             </td>
+                                            <td>
+                                                {% if commande.paiements.first.statut_paiement == "EN_ATTENTE" %}
+                                                    <span class="badge badge-warning">En attente</span>
+                                                {% elif commande.paiements.first.statut_paiement == "EFFECTUE" %}
+                                                    <span class="badge badge-success">Payé</span>
+                                                {% elif commande.paiements.first.statut_paiement == "ECHOUE" %}
+                                                    <span class="badge badge-danger">Échoué</span>
+                                                {% endif %}
+                                            </td>
                                             <td class="shoping__cart__item__close">
+                                                {% if commande.mode.type_paiement == 'Carte de crédit/débit' and commande.paiements.first.statut_paiement == 'EN_ATTENTE' and commande.client_secret %}
+                                                    <button class="primary-btn cart-btn complete-payment" data-client-secret="{{ commande.client_secret }}" data-commande-id="{{ commande.id }}">Compléter le paiement</button>
+                                                    <div id="error-message-{{ commande.id }}" class="text-red-600 mt-2"></div>
+                                                    <div id="payment-element-{{ commande.id }}" style="display: none;"></div>
+                                                {% endif %}
                                                 <a href="{% url 'Ecommerce:commande_detail' commande.id %}" class="primary-btn cart-btn">Détails</a>
                                                 <a href="{% url 'Ecommerce:commande_cancel' commande.id %}" class="icon_close" title="Annuler la commande"></a>
                                             </td>
@@ -78,7 +93,7 @@
                                     {% endfor %}
                                 {% else %}
                                     <tr>
-                                        <td colspan="5"><h5>Aucune commande</h5></td>
+                                        <td colspan="6"><h5>Aucune commande</h5></td>
                                     </tr>
                                 {% endif %}
                             </tbody>
@@ -89,4 +104,44 @@
         </div>
     </section>
     <!-- Commandes Section End -->
+
+    <!-- Inclure Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('{{ stripe_publishable_key }}');
+        const elements = stripe.elements();
+
+        document.querySelectorAll('.complete-payment').forEach(button => {
+            button.addEventListener('click', async () => {
+                const clientSecret = button.getAttribute('data-client-secret');
+                const commandeId = button.getAttribute('data-commande-id');
+                const errorMessageDiv = document.getElementById(`error-message-${commandeId}`);
+                const paymentElementDiv = document.getElementById(`payment-element-${commandeId}`);
+
+                // Afficher le conteneur du formulaire de paiement
+                paymentElementDiv.style.display = 'block';
+
+                // Créer un élément de paiement Stripe
+                const paymentElement = elements.create('payment', {
+                    clientSecret: clientSecret,
+                });
+                paymentElement.mount(`#payment-element-${commandeId}`);
+
+                const { error, paymentIntent } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: window.location.origin + '{% url "Ecommerce:commandes" %}',
+                    },
+                    redirect: 'if_required',
+                });
+
+                if (error) {
+                    errorMessageDiv.textContent = error.message;
+                } else if (paymentIntent.status === 'succeeded') {
+                    // Le paiement est réussi, recharger la page
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
 {% endblock %}

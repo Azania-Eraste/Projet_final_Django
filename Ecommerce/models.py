@@ -89,7 +89,6 @@ class Commande(models.Model):
     statut_commande = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutCommande])
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
     code_promo = models.ForeignKey('Ecommerce.CodePromo', on_delete=models.SET_NULL, null=True, blank=True)
-    paiement = models.OneToOneField('Ecommerce.Paiement', on_delete=models.CASCADE, null=True, blank=True)
     prix = models.FloatField(null=True)
     prix_total = models.FloatField(null=True)
     mode = models.ForeignKey('Ecommerce.Mode', on_delete=models.SET_NULL, null=True, blank=True)
@@ -165,17 +164,27 @@ class Paiement(models.Model):
     montant = models.FloatField()
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     mode = models.ForeignKey("Ecommerce.Mode", on_delete=models.CASCADE, related_name="ModePaiement")
-    statut_paiement = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutPaiement], null=True)
-    est_actif = models.BooleanField(default=True)  # Statut booléen
-
-    def effectuer_paiement(self):
-        pass
+    commande = models.ForeignKey("Ecommerce.Commande", on_delete=models.CASCADE, related_name="paiements", null=True)  # Ajout de la relation avec Commande
+    statut_paiement = models.CharField(
+        max_length=50,
+        choices=[(tag.name, tag.value) for tag in StatutPaiement],
+        default=StatutPaiement.EN_ATTENTE.name
+    )
+    payment_intent_id = models.CharField(max_length=255, null=True, blank=True)  # Ajout du champ pour stocker l'ID du Payment Intent
+    est_actif = models.BooleanField(default=True)
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 
+    def effectuer_paiement(self):
+        if self.mode.type == "Paiement à la livraison":
+            self.statut_paiement = StatutPaiement.EFFECTUE.name
+            self.save()
+            return True
+        return False
+
     def __str__(self):
-        return "Paiement N" + str(self.pk)
+        return f"Paiement N{self.pk} - Commande {self.commande.id}"
 
 
 
