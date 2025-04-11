@@ -21,5 +21,5 @@ urlpatterns = [
     path("Blog/<slug:slug>/delete/<int:id>", views.commentaire_delete, name="delete_comment"),
     path("Blog/<slug:slug>/update/<int:id>", views.commentaire_update, name="update_comment"),
     path("Blog/", views.blog, name="blog"),
-    path('api/', include(router.urls)),
+    path('api_Blog/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

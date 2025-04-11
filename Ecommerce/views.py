@@ -229,7 +229,7 @@ def checkout(request):
                 if paiement.effectuer_paiement():
 
                     messages.success(request, "Commande confirmée avec succès (paiement à la livraison).")
-                    return redirect("Ecommerce:commandes")
+                    return redirect("Ecommerce:confirmation")
 
             elif commande.mode.type_paiement == TypePaiement.CREDIT_CARD.value:
                 # Paiement via Stripe
@@ -246,7 +246,7 @@ def checkout(request):
                     paiement.save()
 
                     messages.info(request, "Veuillez compléter le paiement via Stripe pour confirmer votre commande.")
-                    return redirect("Ecommerce:commandes")
+                    return redirect("Ecommerce:confirmation")
 
                 except stripe.error.StripeError as e:
                     messages.error(request, f"Erreur lors de la création de l'intention de paiement : {str(e)}")
@@ -265,14 +265,14 @@ def checkout(request):
                 paiement.save()
 
                 messages.info(request, f"Simulation : Une demande de paiement a été envoyée à {phone_number}. Veuillez confirmer le paiement sur votre téléphone.")
-                return redirect("Ecommerce:commandes")
+                return redirect("Ecommerce:confirmation")
 
             elif commande.mode.type_paiement == TypePaiement.PREPAID_CARD.value:
                 # Logique pour les cartes prépayées (non implémentée ici)
                 messages.error(request, "Le paiement par carte prépayée n'est pas encore pris en charge.")
                 return redirect("Ecommerce:checkout")
             else:
-                return redirect("Ecommerce:commandes")
+                return redirect("Ecommerce:confirmation")
 
         else:
             messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")

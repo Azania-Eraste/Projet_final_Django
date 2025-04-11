@@ -10,7 +10,10 @@ class UserSerializer(serializers.ModelSerializer):
             fields = [
                         'id',
                         'username',
-                        'email'
+                        'email',
+                        'nom',
+                        'prenom',
+                        'number',
                     ]
             
             

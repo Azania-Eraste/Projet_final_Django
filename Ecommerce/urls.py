@@ -1,5 +1,31 @@
 from django.urls import path,include
 from Ecommerce import views
+from rest_framework.routers import DefaultRouter
+from .viewset import (
+    ProduitViewSet, CategorieProduitViewSet, CommandeViewSet, CommandeProduitViewSet,
+    LivraisonViewSet, ModeViewSet, PaiementViewSet, VilleViewSet, CommuneViewSet,
+    AdresseViewSet, PromotionViewSet, VariationProduitViewSet, PanierViewSet,
+    AvisViewSet, CodePromoViewSet, FavorisViewSet
+)
+
+# Créer un routeur pour les API
+router = DefaultRouter()
+router.register(r'produits', ProduitViewSet)
+router.register(r'categories', CategorieProduitViewSet)
+router.register(r'commandes', CommandeViewSet)
+router.register(r'commande-produits', CommandeProduitViewSet)
+router.register(r'livraisons', LivraisonViewSet)
+router.register(r'modes', ModeViewSet)
+router.register(r'paiements', PaiementViewSet)
+router.register(r'villes', VilleViewSet)
+router.register(r'communes', CommuneViewSet)
+router.register(r'adresses', AdresseViewSet)
+router.register(r'promotions', PromotionViewSet)
+router.register(r'variations', VariationProduitViewSet)
+router.register(r'paniers', PanierViewSet)
+router.register(r'avis', AvisViewSet)
+router.register(r'codes-promo', CodePromoViewSet)
+router.register(r'favoris', FavorisViewSet)
 
 
 app_name="Ecommerce"
@@ -25,5 +51,6 @@ urlpatterns = [
     path('shipping/', views.shipping_info_view, name='shipping'),
     path('privacy/', views.privacy_policy_view, name='privacy'),
     path('innovation/', views.innovation_view, name='innovation'),
+    path('api_Ecommerce/', include(router.urls)),
 
 ]

@@ -37,14 +37,6 @@ MOIS_CHOICES = [
     (9, "Septembre"), (10, "Octobre"), (11, "Novembre"), (12, "Décembre")
 ]
 
-class Role(models.Model):
-    nom = models.CharField(max_length=255)
-    statut = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.nom
 
 class Produit(models.Model):
     nom = models.CharField(max_length=255)
