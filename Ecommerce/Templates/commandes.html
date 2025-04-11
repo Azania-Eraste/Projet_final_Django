@@ -60,19 +60,19 @@
                                         <tr>
                                             <td>{{ commande.id }}</td>
                                             <td>{{ commande.date|date:"d M Y" }}</td>
-                                            <td>{{ commande.prix_total }}</td>
+                                            <td>{{ commande.prix_total }} CFA</td>
                                             <td>
-                                                <span class="badge 
-                                                    {% if commande.statut_commande == 'EXPEDIEE' %}badge-success
-                                                    {% elif commande.statut_commande == 'EN_ATTENTE' %}badge-warning
-                                                    {% elif commande.statut_commande == 'ANNULEE' %}badge-danger
-                                                    {% else %}badge-secondary{% endif %}">
-                                                    {{ commande.statut_commande }}
-                                                </span>
+                                                {% if commande.statut_commande == "En attente" %}
+                                                    <span class="badge badge-warning">En attente</span>
+                                                {% elif commande.statut_commande == "Confirmée" %}
+                                                    <span class="badge badge-success">Confirmée</span>
+                                                {% elif commande.statut_commande == "Annulée" %}
+                                                    <span class="badge badge-danger">Annulée</span>
+                                                {% endif %}
                                             </td>
                                             <td class="shoping__cart__item__close">
                                                 <a href="{% url 'Ecommerce:commande_detail' commande.id %}" class="primary-btn cart-btn">Détails</a>
-                                                <a href="{% url 'Ecommerce:commande_cancel' commande.id %}" class="icon_close" title="Supprimer des favoris"></a>
+                                                <a href="{% url 'Ecommerce:commande_cancel' commande.id %}" class="icon_close" title="Annuler la commande"></a>
                                             </td>
                                         </tr>
                                     {% endfor %}

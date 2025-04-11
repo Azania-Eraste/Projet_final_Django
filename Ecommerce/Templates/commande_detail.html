@@ -56,16 +56,16 @@
                                 <ul>
                                     <li><strong>Date de commande :</strong> <span>{{ commande.created_at|date:"d M Y, H:i" }}</span></li>
                                     <li><strong>Statut de la commande :</strong> 
-                                        <span class="{% if commande.statut_commande == StatutCommande.EXPEDIEE.name %}text-green-600{% else %}text-orange-600{% endif %}">
+                                        <span class="{% if commande.statut_commande == 'Confirmée' %}text-green-600{% else %}text-orange-600{% endif %}">
                                             {{ commande.statut_commande }}
                                         </span>
                                     </li>
                                     <li><strong>Statut de la livraison :</strong> 
-                                        <span class="{% if livraison.statut_livraison == 'LIVREE' %}text-green-600{% else %}text-orange-600{% endif %}">
+                                        <span class="{% if livraison.statut_livraison == 'En cours' %}text-green-600{% else %}text-orange-600{% endif %}">
                                             {{ livraison.statut_livraison }}
                                         </span>
                                     </li>
-                                    <li><strong>Mode de paiement :</strong> <span>{{ commande.paiement.mode.nom }}</span></li>
+                                    <li><strong>Mode de paiement :</strong> <span>{{ mode.nom }}</span></li>
                                 </ul>
                             </div>
                             <div class="col-lg-6">
@@ -79,9 +79,9 @@
                         <!-- Step Progress Bar -->
                         <div class="progress-bar-container mt-4">
                             <h5>Suivi de la commande</h5>
-                            <ul class="stepper" data-active-step="{% if livraison.statut_livraison == 'EN_ATTENTE' %}1{% elif livraison.statut_livraison == 'EN_COURS' %}2{% elif livraison.statut_livraison == 'EXPEDIEE' %}3{% elif livraison.statut_livraison == 'LIVREE' %}4{% elif livraison.statut_livraison == 'RETOURNEE' %}5{% else %}0{% endif %}">
+                            <ul class="stepper" data-active-step="{% if livraison.statut_livraison == 'En attente' %}1{% elif livraison.statut_livraison == 'En cours' %}2{% elif livraison.statut_livraison == 'Expédiée' %}3{% elif livraison.statut_livraison == 'Livrée' %}4{% elif livraison.statut_livraison == 'Retournée' %}5{% else %}0{% endif %}">
                                 <!-- Étape 1 : En attente -->
-                                <li class="stepper-step {% if livraison.statut_livraison == 'En attente' or livraison.statut_livraison == 'EN_COURS' or livraison.statut_livraison == 'EXPEDIEE' or livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                <li class="stepper-step {% if livraison.statut_livraison == 'En attente' or livraison.statut_livraison == 'En cours' or livraison.statut_livraison == 'Expédiée' or livraison.statut_livraison == 'Livrée' or livraison.statut_livraison == 'Retournée' %}stepper-active{% endif %}">
                                     <div class="stepper-head">
                                         <span class="stepper-head-icon">1</span>
                                         <span class="stepper-head-text">En attente</span>
@@ -90,8 +90,8 @@
                                         <p>Votre commande a été reçue et est en attente de traitement.</p>
                                     </div>
                                 </li>
-                                <!-- Étape 2 : EN_COURS -->
-                                <li class="stepper-step {% if livraison.statut_livraison == 'EN_COURS' or livraison.statut_livraison == 'EXPEDIEE' or livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                <!-- Étape 2 : En cours -->
+                                <li class="stepper-step {% if livraison.statut_livraison == 'En cours' or livraison.statut_livraison == 'Expédiée' or livraison.statut_livraison == 'Livrée' or livraison.statut_livraison == 'Retournée' %}stepper-active{% endif %}">
                                     <div class="stepper-head">
                                         <span class="stepper-head-icon">2</span>
                                         <span class="stepper-head-text">En cours</span>
@@ -101,7 +101,7 @@
                                     </div>
                                 </li>
                                 <!-- Étape 3 : EXPEDIEE -->
-                                <li class="stepper-step {% if livraison.statut_livraison == 'EXPEDIEE' or livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                <li class="stepper-step {% if livraison.statut_livraison == 'Expédiée' or livraison.statut_livraison == 'Livrée' or livraison.statut_livraison == 'Retournée' %}stepper-active{% endif %}">
                                     <div class="stepper-head">
                                         <span class="stepper-head-icon">3</span>
                                         <span class="stepper-head-text">Expédiée</span>
@@ -111,7 +111,7 @@
                                     </div>
                                 </li>
                                 <!-- Étape 4 : LIVREE -->
-                                <li class="stepper-step {% if livraison.statut_livraison == 'LIVREE' or livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                <li class="stepper-step {% if livraison.statut_livraison == 'Livrée' or livraison.statut_livraison == 'Retournée' %}stepper-active{% endif %}">
                                     <div class="stepper-head">
                                         <span class="stepper-head-icon">4</span>
                                         <span class="stepper-head-text">Livrée</span>
@@ -121,7 +121,7 @@
                                     </div>
                                 </li>
                                 <!-- Étape 5 : RETOURNEE -->
-                                <li class="stepper-step {% if livraison.statut_livraison == 'RETOURNEE' %}stepper-active{% endif %}">
+                                <li class="stepper-step {% if livraison.statut_livraison == 'Retournée' %}stepper-active{% endif %}">
                                     <div class="stepper-head">
                                         <span class="stepper-head-icon">5</span>
                                         <span class="stepper-head-text">Retournée</span>

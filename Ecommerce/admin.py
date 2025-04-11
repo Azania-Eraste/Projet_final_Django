@@ -78,7 +78,7 @@ class CommandeAdmin(admin.ModelAdmin):
             "fields": ("code_promo", "paiement"),
         }),
         ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
+            "fields": ("est_actif",),  # Ajout de la virgule
             "classes": ("collapse",),
         }),
     )

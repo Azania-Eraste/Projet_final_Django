@@ -6,13 +6,14 @@ from .models import (
     )
 from django.contrib import messages
 from django.core.paginator import Paginator
-from Ecommerce.form import PanierQuantiteForm, CheckForm, ModePaiementForm
+from Ecommerce.form import PanierQuantiteForm, CheckForm, ModePaiementForm, ModePaiementPanierForm
 from django.contrib.auth import get_user_model
 from decimal import Decimal
 
 
 User = get_user_model()
 # Create your views here.
+
 
 @login_required(login_url='Authentification:login')
 def panier(request):
@@ -26,61 +27,68 @@ def panier(request):
     print("Produits dans le panier :", [p.id for p in produits])
 
     panier_items = []
+    mode_paiement_form = ModePaiementPanierForm(user=user)
+
     if request.method == 'POST':
         if 'passer_commande' in request.POST:
             print("Données POST brutes :", request.POST)
             last_commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
             print(f"Dernière commande: {last_commande}")
-            if not last_commande or last_commande.statut_commande != 'EN_ATTENTE':  # Ajustez selon StatutCommande
-                # Étape 1 : Créer et sauvegarder la commande sans prix initial
-                commande = Commande(
-                    utilisateur=user,
-                    statut_commande='EN_ATTENTE'  # Utilisez la valeur brute ou StatutCommande.EN_ATTENTE
-                )
-                commande.save()  # Première sauvegarde pour obtenir un id
-
-                # Étape 2 : Créer les CommandeProduit
-                form_valid = True
-                for produit in produits:
-                    prefix = str(produit.id)
-                    form = PanierQuantiteForm(request.POST, prefix=prefix)
-                    print(f"Produit {produit.id} - Attendu: quantite_{prefix}, produit_id_{prefix}")
-                    print(f"Reçu: {request.POST.get(f'quantite_{prefix}')}, {request.POST.get(f'produit_id_{prefix}')}")
-                    print(f"Formulaire avant validation: {form.data}")
-                    print(f"Est lié (bound) ? {form.is_bound}")
-                    if form.is_valid():
-                        cleaned_quantite = form.cleaned_data['quantite']
-                        cleaned_produit_id = form.cleaned_data['produit_id']
-                        if cleaned_produit_id == produit.id:
-                            prix_actuel = produit.prix_actuel() if callable(produit.prix_actuel) else produit.prix_actuel
-                            prix_produit = prix_actuel * cleaned_quantite
-                            commande_produit = CommandeProduit.objects.create(
-                                commande=commande,
-                                produit=produit,
-                                quantite=cleaned_quantite,
-                                prix=prix_produit
-                            )
-                            print(f"Créé: {commande_produit}")
-                        else:
-                            print(f"Échec: produit_id mismatch ({cleaned_produit_id} != {produit.id})")
-                            form_valid = False
-                    else:
-                        print(f"Échec: formulaire invalide - Erreurs: {form.errors}")
-                        form_valid = False
-
-                # Étape 3 : Recalculer et sauvegarder le prix après création des CommandeProduit
-                if form_valid:
-                    commande.prix = sum(
-                        produit_commande.prix 
-                        for produit_commande in commande.Commande_Produit_ids.all()
+            if not last_commande or last_commande.statut_commande != StatutCommande.EN_ATTENTE.value:
+                mode_paiement_form = ModePaiementPanierForm(request.POST, user=user)
+                if mode_paiement_form.is_valid():
+                    mode_paiement = mode_paiement_form.cleaned_data['mode_paiement']
+                    commande = Commande(
+                        utilisateur=user,
+                        statut_commande=StatutCommande.EN_ATTENTE.value,
+                        mode=mode_paiement
                     )
-                    commande.save()  # Deuxième sauvegarde pour mettre à jour le prix
-                    panier.produits.clear()
-                    return redirect('Ecommerce:check')
-                else:
-                    print("Échec global : au moins un formulaire est invalide")
-                    commande.delete()  # Supprimer la commande si échec
+                    commande.save()
 
+                    form_valid = True
+                    for produit in produits:
+                        prefix = str(produit.id)
+                        form = PanierQuantiteForm(request.POST, prefix=prefix)
+                        print(f"Produit {produit.id} - Attendu: quantite_{prefix}, produit_id_{prefix}")
+                        print(f"Reçu: {request.POST.get(f'quantite_{prefix}')}, {request.POST.get(f'produit_id_{prefix}')}")
+                        print(f"Formulaire avant validation: {form.data}")
+                        print(f"Est lié (bound) ? {form.is_bound}")
+                        if form.is_valid():
+                            cleaned_quantite = form.cleaned_data['quantite']
+                            cleaned_produit_id = form.cleaned_data['produit_id']
+                            if cleaned_produit_id == produit.id:
+                                prix_actuel = produit.prix_actuel() if callable(produit.prix_actuel) else produit.prix_actuel
+                                prix_produit = prix_actuel * cleaned_quantite
+                                commande_produit = CommandeProduit.objects.create(
+                                    commande=commande,
+                                    produit=produit,
+                                    quantite=cleaned_quantite,
+                                    prix=prix_produit
+                                )
+                                print(f"Créé: {commande_produit}")
+                                print(form_valid)
+                            else:
+                                print(f"Échec: produit_id mismatch ({cleaned_produit_id} != {produit.id})")
+                                form_valid = False
+                        else:
+                            print(f"Échec: formulaire invalide - Erreurs: {form.errors}")
+                            form_valid = False
+
+                    if form_valid:
+                        commande.prix = sum(
+                            produit_commande.prix 
+                            for produit_commande in commande.Commande_Produit_ids.all()
+                        )
+                        commande.save()
+                        panier.produits.clear()
+                        return redirect('Ecommerce:check')
+                    else:
+                        print("Échec global : au moins un formulaire est invalide")
+                        commande.delete()
+                        messages.error(request, "Erreur lors de la création de la commande. Veuillez vérifier les quantités.")
+                else:
+                    print("ModePaiementPanierForm invalide - Erreurs:", mode_paiement_form.errors)
+                    messages.error(request, "Veuillez sélectionner un mode de paiement valide.")
             else:
                 messages.warning(request, "Vous avez déjà une commande en attente")
                 return redirect('Ecommerce:panier')
@@ -99,9 +107,11 @@ def panier(request):
         'Categories': CategorieProduit.objects.filter(statut=True),
         'favoris_produit': Favoris.objects.get_or_create(utilisateur=user, defaults={'statut': True})[0].produit.all(),
         'panier_produit': produits,
-        'active_page': 'shop'
+        'active_page': 'shop',
+        'mode_paiement_form': mode_paiement_form,
     }
     return render(request, 'shoping-cart.html', datas)
+
 
 
 @login_required(login_url='Authentification:login')
@@ -117,7 +127,7 @@ def checkout(request):
     })
 
     # Récupérer la dernière commande
-    commande = Commande.objects.filter(utilisateur=user).order_by('-id').first()
+    commande = Commande.objects.filter(utilisateur=user,statut_commande=StatutCommande.EN_ATTENTE.value).order_by('-id').first()
     if not commande:
         messages.error(request, "Aucune commande en cours.")
         return redirect("Ecommerce:panier")
@@ -169,6 +179,7 @@ def checkout(request):
 
             # Calculer et enregistrer le prix total
             commande.prix_total = Decimal(str(commande.prix)) + frais_livraison
+            commande.statut_commande = StatutCommande.CONFIRMEE.value
             commande.save()  # Sauvegarder la mise à jour dans la base
 
             messages.success(request, "Commande passée avec succès !")
@@ -563,6 +574,7 @@ def commande_detail_view(request, commande_id):
     commande = get_object_or_404(Commande, id=commande_id)
     panier_produits = None
     favoris_produits = None
+    mode = Mode.objects.filter(utilisateur=request.user)
 
     livraison,_= Livraison.objects.get_or_create(commande=commande)
     print(livraison)
@@ -587,6 +599,7 @@ def commande_detail_view(request, commande_id):
         'panier_produit': panier_produits,
         'commande': commande,
         'livraison': livraison,
+        'mode': mode,
     }
 
     return render(request, 'commande_detail.html', datas)
@@ -594,8 +607,8 @@ def commande_detail_view(request, commande_id):
 @login_required(login_url='Authentification:login')
 def commande_cancel_view(request, commande_id):
     commande = get_object_or_404(Commande, id=commande_id)
-    if commande.statut_commande == StatutCommande.EN_ATTENTE.name:
-        commande.mettre_a_jour_statut(StatutCommande.ANNULEE.name)
+    if commande.statut_commande != StatutCommande.ANNULEE.value:
+        commande.mettre_a_jour_statut(StatutCommande.ANNULEE.value)
         print(commande.statut_commande)
     print(commande.statut_commande)
     return redirect('Ecommerce:commandes')

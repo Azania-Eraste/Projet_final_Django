@@ -12,15 +12,17 @@ class TypePaiement(Enum):
     MOBILE_MONEY = 'Mobile Money'
     CREDIT_CARD = 'Carte de crédit/débit'
     PREPAID_CARD = 'Carte prépayée'
+    LIQUIDE = 'Liquide'
 
 class StatutCommande(Enum):
     EN_ATTENTE = "En attente"
-    EN_COURS = "En cours"
+    CONFIRMEE = "Confirmée"
     ANNULEE = "Annulée"
 
 class StatutPaiement(Enum):
     EN_ATTENTE = "En attente"
-    EFFECTUEE = "Effectué"
+    EFFECTUE = "Effectué"
+    ECHOUE = "Echoué"
 
 class StatutLivraison(Enum):
     EN_ATTENTE = "En attente"
@@ -90,6 +92,7 @@ class Commande(models.Model):
     paiement = models.OneToOneField('Ecommerce.Paiement', on_delete=models.CASCADE, null=True, blank=True)
     prix = models.FloatField(null=True)
     prix_total = models.FloatField(null=True)
+    mode = models.ForeignKey('Ecommerce.Mode', on_delete=models.SET_NULL, null=True, blank=True)
     
 
     def mettre_a_jour_statut(self, nouveau_statut):
@@ -140,7 +143,7 @@ class Mode(models.Model):
     type_paiement = models.CharField(
         max_length=20,
         choices=[(tag.name, tag.value) for tag in TypePaiement],
-        default=TypePaiement.MOBILE_MONEY.name
+        default=TypePaiement.MOBILE_MONEY.value
     )
     numero_tel = models.CharField(max_length=255, blank=True, null=True)
     numero = models.CharField(max_length=255, blank=True, null=True)
