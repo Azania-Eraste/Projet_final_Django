@@ -12,6 +12,7 @@ urlpatterns = [
     path("Dashboard/Paiement/", views.paiement_view, name="mode_paiement"),
     path("Dashboard/Paiement/Remove/<int:mode_id>", views.paiement_remove, name="mode_paiement_remove"),
     path("Panier/", views.panier, name="panier"),
+    path('Panier/Confirmation/<int:commande_id>/', views.confirmation, name='confirmation'),
     path("Panier/delete/<slug:slug>/", views.remove_panier, name="panier_remove"),
     path("Panier/add/<slug:slug>/", views.add_panier, name="panier_add"),
     path("Panier/Checkout/", views.checkout, name="check"),
