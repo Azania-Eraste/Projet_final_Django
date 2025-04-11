@@ -52,3 +52,6 @@ class CategorieViewSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['nom','description']
     ordering_fields = ['created_at']
+
+
+
