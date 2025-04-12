@@ -8,6 +8,8 @@ from .viewset import (
     AvisViewSet, CodePromoViewSet, FavorisViewSet
 )
 
+
+
 # Créer un routeur pour les API
 router = DefaultRouter()
 router.register(r'produits', ProduitViewSet)
@@ -52,5 +54,5 @@ urlpatterns = [
     path('privacy/', views.privacy_policy_view, name='privacy'),
     path('innovation/', views.innovation_view, name='innovation'),
     path('api_Ecommerce/', include(router.urls)),
-
+    
 ]

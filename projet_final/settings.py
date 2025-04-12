@@ -288,3 +288,4 @@ REST_FRAMEWORK = {
 # Récupérer les clés API de Stripe depuis les variables d'environnement
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+

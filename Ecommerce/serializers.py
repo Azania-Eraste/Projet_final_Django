@@ -3,15 +3,13 @@ from .models import (
     Produit, CategorieProduit, Commande, CommandeProduit, Livraison, Mode, Paiement,
     Ville, Commune, Adresse, Promotion, VariationProduit, Panier, Avis, CodePromo, Favoris
 )
+
+from blog.serializers import UserSerializer
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-# Serializer pour User (minimal, pour les relations)
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']  # Ajustez selon les champs de votre modèle User
+
 
 # Serializer pour CategorieProduit
 class CategorieProduitSerializer(serializers.ModelSerializer):

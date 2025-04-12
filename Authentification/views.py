@@ -90,7 +90,7 @@ def register_view(request):
             html_message = f"""
             <html>
             <body style="font-family: Arial, sans-serif; padding: 20px;">
-                <p style="text-align: center; color: yellow; font-size: 18px; font-weight: bold;">
+                <p style="text-align: center; color: green; font-size: 18px; font-weight: bold;">
                     Bonjour {user.username}, merci de vous être inscrit !
                 </p>
                 <div style="text-align: center; margin-top: 20px;">
