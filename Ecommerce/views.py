@@ -11,6 +11,8 @@ from django.contrib.auth import get_user_model
 from decimal import Decimal
 import stripe
 from django.conf import settings
+from .filters import VariationProduitFilter
+from django.db.models import Min, Max
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
@@ -464,32 +466,66 @@ def remove_favorite(request, slug):
     except Exception as e:
         messages.error(request, f"Erreur: {str(e)}")
         return redirect("blog:index")
+    
 
+# Ecommerce/views.py
 def shop(request):
+    categori = CategorieProduit.objects.filter(statut=True)
+    all_produits = VariationProduit.objects.filter(statut=True)
+    filter_set = VariationProduitFilter(request.GET, queryset=all_produits)
 
-    produits = VariationProduit.objects.filter(statut=True)
-    promo_produit = produits.filter(promotions__active=True).distinct()
-    produits = produits.exclude(promotions__active=True).distinct()
+    # Calculer les valeurs minimales et maximales de prix (approximation initiale)
+    promo = ((all_produits.aggregate(Min('prix'))['prix__min']*50)/100)
+    prix_min_global = (all_produits.aggregate(Min('prix'))['prix__min'] - promo) or 0
+    prix_max_global = all_produits.aggregate(Max('prix'))['prix__max'] or 1000
+    print(promo)
+    # Appliquer le filtrage initial (sur prix, nom, categorie)
+    promo_produit = filter_set.qs.filter(promotions__active=True).distinct()
+    produits = filter_set.qs.exclude(promotions__active=True).distinct()
+
+
+
+    # Affiner le filtrage sur prix_actuel
+    prix_min = '000'
+    prix_min = request.GET.get('prix_min')
+
+    prix_max = request.GET.get('prix_max')
+
+
+
+    if prix_min:
+        prix_min = prix_min.replace("$", "")
+        promo_produit = promo_produit.filter(id__in=[p.id for p in promo_produit if p.prix_actuel >= float(prix_min)])
+        produits = produits.filter(id__in=[p.id for p in produits if p.prix_actuel >= float(prix_min)])
+    if prix_max:
+        prix_max = prix_max.replace("$", "")
+        promo_produit = promo_produit.filter(id__in=[p.id for p in promo_produit if p.prix_actuel <= float(prix_max)])
+        produits = produits.filter(id__in=[p.id for p in produits if p.prix_actuel <= float(prix_max)])
+    print(f"=================================={prix_min}-{prix_max}")
+    # Appliquer le tri
+    sort_by = request.GET.get('sort_by', 'default')
+    if sort_by == 'price_low_to_high':
+        produits = produits.order_by('prix')
+        promo_produit = promo_produit.order_by('prix')
+    elif sort_by == 'price_high_to_low':
+        produits = produits.order_by('-prix')
+        promo_produit = promo_produit.order_by('-prix')
+
     latest_produits = VariationProduit.objects.filter(statut=True).order_by('-created_at')[:6]
     paginator = Paginator(produits, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     view_mode = request.GET.get('view', 'grid')
-    print(view_mode)
-    categori = CategorieProduit.objects.filter(statut=True)
 
     panier_produits = None
     favoris_produits = None
 
     if request.user.is_authenticated:
-        # Gestion des favoris pour l'utilisateur connecté
         favoris, created = Favoris.objects.get_or_create(
             utilisateur=request.user,
             defaults={'statut': True}
         )
-        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
-
-        # Gestion du panier pour l'utilisateur connecté
+        favoris_produits = favoris.produit.all()
         panier, created = Panier.objects.get_or_create(
             utilisateur=request.user,
             defaults={'statut': True}
@@ -498,14 +534,18 @@ def shop(request):
 
     datas = {
         'Categories': categori,
-        'produits' : produits,
-        "page_obj": page_obj,
-        "latest_produits":latest_produits,
+        'produits': page_obj,
+        'page_obj': page_obj,
+        'latest_produits': latest_produits,
         'promotion_produit': promo_produit,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
         'view_mode': view_mode,
-        'active_page': 'shop'
+        'active_page': 'shop',
+        'filter': filter_set,
+        'sort_by': sort_by,
+        'prix_min_global': int(prix_min_global),
+        'prix_max_global': int(prix_max_global),
     }
 
     return render(request, 'shop-grid.html', datas)
