@@ -31,17 +31,22 @@
                 <div class="col-lg-4 col-md-5">
                     <div class="blog__sidebar">
                         <div class="blog__sidebar__search">
-                            <form action="#">
-                                <input type="text" placeholder="Search...">
+                            <form action="{% url 'blog:blog' %}" method="get">
+                                {{ filter.form.titre }}
                                 <button type="submit"><span class="icon_search"></span></button>
+                                {% for key, value in request.GET.items %}
+                                    {% if key != 'titre' %}
+                                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                    {% endif %}
+                                {% endfor %}
                             </form>
                         </div>
                         <div class="blog__sidebar__item">
                             <h4>Categories</h4>
                             <ul>
-                                <li><a href="#">All</a></li>
+                                <li><a href="{% url 'blog:blog' %}">All</a></li>
                                 {% for categories in Categories_article %}
-                                    <li><a href="#">{{ categories.nom }} <span>({{ categories.categorie_article_ids.count }})</span></a></li>
+                                    <li><a href="?categorie={{ categories.id }}">{{ categories.nom }} <span>( {{ categories.categorie_article_ids.count }} )</span></a></li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -64,10 +69,10 @@
                             </div>
                         </div>
                         <div class="blog__sidebar__item">
-                            <h4>Search By</h4>
+                            <h4>Search By Tags</h4>
                             <div class="blog__sidebar__item__tags">
                                 {% for tag in Tags %}
-                                    <a href="#">{{ tag.nom }}</a>
+                                    <a href="?tag={{ tag.id }}">{{ tag.nom }}</a>
                                 {% endfor %}
                             </div>
                         </div>

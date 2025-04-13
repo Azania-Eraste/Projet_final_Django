@@ -14,7 +14,7 @@
                     </div>
                     <ul>
                         {% for categorie in Categories %}
-                            <li><a href="#">{{ categorie.nom }}</a></li>   
+                            <li><a href="?categorie={{ categorie.id }}">{{ categorie.nom }}</a></li>   
                         {% endfor %}
                     </ul>
                 </div>
@@ -22,13 +22,19 @@
             <div class="col-lg-9">
                 <div class="hero__search">
                     <div class="hero__search__form">
-                        <form action="#">
+                        <form method="get" action="{% url 'Ecommerce:shop' %}">
                             <div class="hero__search__categories">
                                 All Categories
                                 <span class="arrow_carrot-down"></span>
                             </div>
-                            <input type="text" placeholder="What do you need?">
+                            {{ filter.form.nom }}
                             <button type="submit" class="site-btn">SEARCH</button>
+                            <!-- Préserver les autres paramètres GET -->
+                            {% for key, value in request.GET.items %}
+                                {% if key != 'nom' %}
+                                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                {% endif %}
+                            {% endfor %}
                         </form>
                     </div>
                     <div class="hero__search__phone">
@@ -77,26 +83,38 @@
                         <h4>Department</h4>
                         <ul>
                             {% for categorie in Categories %}
-                                <li><a href="#">{{ categorie.nom }}</a></li>   
+                                <li><a href="?categorie={{ categorie.id }}">{{ categorie.nom }}</a></li>   
                             {% endfor %}
                         </ul>
                     </div>
                     <div class="sidebar__item">
-                        <h4>Price</h4>
-                        <div class="price-range-wrap">
-                            <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
-                                data-min="10" data-max="540">
-                                <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
-                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
-                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
-                            </div>
-                            <div class="range-slider">
-                                <div class="price-input">
-                                    <input type="text" id="minamount">
-                                    <input type="text" id="maxamount">
+                        <h4>Price Range</h4>
+                        <form method="get" action="{% url 'Ecommerce:shop' %}" id="filter-form">
+                            <!-- Slider pour la tranche de prix -->
+                            <div class="price-range-wrap">
+                                <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                     data-min="{{ prix_min_global }}" data-max="{{ prix_max_global }}">
+                                    <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                </div>
+                                <div class="range-slider">
+                                    <div class="price-input">
+                                        <input type="text" id="minamount" name="prix_min" value="{{ filter.form.prix_min.value|default_if_none:prix_min_global }}">
+                                        <input type="text" id="maxamount" name="prix_max" value="{{ filter.form.prix_max.value|default_if_none:prix_max_global }}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+
+                            <!-- Bouton de soumission -->
+                            <button type="submit" class="site-btn" style="margin-top: 20px;">Filter</button>
+                            <!-- Préserver les autres paramètres GET -->
+                            {% for key, value in request.GET.items %}
+                                {% if key != 'prix_min' and key != 'prix_max' %}
+                                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                {% endif %}
+                            {% endfor %}
+                        </form>
                     </div>
                     <div class="sidebar__item">
                         <div class="latest-product__text">
@@ -159,11 +177,19 @@
                         <div class="col-lg-4 col-md-5">
                             <div class="filter__sort">
                                 <span>Sort By</span>
-                                <select>
-                                    <option value="0">Default</option>
-                                    <option value="1">Price: Low to High</option>
-                                    <option value="2">Price: High to Low</option>
-                                </select>
+                                <form method="get" action="{% url 'Ecommerce:shop' %}" id="sort-form">
+                                    <select name="sort_by" onchange="this.form.submit()">
+                                        <option value="default" {% if sort_by == 'default' %}selected{% endif %}>Default</option>
+                                        <option value="price_low_to_high" {% if sort_by == 'price_low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                                        <option value="price_high_to_low" {% if sort_by == 'price_high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                                    </select>
+                                    <!-- Ajouter les autres paramètres pour les préserver -->
+                                    {% for key, value in request.GET.items %}
+                                        {% if key != 'sort_by' %}
+                                            <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </form>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-4">
@@ -173,10 +199,10 @@
                         </div>
                         <div class="col-lg-4 col-md-3">
                             <div class="filter__option">
-                                <a href="?view=grid{% if page_obj.number %}&page={{ page_obj.number }}{% endif %}" class="view-mode {% if view_mode == 'grid' %}active{% endif %}">
+                                <a href="?view=grid{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" class="view-mode {% if view_mode == 'grid' %}active{% endif %}">
                                     <span class="icon_grid-2x2"></span>
                                 </a>
-                                <a href="?view=list{% if page_obj.number %}&page={{ page_obj.number }}{% endif %}" class="view-mode {% if view_mode == 'list' %}active{% endif %}">
+                                <a href="?view=list{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}" class="view-mode {% if view_mode == 'list' %}active{% endif %}">
                                     <span class="icon_ul"></span>
                                 </a>
                             </div>
@@ -195,7 +221,7 @@
                                 </div>
                                 <div class="product__item__text">
                                     <h6><a href="{% url 'Ecommerce:detail' produit.slug %}">{{ produit.nom }}</a></h6>
-                                    <h5>{{ produit.prix_actuel }}</h5> <!-- Utilisation de prix_actuel pour cohérence -->
+                                    <h5>{{ produit.prix_actuel }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -205,17 +231,17 @@
                 </div>
                 <div class="product__pagination">
                     {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}{% if view_mode %}&view={{ view_mode }}{% endif %}">Previous</a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}">Previous</a>
                     {% endif %}
                     {% for num in page_obj.paginator.page_range %}
                         {% if page_obj.number == num %}
-                            <a href="?page={{ num }}{% if view_mode %}&view={{ view_mode }}{% endif %}" class="active">{{ num }}</a>
+                            <a href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}" class="active">{{ num }}</a>
                         {% else %}
-                            <a href="?page={{ num }}{% if view_mode %}&view={{ view_mode }}{% endif %}">{{ num }}</a>
+                            <a href="?page={{ num }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}">{{ num }}</a>
                         {% endif %}
                     {% endfor %}
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}{% if view_mode %}&view={{ view_mode }}{% endif %}">Next</a>
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}">Next</a>
                     {% endif %}
                 </div>
             </div>
@@ -223,4 +249,35 @@
     </div>
 </section>
 <!-- Product Section End -->
+
+<!-- Script pour initialiser le slider -->
+<script>
+    $(document).ready(function() {
+        // S'assurer que les valeurs sont des nombres valides
+        var defaultMin = parseInt('{{ prix_min_global }}') || 10;
+        var defaultMax = parseInt('{{ prix_max_global }}') || 540;
+
+        var minValue = parseInt($("#minamount").val()) || defaultMin;
+        var maxValue = parseInt($("#maxamount").val()) || defaultMax;
+
+        // S'assurer que maxValue est supérieur à minValue
+        if (maxValue <= minValue) {
+            maxValue = minValue + 100;
+        }
+
+        $(".price-range").slider({
+            range: true,
+            min: defaultMin,
+            max: maxValue,
+            values: [minValue, maxValue],
+            slide: function(event, ui) {
+                $("#minamount").val(ui.values[0]);
+                $("#maxamount").val(ui.values[1]);
+            }
+        });
+
+        $("#minamount").val($(".price-range").slider("values", 0));
+        $("#maxamount").val($(".price-range").slider("values", 1));
+    });
+</script>
 {% endblock %}

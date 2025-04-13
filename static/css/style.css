@@ -3111,6 +3111,34 @@ ol {
     --active-step: 0;
 }
 
+
+
+.blog__sidebar__item .filter-form {
+    margin-top: 15px;
+}
+
+.blog__sidebar__item .filter-group {
+    margin-bottom: 15px;
+}
+
+.blog__sidebar__item .filter-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.blog__sidebar__item .filter-group select,
+.blog__sidebar__item .filter-group input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e1e1e1;
+    border-radius: 4px;
+}
+
+.blog__sidebar__item .filter-group select[multiple] {
+    height: 100px;
+}
+
 /*--------------------------------- Responsive Media Quaries -----------------------------*/
 
 @media only screen and (min-width: 1200px) {
