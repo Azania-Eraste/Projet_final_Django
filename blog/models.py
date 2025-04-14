@@ -104,16 +104,3 @@ class Commentaire(models.Model):
     def __str__(self):
         return self.auteur_id.username
 
-
-class Like(models.Model):
-    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)  # L'utilisateur qui like
-    article = models.ForeignKey('blog.Article', related_name='likes', on_delete=models.CASCADE)  # L'article liké
-    date = models.DateTimeField(auto_now_add=True)  # Date du like
-
-    class Meta:
-        verbose_name = "like"
-        verbose_name_plural = "likes"
-        unique_together = ('utilisateur', 'article')  # Un utilisateur ne peut liker qu'une seule fois un article
-
-    def __str__(self):
-        return f"{self.utilisateur.username} a liké {self.article.titre}"

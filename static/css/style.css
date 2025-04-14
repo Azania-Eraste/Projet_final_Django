@@ -207,6 +207,27 @@ ol {
 	-webkit-animation: loader 0.8s linear infinite;
 }
 
+/* static/css/style.css */
+.like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s;
+}
+
+.like-btn:hover {
+    color: #ff4b2b;
+}
+
+.like-btn.liked {
+    color: #ff4b2b;
+}
+
+.like-btn i {
+    font-size: 1.2rem;
+}
+
 @keyframes loader {
 	0% {
 		-webkit-transform: rotate(0deg);

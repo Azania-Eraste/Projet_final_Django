@@ -16,7 +16,7 @@
                         <ul>
                             <li>By {{ article.auteur_id.username }}</li>
                             <li>{{ article.date_de_publicatio }}</li>
-                            <li>{{ article.article_commentaire_ids.count }} Commentaires </li>
+                            <li>{{ article.article_commentaire_ids.count }} Commentaires</li>
                         </ul>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                 <div class="col-lg-4 col-md-5 order-md-1 order-2">
                     <div class="blog__sidebar">
                         <div class="blog__sidebar__item">
-                            <h4>Recent News</h4>
+                            <h4>Articles récents</h4>
                             <div class="blog__sidebar__recent">
                                 {% for recent in recents %}
                                     <a href="{% url 'blog:detail' recent.slug %}" class="blog__sidebar__recent__item">
@@ -45,7 +45,7 @@
                                         </div>
                                     </a>
                                 {% empty %}
-                                    <p>No recent posts available.</p>
+                                    <p>Aucun article récent disponible.</p>
                                 {% endfor %}
                             </div>
                         </div>
@@ -68,8 +68,8 @@
                             <div class="col-lg-6">
                                 <div class="blog__details__widget">
                                     <ul>
-                                        <li><span>Categories:</span> {{ article.categorie_id.nom }}</li>
-                                        <li><span>Tags:</span>
+                                        <li><span>Catégorie :</span> {{ article.categorie_id.nom }}</li>
+                                        <li><span>Tags :</span>
                                             {% for tag in article.tag_ids.all %}
                                                 {{ tag.nom }}{% if not forloop.last %},{% endif %}
                                             {% empty %}
@@ -77,7 +77,6 @@
                                             {% endfor %}
                                         </li>
                                     </ul>
-                                    
                                 </div>
                             </div>
                         </div>
@@ -161,30 +160,94 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-title related-blog-title">
-                        <h2>Post You May Like</h2>
+                        <h2>Articles similaires</h2>
                     </div>
                 </div>
             </div>
             <div class="row">
-                {% for article in same_tag.all %}
-                <div class="col-lg-4 col-md-4 col-sm-6">
-                    <div class="blog__item">
-                        <div class="blog__item__pic">
-                            <img src="{{ article.couverture.url }}" alt="">
-                        </div>
-                        <div class="blog__item__text">
-                            <ul>
-                                <li><i class="fa fa-calendar-o"></i>{{ recent.date_de_publicatio }}</li>
-                                <li><i class="fa fa-comment-o"></i> {{ article.article_commentaire_ids.count }}</li>
-                            </ul>
-                            <h5><a href="#">{{ recent.titre }}</a></h5>
-                            <p>{{ article.resume }}</p>
+                {% for related_article in same_tag %}
+                    <div class="col-lg-4 col-md-4 col-sm-6">
+                        <div class="blog__item">
+                            <div class="blog__item__pic">
+                                <img src="{{ related_article.couverture.url }}" alt="">
+                            </div>
+                            <div class="blog__item__text">
+                                <ul>
+                                    <li><i class="fa fa-calendar-o"></i> {{ related_article.date_de_publicatio }}</li>
+                                    <li><i class="fa fa-comment-o"></i> {{ related_article.article_commentaire_ids.count }}</li>
+                                </ul>
+                                <h5><a href="{% url 'blog:detail' related_article.slug %}">{{ related_article.titre }}</a></h5>
+                                <p>{{ related_article.resume }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% empty %}
+                    <div class="col-lg-12">
+                        <p class="text-gray-500 italic">Aucun article similaire trouvé.</p>
+                    </div>
                 {% endfor %}
             </div>
         </div>
     </section>
     <!-- Related Blog Section End -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Script chargé !"); // Vérifier si le script est chargé
+
+    const likeButton = document.querySelector('.like-btn');
+    console.log("Bouton Like trouvé :", likeButton); // Vérifier si le bouton est trouvé
+
+    if (likeButton) {
+        likeButton.addEventListener('click', function() {
+            console.log("Bouton Like cliqué !"); // Vérifier si le clic est détecté
+
+            const slug = this.getAttribute('data-article-slug');
+            const url = `/blog/like/${slug}/`;
+            console.log("URL de la requête :", url); // Vérifier l'URL
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                console.log("Réponse reçue :", response); // Vérifier la réponse
+                return response.json();
+            })
+            .then(data => {
+                console.log("Données JSON :", data); // Vérifier les données renvoyées
+
+                // Mettre à jour l'icône du bouton
+                const icon = this.querySelector('i');
+                if (data.liked) {
+                    this.classList.add('liked');
+                    icon.classList.remove('fa-heart-o');
+                    icon.classList.add('fa-heart');
+                    this.title = "Retirer le like";
+                } else {
+                    this.classList.remove('liked');
+                    icon.classList.remove('fa-heart');
+                    icon.classList.add('fa-heart-o');
+                    this.title = "Liker";
+                }
+
+                // Mettre à jour le nombre de likes
+                const likeCountElement = document.querySelector(`.like-count[data-article-slug="${slug}"]`);
+                likeCountElement.textContent = data.like_count;
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+            });
+        });
+    } else {
+        console.log("Aucun bouton Like trouvé !");
+    }
+});
+</script>
 {% endblock %}
