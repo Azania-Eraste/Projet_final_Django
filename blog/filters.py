@@ -1,23 +1,31 @@
+from .models import Article, Categorie, Tag
 import django_filters
-from .models import Categorie, Tag, Article
 
 class ArticleFilter(django_filters.FilterSet):
-
     categorie = django_filters.ModelChoiceFilter(
-        field_name='categorie',
+        field_name='categorie_id',  # Utilisez 'categorie_id' pour correspondre au champ du modèle
         queryset=Categorie.objects.filter(statut=True),
-        label='Categories'
+        label='Catégories',
+        empty_label="Toutes les catégories"  # Option par défaut pour ne pas filtrer
     )
 
-    titre = django_filters.CharFilter(field_name='titre', lookup_expr='icontains', label='Titre', placeholder='Search....')
+    titre = django_filters.CharFilter(
+        field_name='titre',
+        lookup_expr='icontains',
+        label='Titre',
+    )
 
     tag = django_filters.ModelMultipleChoiceFilter(
-        field_name='tags',
+        field_name='tag_ids',  # Utilisez 'tag_ids' pour correspondre au champ ManyToMany
         queryset=Tag.objects.filter(statut=True),
-        label='Tags'
+        label='Tags',
     )
 
-    date_de_publication = django_filters.DateFilter(field_name='date_de_publication', lookup_expr='gte', label='Publié après')
+    date_de_publication = django_filters.DateFilter(
+        field_name='date_de_publicatio',  # Correspond au champ du modèle (notez la faute de frappe dans votre modèle : 'date_de_publicatio')
+        lookup_expr='gte',
+        label='Publié après',
+    )
 
     class Meta:
         model = Article
