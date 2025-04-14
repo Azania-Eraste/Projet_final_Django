@@ -72,11 +72,11 @@
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                {% if commande.paiements.first.statut_paiement == "EN_ATTENTE" %}
+                                                {% if commande.paiements.first.statut_paiement == "En attente" %}
                                                     <span class="badge badge-warning">En attente</span>
-                                                {% elif commande.paiements.first.statut_paiement == "EFFECTUE" %}
+                                                {% elif commande.paiements.first.statut_paiement == "Effectué" %}
                                                     <span class="badge badge-success">Payé</span>
-                                                {% elif commande.paiements.first.statut_paiement == "ECHOUE" %}
+                                                {% elif commande.paiements.first.statut_paiement == "Echoué" %}
                                                     <span class="badge badge-danger">Échoué</span>
                                                 {% endif %}
                                             </td>

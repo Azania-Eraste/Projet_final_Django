@@ -38,6 +38,7 @@ urlpatterns = [
     path('Dashboard/Commandes/<int:commande_id>/', views.commande_detail_view, name='commande_detail'),
     path('Dashboard/Commandes/<int:commande_id>/cancel/', views.commande_cancel_view, name='commande_cancel'),
     path("Dashboard/Paiement/", views.paiement_view, name="mode_paiement"),
+    path("Dashboard/Paiement/<int:paiement_id>", views.validate_payment, name="validate_payment"),
     path("Dashboard/Paiement/Remove/<int:mode_id>", views.paiement_remove, name="mode_paiement_remove"),
     path("Panier/", views.panier, name="panier"),
     path('Panier/Confirmation/<int:commande_id>/', views.confirmation, name='confirmation'),
@@ -54,5 +55,6 @@ urlpatterns = [
     path('privacy/', views.privacy_policy_view, name='privacy'),
     path('innovation/', views.innovation_view, name='innovation'),
     path('api_Ecommerce/', include(router.urls)),
+
     
 ]

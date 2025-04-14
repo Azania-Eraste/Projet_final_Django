@@ -1,12 +1,12 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import (
-    Produit, Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, 
+    Produit ,Panier, StatutCommande, VariationProduit, CategorieProduit, Favoris, 
     Commande, CommandeProduit, Paiement, Adresse, Mode, Livraison, Avis, StatutLivraison, StatutPaiement,TypePaiement
     )
 from django.contrib import messages
 from django.core.paginator import Paginator
-from Ecommerce.form import PanierQuantiteForm, CheckForm, ModePaiementForm, ModePaiementPanierForm
+from Ecommerce.form import PanierQuantiteForm, CheckForm, ModePaiementForm, ModePaiementPanierForm, AvisForm
 from django.contrib.auth import get_user_model
 from decimal import Decimal
 import stripe
@@ -16,10 +16,13 @@ from django.db.models import Min, Max
 from django.core.mail import EmailMessage
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.db import models
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
 # Create your views here.
+
 
 
 @login_required(login_url='Authentification:login')
@@ -72,6 +75,9 @@ def panier(request):
                                     quantite=cleaned_quantite,
                                     prix=prix_produit
                                 )
+                                produit.quantite = produit.quantite - cleaned_quantite
+                                print(produit.quantite)
+                                produit.save()
                                 print(f"Créé: {commande_produit}")
                                 print(form_valid)
                             else:
@@ -306,6 +312,12 @@ def confirmation(request, commande_id):
     commande = get_object_or_404(Commande, id=commande_id, utilisateur=request.user)
     paiement = commande.paiements.first()
 
+    print(paiement.statut_paiement)
+
+    print(StatutPaiement.EN_ATTENTE.value)
+
+    print(StatutPaiement.EN_ATTENTE.value == paiement.statut_paiement)
+
     # Vérifier si le paiement a été effectué
     if paiement.statut_paiement == StatutPaiement.EFFECTUE.value:
         commande.statut_commande = StatutCommande.CONFIRMEE.value
@@ -322,11 +334,14 @@ def confirmation(request, commande_id):
     elif paiement.statut_paiement == StatutPaiement.EN_ATTENTE.value:
         # Générer l'URL de validation pour l'email
         validation_path = reverse('Ecommerce:validate_payment', args=[paiement.id])
-        validation_url = f"http://{settings.SITE_URL}{validation_path}"  # URL complète
-
+        validation_url = f"{settings.SITE_URL}{validation_path}"  # URL complète
+        print("ça marche ? 1")
+        print(commande.mode.type_paiement)
+        print(commande.mode.type_paiement in [TypePaiement.MOBILE_MONEY.name, TypePaiement.CREDIT_CARD.name])
         # Envoyer un email pour MOBILE_MONEY et CREDIT_CARD
-        if commande.mode.type_paiement in [TypePaiement.MOBILE_MONEY.value, TypePaiement.CREDIT_CARD.value]:
+        if commande.mode.type_paiement in [TypePaiement.MOBILE_MONEY.name, TypePaiement.CREDIT_CARD.name]:
             # Préparer le contenu de l'email avec le nouveau template Bootstrap
+            print("ça marche ? 2")
             subject = "Validation de votre paiement"
             html_message = render_to_string('emails/payment_validation_email_bootstrap.html', {
                 'user': request.user,
@@ -588,39 +603,62 @@ def shop(request):
     return render(request, 'shop-grid.html', datas)
 
 def shop_detail(request, slug):
-
     categori = CategorieProduit.objects.filter(statut=True)
-    produit = VariationProduit.objects.get(slug=slug)
+    produit = get_object_or_404(VariationProduit, slug=slug)
+    produit_parent = produit.produit
+    avis_list = Avis.objects.filter(produit=produit, statut=True).order_by('-created_at')
+    
+    has_liked = Favoris.objects.filter(produit=produit, utilisateur=request.user)
+    # Calculer la note moyenne
+    moyenne_note = avis_list.aggregate(models.Avg('note'))['note__avg'] or 0
+    moyenne_note = round(moyenne_note, 1)
 
     panier_produits = None
     favoris_produits = None
+    form_avis = None
+    
+    same_produit = VariationProduit.objects.filter(produit=produit_parent, statut=True).exclude(id=produit.id).distinct()[:3]
 
     if request.user.is_authenticated:
-        # Gestion des favoris pour l'utilisateur connecté
         favoris, created = Favoris.objects.get_or_create(
             utilisateur=request.user,
             defaults={'statut': True}
         )
-        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+        favoris_produits = favoris.produit.all()
 
-        # Gestion du panier pour l'utilisateur connecté
         panier, created = Panier.objects.get_or_create(
             utilisateur=request.user,
             defaults={'statut': True}
         )
         panier_produits = panier.produits.all()
 
-    
+        if request.method == 'POST':
+            form_avis = AvisForm(request.POST)
+            if form_avis.is_valid():
+                avis = form_avis.save(commit=False)
+                avis.utilisateur = request.user
+                avis.produit = produit
+                avis.save()
+                messages.success(request, "Votre avis a été ajouté avec succès !")
+                return redirect('Ecommerce:detail', slug=slug)
+        else:
+            form_avis = AvisForm()
 
     datas = {
         'active_page': 'shop',
         'Categories': categori,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
-        'produit' : produit,
+        'produit': produit,
+        'avis_list': avis_list,
+        'form_avis': form_avis,
+        'moyenne_note': moyenne_note,  
+        'same_produit': same_produit,
+        'has_liked': has_liked,
     }
 
     return render(request, 'shop-details.html', datas)
+
 
 @login_required(login_url='Authentification:login')
 def profile_view(request):

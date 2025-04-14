@@ -88,7 +88,7 @@
                         </ul>
                     </div>
                     <div class="sidebar__item">
-                        <h4>Price Range</h4>
+                        <h4>Echelle de prix</h4>
                         <form method="get" action="{% url 'Ecommerce:shop' %}" id="filter-form">
                             <!-- Slider pour la tranche de prix -->
                             <div class="price-range-wrap">
@@ -231,7 +231,7 @@
                 </div>
                 <div class="product__pagination">
                     {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}">Previous</a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}"><<</a>
                     {% endif %}
                     {% for num in page_obj.paginator.page_range %}
                         {% if page_obj.number == num %}
@@ -241,7 +241,7 @@
                         {% endif %}
                     {% endfor %}
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}">Next</a>
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode|cut:'&page=' }}{% endif %}">>></a>
                     {% endif %}
                 </div>
             </div>

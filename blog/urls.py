@@ -22,4 +22,5 @@ urlpatterns = [
     path("Blog/<slug:slug>/update/<int:id>", views.commentaire_update, name="update_comment"),
     path("Blog/", views.blog, name="blog"),
     path('api_Blog/', include(router.urls)),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

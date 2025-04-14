@@ -86,7 +86,7 @@ class PaiementSerializer(serializers.ModelSerializer):
         model = Paiement
         fields = [
             'id', 'montant', 'utilisateur', 'utilisateur_id', 'mode', 'mode_id', 'commande',
-            'statut_paiement', 'payment_intent_id', 'est_actif', 'statut', 'created_at', 'last_updated_at'
+            'statut_paiement', 'payment_intent_id', 'statut', 'created_at', 'last_updated_at'
         ]
 
 # Serializer pour Livraison

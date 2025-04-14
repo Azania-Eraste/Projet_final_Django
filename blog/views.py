@@ -11,6 +11,9 @@ from django.http import JsonResponse
 
 # Create your views here.
 
+
+
+
 def index(request):
     panier_produits = None
     favoris_produits = None
@@ -183,7 +186,7 @@ def blog_single(request, slug):
             commentaire.article_id = article
             commentaire.save()
             messages.success(request, "Votre commentaire a été ajouté avec succès !")
-            return redirect('blog:article', slug=article.slug)
+            return redirect('blog:detail', slug=article.slug)
     else:
         form_comment = CommentaireForm()
 

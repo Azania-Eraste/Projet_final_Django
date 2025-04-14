@@ -1,5 +1,5 @@
 from django import forms
-from .models import Mode, TypePaiement, Commune
+from .models import Mode, TypePaiement, Commune, Avis
 
 class CheckForm(forms.Form):
     nom = forms.CharField(
@@ -173,3 +173,24 @@ class ModePaiementForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+
+class AvisForm(forms.ModelForm):
+    class Meta:
+        model = Avis
+        fields = ['note', 'commentaire']
+        widgets = {
+            'note': forms.NumberInput(attrs={'min': 1, 'max': 5, 'class': 'form-control'}),
+            'commentaire': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Votre commentaire...'}),
+        }
+        labels = {
+            'note': 'Note (1 à 5)',
+            'commentaire': 'Commentaire',
+        }
+
+    def clean_note(self):
+        note = self.cleaned_data['note']
+        if note < 1 or note > 5:
+            raise forms.ValidationError("La note doit être comprise entre 1 et 5.")
+        return note

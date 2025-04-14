@@ -9,10 +9,10 @@
         <div class="container">
             <div class="row">
                 <div class="categories__slider owl-carousel">
-                    {% for categorie in categories_produit %}
+                    {% for categorie in Categories %}
                         <div class="col-lg-3">
                             <div class="categories__item set-bg" data-setbg="{{ categorie.couverture.url }}">
-                                <h5><a href="#">{{ categorie.nom }}</a></h5>
+                                <h5><a href="{% url 'Ecommerce:shop' %}?categorie={{ categorie.id }}">{{ categorie.nom }}</a></h5>  
                             </div>
                         </div>
                     {% endfor %}
@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-title">
-                        <h2>Produit vedette</h2>
+                        <h2>Quelques Produits</h2>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-title from-blog__title">
-                        <h2>From The Blog</h2>
+                        <h2>Article du Blog</h2>
                     </div>
                 </div>
             </div>

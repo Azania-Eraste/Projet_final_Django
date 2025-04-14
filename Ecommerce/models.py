@@ -334,7 +334,7 @@ class Panier(models.Model):
 
 class Avis(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
-    produit = models.ForeignKey("Ecommerce.Produit", on_delete=models.CASCADE)
+    produit = models.ForeignKey("Ecommerce.VariationProduit", on_delete=models.CASCADE)
     note = models.IntegerField()
     commentaire = models.TextField()
     date = models.DateField(auto_now_add=True)
@@ -360,7 +360,7 @@ class CodePromo(models.Model):
 
 class Favoris(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
-    produit = models.ManyToManyField("Ecommerce.VariationProduit")
+    produit = models.ManyToManyField("Ecommerce.VariationProduit", related_name="Favoris_ids")
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

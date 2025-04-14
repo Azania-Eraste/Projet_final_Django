@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="description" content="Ogani, vente de produits vivriers en Côte d'Ivoire">
-    <title>Ogani | Template</title>
+    <title>Organic</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
@@ -153,7 +153,7 @@
                             </div>
                             <ul>
                                 {% for categorie in Categories %}
-                                    <li><a href="#">{{ categorie.nom }}</a></li>   
+                                    <li><a href="{% url 'Ecommerce:shop' %}?categorie={{ categorie.id }}">{{ categorie.nom }}</a></li>   
                                 {% endfor %}
                             </ul>
                         </div>

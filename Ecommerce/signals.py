@@ -10,5 +10,6 @@ def create_default_payment_mode(sender, instance, created, **kwargs):
         Mode.objects.create(
             utilisateur=instance,
             type_paiement=TypePaiement.LIQUIDE.value,
-            statut=True
+            statut=True,
+            nom = "liquide"
         )
