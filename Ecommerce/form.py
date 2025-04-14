@@ -58,12 +58,26 @@ class ModePaiementPanierForm(forms.Form):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user:
+            # Vérifier si l'utilisateur a un mode "Liquide"
+            if not Mode.objects.filter(
+                utilisateur=user,
+                type_paiement=TypePaiement.LIQUIDE.value,
+                statut=True
+            ).exists():
+                # Créer un mode "Liquide" si aucun n'existe
+                Mode.objects.create(
+                    utilisateur=user,
+                    type_paiement=TypePaiement.LIQUIDE.value,
+                    statut=True
+                )
+            # Charger tous les modes de paiement de l'utilisateur
             self.fields['mode_paiement'].queryset = Mode.objects.filter(
                 utilisateur=user,
                 statut=True
             )
         else:
             self.fields['mode_paiement'].queryset = Mode.objects.none()
+
 
 class PanierQuantiteForm(forms.Form):
     quantite = forms.IntegerField(min_value=1, required=True)

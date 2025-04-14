@@ -100,7 +100,7 @@
                 <div class="col-lg-8 col-md-7 order-md-1 order-1">
                     <div class="blog__details__text">
                         <img src="{{ article.couverture.url }}" alt="">
-                        {{ article.contenu }}
+                        {{ article.contenu | safe }}
                     <div class="blog__details__content">
                         <div class="row">
                             <div class="col-lg-6">
@@ -110,7 +110,6 @@
                                     </div>
                                     <div class="blog__details__author__text">
                                         <h6>{{ article.auteur_id.username }}</h6>
-                                        <span>Admin</span>
                                     </div>
                                 </div>
                             </div>

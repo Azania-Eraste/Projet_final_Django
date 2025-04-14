@@ -9,6 +9,8 @@ from django.conf import settings
 from django.urls import reverse
 from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -41,6 +43,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('blog:index')
+
 
 def register_view(request):
     form = RegisterForm(request.POST or None)
@@ -87,32 +90,20 @@ def register_view(request):
 
             # Contenu de l'email
             subject = "Activation de votre compte"
-            html_message = f"""
-            <html>
-            <body style="font-family: Arial, sans-serif; padding: 20px;">
-                <p style="text-align: center; color: green; font-size: 18px; font-weight: bold;">
-                    Bonjour {user.username}, merci de vous être inscrit !
-                </p>
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="{activation_link}" 
-                       style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; 
-                              border-radius: 5px; display: inline-block;">
-                        Activer mon compte
-                    </a>
-                </div>
-                <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
-                    Si vous n'avez pas demandé cette inscription, ignorez cet email.
-                </p>
-            </body>
-            </html>
-            """
-            email_message = EmailMessage(
-                subject,
-                html_message,
-                settings.EMAIL_HOST_USER,
-                [user.email]
+            html_message = render_to_string('emails/activation_email.html', {
+                'user': user,
+                'activation_link': activation_link,
+            })
+            plain_message = f"Bonjour {user.username},\n\nMerci de vous être inscrit sur notre site.\nPour activer votre compte, veuillez cliquer sur ce lien : {activation_link}\n\nSi vous n'avez pas demandé cette inscription, ignorez cet email.\n\nVotre Boutique"
+
+            # Envoyer l'email avec une version texte et HTML
+            email_message = EmailMultiAlternatives(
+                subject=subject,
+                body=plain_message,  # Version texte
+                from_email=settings.EMAIL_HOST_USER,
+                to=[user.email]
             )
-            email_message.content_subtype = "html"
+            email_message.attach_alternative(html_message, "text/html")  # Version HTML
             email_message.send(fail_silently=False)
 
             messages.success(request, "Un email d'activation vous a été envoyé.")
@@ -122,6 +113,7 @@ def register_view(request):
             messages.error(request, f"Une erreur est survenue : {str(e)}")
 
     return render(request, "register.html", {"form": form})
+
 
 def forgetpassword(request):
     if request.method == 'POST':
@@ -134,38 +126,28 @@ def forgetpassword(request):
                 messages.error(request, "Aucun compte associé à cet email.")
                 return render(request, 'forgetpassword.html', {'form': form})
             
+            # Génération du lien de réinitialisation
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             reset_link = f"{settings.SITE_URL}/Auth/forget-password/{uid}/{token}/"
 
+            # Contenu de l'email
             subject = "Réinitialisation de votre mot de passe"
-            html_message = f"""
-            <html>
-            <body style="font-family: Arial, sans-serif; padding: 20px;">
-                <p style="text-align: center; color: yellow; font-size: 18px; font-weight: bold;">
-                    Bonjour {user.username}, réinitialisez votre mot de passe !
-                </p>
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="{reset_link}" 
-                       style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; 
-                              border-radius: 5px; display: inline-block;">
-                        Réinitialiser mon mot de passe
-                    </a>
-                </div>
-                <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
-                    Si vous n'avez pas effectué cette demande, ignorez cet email.
-                </p>
-            </body>
-            </html>
-            """
-            email = EmailMessage(
-                subject,
-                html_message,
-                settings.EMAIL_HOST_USER,
-                [user.email]
+            html_message = render_to_string('emails/reset_password_email.html', {
+                'user': user,
+                'reset_link': reset_link,
+            })
+            plain_message = f"Bonjour {user.username},\n\nVous avez demandé à réinitialiser votre mot de passe.\nPour procéder, veuillez cliquer sur ce lien : {reset_link}\n\nSi vous n'avez pas effectué cette demande, ignorez cet email.\n\nVotre Boutique"
+
+            # Envoyer l'email avec une version texte et HTML
+            email_message = EmailMultiAlternatives(
+                subject=subject,
+                body=plain_message,  # Version texte
+                from_email=settings.EMAIL_HOST_USER,
+                to=[user.email]
             )
-            email.content_subtype = "html"  # Indique que le contenu est HTML
-            email.send(fail_silently=False)
+            email_message.attach_alternative(html_message, "text/html")  # Version HTML
+            email_message.send(fail_silently=False)
 
             messages.success(request, "Un email de réinitialisation a été envoyé.")
             return redirect("Authentification:login")
@@ -173,6 +155,7 @@ def forgetpassword(request):
         form = ForgetPasswordForm() 
 
     return render(request, 'forgetpassword.html', {'form': form})
+
 
 def active_account(request, uidb64, token):
     try:

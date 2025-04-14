@@ -87,11 +87,14 @@ class LivraisonAdmin(admin.ModelAdmin):
 
 @admin.register(Mode)
 class ModeAdmin(admin.ModelAdmin):
-    list_display = ("nom",)
+    list_display = ("nom","type_paiement")
     search_fields = ("nom",)
     fieldsets = (
         ("Informations principales", {
-            "fields": ("nom", "description")
+            "fields": ("nom", "description","type_paiement","utilisateur")
+        }),
+        ("Informations spécifiques", {
+            "fields": ("numero_tel","numero","expiration","code")
         }),
         ("Métadonnées", {
             "fields": ("statut",),  # Ajout de la virgule
@@ -101,12 +104,12 @@ class ModeAdmin(admin.ModelAdmin):
 
 @admin.register(Paiement)
 class PaiementAdmin(admin.ModelAdmin):
-    list_display = ("montant", "mode", "statut_paiement")
+    list_display = ("commande","montant", "mode", "statut_paiement")
     list_filter = ("statut_paiement",)
     search_fields = ("mode__nom",)
     fieldsets = (
         ("Informations principales", {
-            "fields": ("montant", "mode", "statut_paiement")
+            "fields": ("commande","montant", "mode", "statut_paiement","payment_intent_id")
         }),
         ("Métadonnées", {
             "fields": ("statut",),  # Ajout de la virgule
@@ -178,7 +181,7 @@ class AdresseAdmin(admin.ModelAdmin):
     search_fields = ("commune__nom",)
     fieldsets = (
         ("Informations principales", {
-            "fields": ("commune",)
+            "fields": ("nom","commune",)
         }),
         ("Métadonnées", {
             "fields": ("statut",),  # Ajout de la virgule

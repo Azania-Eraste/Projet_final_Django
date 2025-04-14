@@ -156,23 +156,28 @@ class Paiement(models.Model):
     montant = models.FloatField()
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     mode = models.ForeignKey("Ecommerce.Mode", on_delete=models.CASCADE, related_name="ModePaiement")
-    commande = models.ForeignKey("Ecommerce.Commande", on_delete=models.CASCADE, related_name="paiements", null=True)  # Ajout de la relation avec Commande
+    
     statut_paiement = models.CharField(
         max_length=50,
         choices=[(tag.name, tag.value) for tag in StatutPaiement],
-        default=StatutPaiement.EN_ATTENTE.name
+        default=StatutPaiement.EN_ATTENTE.value
     )
     payment_intent_id = models.CharField(max_length=255, null=True, blank=True)  # Ajout du champ pour stocker l'ID du Payment Intent
-    est_actif = models.BooleanField(default=True)
+
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
+    commande = models.ForeignKey("Ecommerce.Commande", on_delete=models.CASCADE, related_name="paiements", null=True)  # Ajout de la relation avec Commande
 
     def effectuer_paiement(self):
-        if self.mode.type == "Paiement à la livraison":
+        if self.mode.type_paiement == "Liquide":
+            print(f"Avant mise à jour statut_paiement : {self.statut_paiement}")
             self.statut_paiement = StatutPaiement.EFFECTUE.name
+            print(f"Après mise à jour statut_paiement : {self.statut_paiement}")
             self.save()
+            print(f"Après sauvegarde : {self.statut_paiement}")
             return True
+        print(f"Mode de paiement non éligible pour effectuer_paiement : {self.mode.type}")
         return False
 
     def __str__(self):

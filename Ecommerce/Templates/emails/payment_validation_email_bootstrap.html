@@ -1,0 +1,66 @@
+<script type="text/javascript">
+    var gk_fileData = {};
+    function loadFileData(filename) {
+      return gk_fileData[filename] || "";
+    }
+    </script><!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation de Paiement</title>
+    <!-- Inclure Bootstrap via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        /* Ajouter des styles personnalisés si nécessaire */
+        body {
+            background-color: #f8f9fa;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1 class="mb-0">Validation de Paiement</h1>
+        </div>
+        <div class="content">
+            <h2 class="text-center mb-4">Bonjour {{ user.username }} !</h2>
+            <p class="text-center">Merci pour votre commande n°{{ commande.id }}.</p>
+            <p class="text-center">Pour finaliser votre paiement, veuillez cliquer sur le bouton ci-dessous :</p>
+            <div class="text-center">
+                <a href="{{ validation_url }}" class="btn btn-primary btn-lg">Valider le Paiement</a>
+            </div>
+            <p class="text-center mt-4">Si vous n'avez pas initié cette commande, veuillez nous contacter immédiatement.</p>
+        </div>
+        <div class="footer">
+            <p>© 2025 Votre Boutique. Tous droits réservés.</p>
+        </div>
+    </div>
+    <!-- Inclure le JS de Bootstrap (optionnel, pour certains composants interactifs) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bk" crossorigin="anonymous"></script>
+</body>
+</html>

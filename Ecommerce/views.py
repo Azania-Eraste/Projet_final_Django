@@ -13,6 +13,9 @@ import stripe
 from django.conf import settings
 from .filters import VariationProduitFilter
 from django.db.models import Min, Max
+from django.core.mail import EmailMessage
+from django.urls import reverse
+from django.template.loader import render_to_string
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
@@ -174,16 +177,16 @@ def checkout(request):
 
             # Vérifier si une adresse existe déjà
             adresse_existante = Adresse.objects.filter(
-                utilisateur=user,
                 commune=commune,
                 statut=True
             ).first()
-
+            print(f"===================================={adresse_existante} & {commune.nom}")
             if adresse_existante:
                 adresse = adresse_existante
+                adresse.utilisateur.add(user)
             else:
                 adresse = Adresse.objects.create(
-                    nom=f"{commune.nom} {commune.ville.nom}",
+                    nom=f"{commune.nom} - {commune.ville.nom}",
                     commune=commune,
                     statut=True
                 )
@@ -224,12 +227,13 @@ def checkout(request):
                     commande=commande,
                     statut_paiement=StatutPaiement.EN_ATTENTE.value
                 )
-
+                print(f"Après création : {paiement.statut_paiement}")
+                print(f"Avant effectuer_paiement : {paiement.statut_paiement}")
             # Gérer les différents modes de paiement
             if commande.mode.type_paiement == TypePaiement.LIQUIDE.value:
                 # Paiement à la livraison
                 if paiement.effectuer_paiement():
-
+                    print(f"Après effectuer_paiement : {paiement.statut_paiement}")
                     messages.success(request, "Commande confirmée avec succès (paiement à la livraison).")
                     return redirect("Ecommerce:confirmation", commande_id=commande.id)
 
@@ -246,7 +250,7 @@ def checkout(request):
 
                     paiement.payment_intent_id = payment_intent.id
                     paiement.save()
-
+                    print(f"Après effectuer_paiement : {paiement.statut_paiement}")
                     messages.info(request, "Veuillez compléter le paiement via Stripe pour confirmer votre commande.")
                     return redirect("Ecommerce:confirmation", commande_id=commande.id)
 
@@ -265,7 +269,7 @@ def checkout(request):
                 simulated_transaction_id = f"simulated-{commande.id}-{int(prix_total)}"
                 paiement.payment_intent_id = simulated_transaction_id
                 paiement.save()
-
+                print(f"Après effectuer_paiement : {paiement.statut_paiement}")
                 messages.info(request, f"Simulation : Une demande de paiement a été envoyée à {phone_number}. Veuillez confirmer le paiement sur votre téléphone.")
                 return redirect("Ecommerce:confirmation", commande_id=commande.id)
 
@@ -278,7 +282,7 @@ def checkout(request):
 
         else:
             messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
-
+    
     # Calcul du total avec les frais (pour affichage initial)
     total_avec_frais = sous_total + frais_livraison
 
@@ -295,7 +299,6 @@ def checkout(request):
         'active_page': 'shop',
     }
     return render(request, 'checkout.html', datas)
-
 
 
 @login_required(login_url='Authentification:login')
@@ -317,6 +320,30 @@ def confirmation(request, commande_id):
         return redirect('Ecommerce:checkout')
 
     elif paiement.statut_paiement == StatutPaiement.EN_ATTENTE.value:
+        # Générer l'URL de validation pour l'email
+        validation_path = reverse('Ecommerce:validate_payment', args=[paiement.id])
+        validation_url = f"http://{settings.SITE_URL}{validation_path}"  # URL complète
+
+        # Envoyer un email pour MOBILE_MONEY et CREDIT_CARD
+        if commande.mode.type_paiement in [TypePaiement.MOBILE_MONEY.value, TypePaiement.CREDIT_CARD.value]:
+            # Préparer le contenu de l'email avec le nouveau template Bootstrap
+            subject = "Validation de votre paiement"
+            html_message = render_to_string('emails/payment_validation_email_bootstrap.html', {
+                'user': request.user,
+                'commande': commande,
+                'validation_url': validation_url,
+            })
+
+            # Envoyer l'email
+            email_message = EmailMessage(
+                subject,
+                html_message,
+                settings.EMAIL_HOST_USER,
+                [request.user.email]
+            )
+            email_message.content_subtype = "html"
+            email_message.send(fail_silently=False)
+
         if commande.mode.type_paiement == TypePaiement.CREDIT_CARD.value:
             # Vérifier l'état du Payment Intent avec Stripe
             try:
@@ -327,10 +354,8 @@ def confirmation(request, commande_id):
                     paiement.save()
                     commande.save()
                 else:
-                    paiement.statut_paiement = StatutPaiement.ECHOUE.value
-                    paiement.save()
-                    messages.error(request, "Le paiement a échoué. Veuillez réessayer.")
-                    return redirect('Ecommerce:checkout')
+                    # Ne pas mettre à jour le statut ici, attendre que l'utilisateur clique sur le bouton dans l'email
+                    pass
             except stripe.error.StripeError as e:
                 messages.error(request, f"Erreur lors de la vérification du paiement : {str(e)}")
                 return redirect('Ecommerce:checkout')
@@ -339,13 +364,8 @@ def confirmation(request, commande_id):
             # Simulation de la vérification du paiement Mobile Money
             transaction_id = paiement.payment_intent_id
             if transaction_id.startswith("simulated-"):
-                # Simuler un paiement réussi
-                paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-                commande.statut_commande = StatutCommande.CONFIRMEE.value
-                paiement.save()
-                commande.save()
-                messages.success(request, "Simulation : Paiement Mobile Money confirmé avec succès !")
-                return redirect('Ecommerce:commandes')  # Redirection vers Ecommerce:commandes
+                # Ne pas confirmer ici, attendre que l'utilisateur clique sur le bouton dans l'email
+                pass
             else:
                 # Simuler un échec (optionnel)
                 paiement.statut_paiement = StatutPaiement.ECHOUE.value
@@ -362,16 +382,33 @@ def confirmation(request, commande_id):
             messages.success(request, "Commande confirmée avec succès !")
             return redirect('Ecommerce:commandes')  # Redirection vers Ecommerce:commandes
 
-    # Afficher la page de confirmation uniquement pour CREDIT_CARD
-    if commande.mode.type_paiement == TypePaiement.CREDIT_CARD.value:
+    # Afficher la page de confirmation uniquement pour CREDIT_CARD et MOBILE_MONEY
+    if commande.mode.type_paiement in [TypePaiement.CREDIT_CARD.value, TypePaiement.MOBILE_MONEY.value]:
+        messages.info(request, "Un email de validation a été envoyé. Veuillez vérifier votre boîte de réception pour confirmer le paiement.")
         return render(request, 'confirmation.html', {
             'commande': commande,
         })
     else:
-        # Par sécurité, rediriger vers Ecommerce:commandes si le mode de paiement n'est pas CREDIT_CARD
+        # Par sécurité, rediriger vers Ecommerce:commandes si le mode de paiement n'est pas CREDIT_CARD ou MOBILE_MONEY
         return redirect('Ecommerce:commandes')
 
 
+@login_required(login_url='Authentification:login')
+def validate_payment(request, paiement_id):
+    paiement = get_object_or_404(Paiement, id=paiement_id, utilisateur=request.user)
+    commande = paiement.commande
+
+    # Vérifier que le paiement est en attente
+    if paiement.statut_paiement == StatutPaiement.EN_ATTENTE.value:
+        paiement.statut_paiement = StatutPaiement.EFFECTUE.value
+        commande.statut_commande = StatutCommande.CONFIRMEE.value
+        paiement.save()
+        commande.save()
+        messages.success(request, "Paiement validé avec succès !")
+    else:
+        messages.error(request, "Le paiement a déjà été traité ou n'est pas en attente.")
+
+    return redirect('Ecommerce:commandes')
 
 @login_required(login_url='Authentification:login')
 def add_panier(request, slug):
@@ -638,26 +675,7 @@ def commandes_view(request):
         )
         panier_produits = panier.produits.all()
 
-    # Vérifier l'état des paiements Stripe pour les commandes en attente
-    # for commande in commandes:
-    #     if commande.mode.type_paiement == TypePaiement.CREDIT_CARD.value:
-    #         paiement = commande.paiements.first()
-    #         if paiement and paiement.statut_paiement == StatutPaiement.EN_ATTENTE.value and paiement.payment_intent_id:
-    #             try:
-    #                 payment_intent = stripe.PaymentIntent.retrieve(paiement.payment_intent_id)
-    #                 if payment_intent.status == 'succeeded':
-    #                     paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-    #                     commande.statut_commande = StatutCommande.CONFIRMEE.value
-    #                     paiement.save()
-    #                     commande.save()
-    #                 elif payment_intent.status == 'requires_payment_method' or payment_intent.status == 'requires_confirmation':
-    #                     # Le paiement est en attente, l'utilisateur doit le compléter
-    #                     commande.client_secret = payment_intent.client_secret
-    #                 else:
-    #                     paiement.statut_paiement = StatutPaiement.ECHOUE.value
-    #                     paiement.save()
-    #             except stripe.error.StripeError as e:
-    #                 messages.error(request, f"Erreur lors de la vérification du paiement pour la commande {commande.id} : {str(e)}")
+
 
     datas = {
         'active_page': 'shop',
@@ -812,7 +830,12 @@ def commande_detail_view(request, commande_id):
             defaults={'statut': True}
         )
         panier_produits = panier.produits.all()
-        print(livraison.statut_livraison)
+    print(livraison.statut_livraison)
+    paiement = Paiement.objects.filter(
+        utilisateur = request.user,
+        commande = commande
+        )
+    print(f"=============================================={paiement}")
     datas = {
         'active_page': 'shop',
         'favoris_produit': favoris_produits,
@@ -820,6 +843,7 @@ def commande_detail_view(request, commande_id):
         'commande': commande,
         'livraison': livraison,
         'mode': mode,
+        'paiement': paiement,
     }
 
     return render(request, 'commande_detail.html', datas)

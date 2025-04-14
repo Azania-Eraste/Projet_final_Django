@@ -65,13 +65,18 @@
                                             {{ livraison.statut_livraison }}
                                         </span>
                                     </li>
-                                    <li><strong>Mode de paiement :</strong> <span>{{ commande.mode.nom }}</span></li>
+                                    <li><strong>Statut du paiement :</strong> 
+                                        <span class="{% if paiement.statut_paiement == 'Effectué' %}text-green-600{% else %}text-orange-600{% endif %}">
+                                            {{commande.paiements.first.statut_paiement }}
+                                        </span>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="col-lg-6">
                                 <ul>
                                     <li><strong>Adresse de livraison :</strong> <span>{{ livraison.adresse.nom }}</span></li>
                                     <li><strong>Téléphone :</strong> <span>{{ livraison.numero_tel }}</span></li>
+                                    <li><strong>Mode de paiement :</strong> <span>{{ commande.mode.nom }}</span></li>
                                 </ul>
                             </div>
                         </div>
