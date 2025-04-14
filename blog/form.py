@@ -42,17 +42,30 @@ class StandardsForm(forms.ModelForm):
             'statut': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-class CommentaireForm(forms.ModelForm):  # Correct
+class CommentaireForm(forms.ModelForm):
     class Meta:
         model = Commentaire
         fields = ['contenu']
-
+        labels = {
+            'contenu': 'Votre commentaire',
+        }
         widgets = {
             'contenu': forms.Textarea(attrs={
-            'class': 'w-full h-24 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500',
-            'placeholder': 'Écrivez votre commentaire ici...',
-            'rows': 5,
-            'cols': 50
+                'class': 'w-full h-24 px-4 py-2 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400',
+                'placeholder': 'Écrivez votre commentaire ici...',
+                'rows': 4,
+                'cols': 50,
+            }),
+        }
+        error_messages = {
+            'contenu': {
+                'required': 'Le champ commentaire est requis.',
+                'max_length': 'Le commentaire est trop long.',
+            },
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['contenu'].widget.attrs.update({
+            'required': True,  # Ajoute l'attribut HTML required
         })
-            
-        } 

@@ -5,6 +5,8 @@ from blog.models import Article, Commentaire, Categorie, Tag
 from django.contrib import messages
 from Ecommerce.models import VariationProduit,Panier,Favoris, CategorieProduit
 from blog.form import InfosGeneralesForm, ContenuForm, StandardsForm, CommentaireForm
+from .filters import ArticleFilter
+
 
 # Create your views here.
 
@@ -98,11 +100,65 @@ def contact(request):
 
 
 def blog(request):
+    # Initialisation du queryset de base
     articles = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")
-    
-    paginator = Paginator(articles, 6)
+
+    # Appliquer les filtres
+    filter_set = ArticleFilter(request.GET, queryset=articles)
+    filtered_articles = filter_set.qs
+
+    # Pagination des articles filtrés
+    paginator = Paginator(filtered_articles, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    # Gestion des favoris et du panier pour les utilisateurs connectés
+    panier_produits = None
+    favoris_produits = None
+    if request.user.is_authenticated:
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        favoris_produits = favoris.produit.all()
+
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user,
+            defaults={'statut': True}
+        )
+        panier_produits = panier.produits.all()
+
+    # Données supplémentaires pour le contexte
+    categori = CategorieProduit.objects.filter(statut=True)
+    categories_article = Categorie.objects.filter(statut=True)
+    tag = Tag.objects.filter(statut=True)
+    recents = articles[:3]
+
+    datas = {
+        "articles": filtered_articles,  # Articles filtrés
+        "page_obj": page_obj,
+        "filter": filter_set,  # Passer l'instance du filtre pour le formulaire
+        'Categories': categori,
+        'Categories_article': categories_article,
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+        'active_page': 'blog',
+        'Tags': tag,
+        'recents': recents,
+    }
+
+    return render(request, 'blog.html', datas)
+
+
+@login_required(login_url='Authentification:login')
+def blog_single(request, slug):
+    article = get_object_or_404(Article, slug=slug)
+    form = CommentaireForm()
+    categories_article = Categorie.objects.filter(statut=True)
+    tags = Tag.objects.filter(statut=True)
+    categories_produit = CategorieProduit.objects.filter(statut=True)
+    recents = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")[:3]
+    related_articles = Article.objects.filter(tag_ids__in=article.tag_ids.all()).exclude(slug=slug).distinct()[:3]
 
     panier_produits = None
     favoris_produits = None
@@ -120,41 +176,17 @@ def blog(request):
         )
         panier_produits = panier.produits.all()
 
-    categori = CategorieProduit.objects.filter(statut=True)
-    categories_article = Categorie.objects.filter(statut=True)
-    tag = Tag.objects.filter(statut=True)
-    recents = articles[:3]
-
     datas = {
-        "articles": articles,
-        "page_obj": page_obj,
-        'Categories': categori,
-        'Categories_article': categories_article,
+        "article": article,
+        "form_comment": form,
+        "categories_produit": categories_produit,
+        "categories_article": categories_article,
+        "tags": tags,
         'favoris_produit': favoris_produits,
         'panier_produit': panier_produits,
         'active_page': 'blog',
-        'Tags': tag,
-        'recents': recents,
-    }
-
-    return render(request, 'blog.html', datas)
-
-def blog_single(request, slug):
-    article = get_object_or_404(Article, slug=slug)
-    form = CommentaireForm()
-    categories_article = Categorie.objects.filter(statut=True)
-    tag = Tag.objects.filter(statut=True)
-    categori = CategorieProduit.objects.filter(statut=True)
-    recents = Article.objects.filter(est_publie=True, statut=True).order_by("-created_at")[:3]
-
-    
-    datas = {
-        "article" : article,
-        "form_comment" : form,
-        'Categories': categori,
-        'Categories_article': categories_article,
-        'Tags': tag,
-        'recents': recents,
+        "recents": recents,
+        "related_articles": related_articles
     }
 
     if request.method == "POST":
@@ -166,7 +198,10 @@ def blog_single(request, slug):
                 contenu=form.cleaned_data["contenu"]
             )
             messages.success(request, "Votre commentaire a été ajouté avec succès !")
-            return redirect("blog:article", slug=article.slug)
+            return redirect("blog:detail", slug=article.slug)
+        else:
+            messages.error(request, "Erreur dans le formulaire de commentaire. Veuillez vérifier vos saisies.")
+            datas["form_comment"] = form
 
     return render(request, 'blog-single.html', datas)
 
@@ -179,7 +214,7 @@ def commentaire_delete(request, slug, id):
     commentaire.delete()
     messages.success(request, "Commentaire supprimé avec succès.")
 
-    return redirect("blog:article", slug=article.slug)
+    return redirect("blog:detail", slug=article.slug)
 
 @login_required(login_url='Authentification:login')
 def commentaire_update(request, slug, id):
@@ -192,7 +227,7 @@ def commentaire_update(request, slug, id):
         if form_comment.is_valid():
             form_comment.save()
             messages.success(request, "Commentaire mis à jour avec succès !")
-            return redirect('blog:article', slug=article.slug)  # Redirection vers l'article mis à jour
+            return redirect('blog:detail', slug=article.slug)  # Redirection vers l'article mis à jour
         else:
             messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
 
