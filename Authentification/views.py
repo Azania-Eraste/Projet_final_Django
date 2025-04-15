@@ -46,6 +46,7 @@ def logout_view(request):
 
 
 def register_view(request):
+    
     form = RegisterForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
