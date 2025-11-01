@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr-FR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="Ogani, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Ogani, vente de produits vivriers en Côte d'Ivoire">
+    <title>Organic</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css">
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+    <!-- Humberger Begin -->
+    <div class="humberger__menu__overlay"></div>
+    <div class="humberger__menu__wrapper">
+        <div class="humberger__menu__logo">
+            <a href="#"><img src="{% static 'img/logo.png' %}" alt=""></a>
+        </div>
+        <div class="humberger__menu__cart">
+            <ul>
+                <li><a href="{% url 'Ecommerce:favorite' %}"><i class="fa fa-heart"></i> <span>{{ favoris_produit.count }}</span></a></li>
+                <li><a href="{% url 'Ecommerce:panier' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
+            </ul>
+            
+        </div>
+        <div class="humberger__menu__widget">
+            <div class="header__top__right__auth">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
+                {% else %}
+                    <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
+                {% endif %}
+            </div>
+        </div>
+        <nav class="humberger__menu__nav mobile-menu">
+            <ul>
+                <li class="active"><a href="{% url 'blog:index' %}">Home</a></li>
+                <li><a href="{% url 'Ecommerce:shop' %}">Shop</a></li>
+                <li><a href="{% url 'blog:blog' %}">Blog</a></li>
+                <li><a href="{% url 'blog:contact' %}">Contact</a></li>
+                <li><a href="{% url 'Ecommerce:about' %}">About Us</a></li>
+            </ul>
+        </nav>
+        <div id="mobile-menu-wrap"></div>
+        <div class="header__top__right__social">
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-linkedin"></i></a>
+            <a href="#"><i class="fa fa-pinterest-p"></i></a>
+        </div>
+
+    </div>
+    <!-- Humberger End -->
+
+    <!-- Header Section Begin -->
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="header__top__left">
+                          
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="header__top__right">
+                            <div class="header__top__right__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                            </div>
+ 
+                            <div class="header__top__right__auth">
+                                {% if request.user.is_authenticated %}
+                                <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
+                                {% else %}
+                                    <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a href="{% url 'blog:index' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul>
+                            <li class="{% if active_page == 'accueil' %}active{% endif %}"><a href="{% url 'blog:index' %}">Home</a></li>
+                            <li class="{% if active_page == 'shop' %}active{% endif %}"><a href="{% url 'Ecommerce:shop' %}">Shop</a></li>
+                            <li class="{% if active_page == 'blog' %}active{% endif %}"><a href="{% url 'blog:blog' %}">Blog</a></li>
+                            <li class="{% if active_page == 'contact' %}active{% endif %}"><a href="{% url 'blog:contact' %}">Contact</a></li>
+                            <li class="{% if active_page == 'about' %}active{% endif %}"><a href="{% url 'Ecommerce:about' %}">About Us</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    <div class="header__cart">
+                        <ul>
+                            <li><a href="{% url 'Ecommerce:favorite' %}"><i class="fa fa-heart"></i> <span>{{ favoris_produit.count }}</span></a></li>
+                            <li><a href="{% url 'Ecommerce:panier' %}"><i class="fa fa-shopping-bag"></i> <span>{{ panier_produit.count }}</span></a></li>
+                        </ul>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Header Section End -->
+
+    {% block header %}
+        <!-- Hero Section Begin -->
+        <section class="hero">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="hero__categories">
+                            <div class="hero__categories__all">
+                                <i class="fa fa-bars"></i>
+                                <span>All departments</span>
+                            </div>
+                            <ul>
+                                {% for categorie in Categories %}
+                                    <li><a href="{% url 'Ecommerce:shop' %}?categorie={{ categorie.id }}">{{ categorie.nom }}</a></li>   
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="hero__item set-bg" data-setbg="{% static 'img/hero/banner.jpg' %}">
+                            <div class="hero__text">
+                                <span>FRUIT FRESH</span>
+                                <h2>Vegetable <br />100% Organic</h2>
+                                <p>Free Pickup and Delivery Available</p>
+                                <a href="{% url 'Ecommerce:shop' %}" class="primary-btn">SHOP NOW</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Hero Section End -->
+    {% endblock %}
+
+
+    {% block content %}
+    {% endblock %}
+
+        <!-- Footer Section Begin -->
+        <footer class="footer spad">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="footer__about">
+                            <div class="footer__about__logo">
+                                <a href="{% url 'blog:index' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
+                            </div>
+                            <ul>
+                                <li>Numero: +225 0778177333</li>
+                                <li>Email: hello@colorlib.com</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                        <div class="footer__widget">
+                            <h6>Lien utils</h6>
+                            <ul>
+                                <li><a href="{% url 'Ecommerce:about' %}">A propos de nous</a></li>
+                                <li><a href="{% url 'Ecommerce:shipping' %}">Information de livraison</a></li>
+                                <li><a href="{% url 'Ecommerce:privacy' %}">Police de Confidentialité</a></li>
+                            </ul>
+                            <ul>
+                                <li><a href="{% url 'blog:contact' %}">Contact</a></li>
+                                <li><a href="{% url 'Ecommerce:innovation' %}">Innovation</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-12">
+                        <div class="footer__widget">
+                            <h6>Rejoins notre Newsletter</h6>
+                            <p>Reçois des emails pour rester au courant des derniers ajouts</p>
+                            <form action="#">
+                                <input type="text" placeholder="Entrez votre Email">
+                                <button type="submit" class="site-btn">S'inscrire</button>
+                            </form>
+                            <div class="footer__widget__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-instagram"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-pinterest"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="footer__copyright">
+                            <div class="footer__copyright__text"><p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+      Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved 
+      <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p></div>
+                            <div class="footer__copyright__payment"><img src="{% static 'img/payment-item.png' %}" alt=""></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer Section End -->
+
+    <!-- Js Plugins -->
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slicknav.js' %}"></script>
+    <script src="{% static 'js/mixitup.min.js' %}"></script>
+    <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+
+
+</body>
+
+</html>

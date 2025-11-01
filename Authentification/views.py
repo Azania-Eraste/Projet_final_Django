@@ -11,6 +11,10 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+
+from Ecommerce.models import Favoris, Panier
+from .form import DevenirVendeurForm
 
 # Create your views here.
 
@@ -278,3 +282,70 @@ def changepassword(request, uidb64, token):
         messages.error(request, "Le lien de réinitialisation est invalide ou a expiré.")
         return redirect('Authentification:forgetpassword')
 
+@login_required # Garantit que seul un utilisateur connecté peut accéder
+def devenir_vendeur(request):
+    # Vérifier si l'utilisateur a déjà un profil vendeur
+    favoris, created = Favoris.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}
+    )
+    favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+    # Gestion du panier pour l'utilisateur connecté
+    panier, created = Panier.objects.get_or_create(
+        utilisateur=request.user,
+        defaults={'statut': True}
+    )
+    panier_produits = panier.produits.all()
+
+    if hasattr(request.user, 'profil_vendeur'):
+        profil = request.user.profil_vendeur
+        if profil.statut == 'APPROUVE':
+            messages.info(request, 'Vous êtes déjà un vendeur approuvé.')
+        elif profil.statut == 'EN_ATTENTE':
+            messages.info(request, 'Votre demande est déjà en cours d\'examen.')
+        elif profil.statut == 'REFUSE':
+            messages.error(request, 'Votre demande précédente a été refusée. Contactez le support.')
+        
+        return redirect('Ecommerce:profile') # Rediriger vers son tableau de bord
+
+    # Si la méthode est POST, l'utilisateur a soumis le formulaire
+    if request.method == 'POST':
+        # On passe 'user=request.user' pour la pré-remplissage (si nécessaire)
+        form = DevenirVendeurForm(request.POST, user=request.user)
+        
+        if form.is_valid():
+            # 1. Mettre à jour le CustomUser avec le numéro de téléphone
+            user = request.user
+            user.number = form.cleaned_data['number']
+            # Si l'utilisateur n'a pas de nom/prénom, on peut les ajouter
+            # user.first_name = ... (si vous ajoutez ces champs au formulaire)
+            user.save()
+
+            # 2. Créer l'objet Vendeur mais ne pas le sauvegarder en BDD tout de suite
+            profil_vendeur = form.save(commit=False)
+            
+            # 3. Lier ce nouveau profil à l'utilisateur connecté
+            profil_vendeur.user = user
+            
+            # 4. Le statut par défaut est déjà 'EN_ATTENTE' (défini dans le modèle)
+            
+            # 5. Sauvegarder le nouveau profil Vendeur en BDD
+            profil_vendeur.save()
+
+            messages.success(request, 'Votre demande a été envoyée ! Elle est maintenant en cours d\'examen.')
+            return redirect('Ecommerce:profile') # Rediriger
+    
+    else:
+        # Si la méthode est GET, afficher un formulaire vide
+        # On passe 'user=request.user' pour pré-remplir le numéro et le nom de boutique
+        form = DevenirVendeurForm(user=request.user)
+
+    context = {
+        'form': form,
+        'active_page': '',  # Pour qu'aucun lien de menu ne soit actif
+        'favoris_produit': favoris_produits,
+        'panier_produit': panier_produits,
+    }
+    # Utilise le template HTML que je vous ai montré précédemment
+    return render(request, 'devenir_vendeur.html', context)

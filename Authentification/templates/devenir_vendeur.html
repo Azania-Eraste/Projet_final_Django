@@ -1,0 +1,100 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% comment %}
+  Nous remplaçons le bloc "header" (qui contient la grande bannière "Hero Section")
+  par une simple barre de navigation "breadcrumb" pour cette page.
+{% endcomment %}
+{% block header %}
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Devenir Vendeur</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'blog:index' %}">Home</a>
+                            <span>Devenir Vendeur</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endblock %}
+
+
+{% comment %}
+  Voici le bloc "content" que vous avez demandé.
+  Il contient le formulaire et les instructions.
+{% endcomment %}
+{% block content %}
+    <section class="checkout spad">
+        <div class="container">
+            <div class="checkout__form">
+                <h4>Formulaire de demande Vendeur</h4>
+                <p>Remplissez ce formulaire pour soumettre votre demande. Votre profil sera examiné par nos administrateurs.</p>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url 'Authentification:devenir_vendeur' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6">
+                            
+                            <div class="checkout__input">
+                                <p>{{ form.number.label }}<span>*</span></p>
+                                {{ form.number }} {% if form.number.errors %}
+                                    <small class="text-danger">{{ form.number.errors|first }}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="checkout__input">
+                                <p>{{ form.boutique_name.label }}<span>*</span></p>
+                                {{ form.boutique_name }}
+                                {% if form.boutique_name.errors %}
+                                    <small class="text-danger">{{ form.boutique_name.errors|first }}</small>
+                                {% endif %}
+                            </div>
+
+                            <div class="checkout__input">
+                                <p>{{ form.boutique_description.label }}</p>
+                                {{ form.boutique_description }}
+                                {% if form.boutique_description.errors %}
+                                    <small class="text-danger">{{ form.boutique_description.errors|first }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <button type="submit" class="site-btn">SOUMETTRE LA DEMANDE</button>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6">
+                            <div class="checkout__order" style="background: #f5f5f5;">
+                                <h4 style="border-bottom: 1px solid #e1e1e1;">Processus d'inscription</h4>
+                                <div class="checkout__order__products">Comment ça marche ?</div>
+                                <ul style="list-style-type: decimal; padding-left: 20px; margin-top: 15px; color: #666;">
+                                    <li>Remplissez le formulaire.</li>
+                                    <li>Notre équipe examine votre profil.</li>
+                                    <li>Vous recevez une notification.</li>
+                                    <li>Commencez à vendre !</li>
+                                </ul>
+                                <div class="checkout__order__total">Statut Actuel
+                                    <span>EN ATTENTE D'ENVOI</span>
+                                </div>
+                                <p style="font-size: 14px; color: #888; margin-top: 15px;">
+                                    Une fois votre demande soumise, son statut passera à "En attente".
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    {% endblock %}

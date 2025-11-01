@@ -14,16 +14,18 @@ class TypePaiement(Enum):
     PREPAID_CARD = 'Carte prépayée'
     LIQUIDE = 'Liquide'
 
-class StatutCommande(Enum):
-    EN_ATTENTE = "En attente"
-    CONFIRMEE = "Confirmée"
-    ANNULEE = "Annulée"
+
 
 class StatutPaiement(Enum):
     EN_ATTENTE = "En attente"
     EFFECTUE = "Effectué"
     ECHOUE = "Echoué"
 
+class StatutCommande(Enum):
+    EN_ATTENTE = "En attente"
+    CONFIRMEE = "Confirmée"
+    ANNULEE = "Annulée"
+    
 class StatutLivraison(Enum):
     EN_ATTENTE = "En attente"
     EN_COURS = "En cours"

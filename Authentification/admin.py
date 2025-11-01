@@ -7,7 +7,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_display = ("username","nom","prenom","number","is_active")
     fieldsets = (
         ("Informations principales", {
-            "fields": ("username","password","nom","prenom","number")
+            "fields": ("username","password","nom","prenom","number", 'email')
         }),
         ("Métadonnées", {
             "fields": ("is_active",),  # Ajout de la virgule
