@@ -11,6 +11,13 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
+from datetime import timedelta
+import secrets
+import string
+
+from .models import ActivationOTP
+from .form import DevenirVendeurForm, OTPVerifyForm
 from django.contrib.auth.decorators import login_required
 
 from Ecommerce.models import Favoris, Panier
@@ -208,41 +215,33 @@ def register_view(request):
                     is_active=False
                 )
 
-                uid = urlsafe_base64_encode(force_bytes(user.pk))
-                token = default_token_generator.make_token(user)
-                activation_link = f"{settings.SITE_URL}/Auth/register/{uid}/{token}/"
+                # Générer un OTP numérique de 6 chiffres
+                otp_code = ''.join(secrets.choice(string.digits) for _ in range(6))
+                expires_at = timezone.now() + timedelta(minutes=10)
 
-                subject = "Activation de votre compte"
-                html_message = f"""
-                <html>
-                <body style="font-family: Arial, sans-serif; padding: 20px;">
-                    <p style="text-align: center; color: yellow; font-size: 18px; font-weight: bold;">
-                        Bonjour {user.username}, merci de vous être inscrit !
-                    </p>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <a href="{activation_link}" 
-                           style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; 
-                                  border-radius: 5px; display: inline-block;">
-                            Activer mon compte
-                        </a>
-                    </div>
-                    <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
-                        Si vous n'avez pas demandé cette inscription, ignorez cet email.
-                    </p>
-                </body>
-                </html>
-                """
-                email = EmailMessage(
-                    subject,
-                    html_message,
-                    settings.EMAIL_HOST_USER,
-                    [user.email]
+                # Sauvegarder l'OTP en base
+                ActivationOTP.objects.create(user=user, code=otp_code, expires_at=expires_at)
+
+                # Envoyer le code par email
+                subject = "Votre code d'activation"
+                html_message = render_to_string('emails/activation_otp_email.html', {
+                    'user': user,
+                    'otp_code': otp_code,
+                    'expires_minutes': 10,
+                })
+                plain_message = f"Bonjour {user.username},\n\nVotre code d'activation est : {otp_code}\nIl expire dans 10 minutes.\n\nSi vous n'avez pas demandé cette inscription, ignorez cet email."
+
+                email_msg = EmailMultiAlternatives(
+                    subject=subject,
+                    body=plain_message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    to=[user.email]
                 )
-                email.content_subtype = "html"  # Indique que le contenu est HTML
-                email.send(fail_silently=False)
+                email_msg.attach_alternative(html_message, "text/html")
+                email_msg.send(fail_silently=False)
 
-                messages.success(request, "Un email d'activation vous a été envoyé.")
-                return redirect("Authentification:login")
+                messages.success(request, "Un code d'activation a été envoyé à votre email.")
+                return redirect('Authentification:verify_otp', user_id=user.pk)
 
             except Exception as e:
                 messages.error(request, f"Une erreur s'est produite : {str(e)}")
@@ -281,6 +280,85 @@ def changepassword(request, uidb64, token):
     else:
         messages.error(request, "Le lien de réinitialisation est invalide ou a expiré.")
         return redirect('Authentification:forgetpassword')
+
+
+def verify_otp(request, user_id):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        messages.error(request, "Utilisateur introuvable.")
+        return redirect('Authentification:register')
+
+    if request.method == 'POST':
+        form = OTPVerifyForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['code'].strip()
+            otp = ActivationOTP.objects.filter(user=user, used=False).order_by('-created_at').first()
+            if not otp:
+                messages.error(request, "Aucun code actif trouvé. Demandez un nouveau code.")
+                return redirect('Authentification:resend_otp', user_id=user.pk)
+
+            if timezone.now() > otp.expires_at:
+                messages.error(request, "Le code a expiré. Demandez un nouveau code.")
+                return redirect('Authentification:resend_otp', user_id=user.pk)
+
+            if otp.attempts >= 5:
+                messages.error(request, "Trop d'essais. Demandez un nouveau code.")
+                return redirect('Authentification:resend_otp', user_id=user.pk)
+
+            if code == otp.code:
+                otp.used = True
+                otp.save()
+                user.is_active = True
+                user.save()
+                messages.success(request, "Votre compte a été activé. Vous pouvez maintenant vous connecter.")
+                return redirect('Authentification:login')
+            else:
+                otp.attempts += 1
+                otp.save()
+                messages.error(request, "Code invalide. Veuillez réessayer.")
+    else:
+        form = OTPVerifyForm()
+
+    return render(request, 'otp_verify.html', {'form': form, 'email': user.email, 'user_id': user.pk})
+
+
+def resend_otp(request, user_id):
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        messages.error(request, "Utilisateur introuvable.")
+        return redirect('Authentification:register')
+
+    # Rate limit : max 3 OTPs in the last hour
+    recent_count = ActivationOTP.objects.filter(user=user, created_at__gte=timezone.now() - timedelta(hours=1)).count()
+    if recent_count >= 3:
+        messages.error(request, "Trop de demandes de code. Réessayez plus tard.")
+        return redirect('Authentification:verify_otp', user_id=user.pk)
+
+    otp_code = ''.join(secrets.choice(string.digits) for _ in range(6))
+    expires_at = timezone.now() + timedelta(minutes=10)
+    ActivationOTP.objects.create(user=user, code=otp_code, expires_at=expires_at)
+
+    subject = "Votre nouveau code d'activation"
+    html_message = render_to_string('emails/activation_otp_email.html', {
+        'user': user,
+        'otp_code': otp_code,
+        'expires_minutes': 10,
+    })
+    plain_message = f"Bonjour {user.username},\n\nVotre nouveau code d'activation est : {otp_code}\nIl expire dans 10 minutes.\n\nSi vous n'avez pas demandé cette inscription, ignorez cet email."
+
+    email_msg = EmailMultiAlternatives(
+        subject=subject,
+        body=plain_message,
+        from_email=settings.EMAIL_HOST_USER,
+        to=[user.email]
+    )
+    email_msg.attach_alternative(html_message, "text/html")
+    email_msg.send(fail_silently=False)
+
+    messages.success(request, "Un nouveau code a été envoyé.")
+    return redirect('Authentification:verify_otp', user_id=user.pk)
 
 @login_required # Garantit que seul un utilisateur connecté peut accéder
 def devenir_vendeur(request):

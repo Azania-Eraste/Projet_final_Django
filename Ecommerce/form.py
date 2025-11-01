@@ -1,5 +1,19 @@
 from django import forms
 from .models import Mode, TypePaiement, Commune, Avis
+from .models import Produit, VariationProduit
+from django import forms
+
+
+class ProduitForm(forms.ModelForm):
+    class Meta:
+        model = Produit
+        fields = ['nom', 'Image', 'description', 'stock', 'categorie', 'statut']
+
+
+class VariationProduitForm(forms.ModelForm):
+    class Meta:
+        model = VariationProduit
+        fields = ['nom', 'produit', 'poids', 'description', 'images', 'quantite', 'origine', 'mois_debut_recolte', 'mois_fin_recolte', 'prix', 'qualite']
 
 class CheckForm(forms.Form):
     nom = forms.CharField(

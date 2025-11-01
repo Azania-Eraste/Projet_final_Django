@@ -1,0 +1,46 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container p-6">
+  <h1 class="text-2xl font-bold mb-4">Tableau de bord vendeur</h1>
+  <p>Revenu total : {{ total_revenu }} </p>
+  <p>Articles vendus : {{ total_articles_vendus }} </p>
+
+  <h2 class="mt-6">Vos produits</h2>
+  <a href="{% url 'Ecommerce:seller_create_product' %}" class="btn btn-primary mb-3">Créer un produit</a>
+  <a href="{% url 'Ecommerce:seller_create_variation' %}" class="btn btn-secondary mb-3">Ajouter une variante</a>
+  <table class="table-auto w-full">
+    <thead>
+      <tr>
+        <th>Produit</th>
+        <th>Stock</th>
+        <th>Quantité vendue</th>
+        <th>Revenu</th>
+        <th>Créé le</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for stat in produit_stats %}
+      <tr>
+        <td>{{ stat.produit.nom }}</td>
+        <td>{{ stat.produit.stock }}</td>
+        <td>{{ stat.quantite_vendue }}</td>
+        <td>{{ stat.revenu }}</td>
+        <td>{{ stat.produit.created_at }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">Aucun produit pour le moment.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2 class="mt-6">Commandes récentes</h2>
+  <ul>
+    {% for commande in recent_commandes %}
+      <li>Commande #{{ commande.id }} — {{ commande.prix_total }} — {{ commande.created_at }}</li>
+    {% empty %}
+      <li>Aucune commande trouvée.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -102,3 +102,13 @@ class DevenirVendeurForm(forms.ModelForm):
         # Pré-remplir 'boutique_name' avec le username si le champ est vide
         if user and not self.fields['boutique_name'].initial:
             self.fields['boutique_name'].initial = user.username
+
+
+class OTPVerifyForm(forms.Form):
+    code = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full h-12 px-4 py-2 text-lg border rounded-xl',
+            'placeholder': 'Entrez le code à 6 chiffres'
+        })
+    )

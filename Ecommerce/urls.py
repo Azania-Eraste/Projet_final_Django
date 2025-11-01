@@ -55,6 +55,10 @@ urlpatterns = [
     path('privacy/', views.privacy_policy_view, name='privacy'),
     path('innovation/', views.innovation_view, name='innovation'),
     path('api_Ecommerce/', include(router.urls)),
+    # Seller routes
+    path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
+    path('seller/product/create/', views.seller_create_product, name='seller_create_product'),
+    path('seller/variation/create/', views.seller_create_variation, name='seller_create_variation'),
 
     
 ]

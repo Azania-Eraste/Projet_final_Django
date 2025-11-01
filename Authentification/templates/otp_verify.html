@@ -1,0 +1,16 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-4">Vérification du compte</h2>
+  <p>Un code a été envoyé à <strong>{{ email }}</strong>. Entrez-le ci-dessous :</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary mt-2">Vérifier</button>
+  </form>
+
+  <p class="mt-3">Vous n'avez pas reçu le code ? <a href="{% url 'Authentification:resend_otp' user_id %}">Renvoyer le code</a></p>
+</div>
+{% endblock %}

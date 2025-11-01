@@ -1,0 +1,9 @@
+<html>
+  <body style="font-family: Arial, sans-serif; padding: 20px;">
+    <p>Bonjour {{ user.username }},</p>
+    <p>Votre code d'activation est : <strong style="font-size:18px">{{ otp_code }}</strong></p>
+    <p>Il expirera dans {{ expires_minutes }} minutes.</p>
+    <p>Si vous n'avez pas demandé cette inscription, ignorez cet email.</p>
+    <p>— Votre Boutique</p>
+  </body>
+</html>

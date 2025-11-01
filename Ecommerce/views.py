@@ -17,6 +17,12 @@ from django.core.mail import EmailMessage
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.db import models
+from django import forms
+from django.db.models import Sum, Count
+from django.contrib.auth.decorators import login_required
+from Authentification.models import Vendeur
+from Authentification.decorators import seller_required
+from .form import ProduitForm, VariationProduitForm
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -124,6 +130,79 @@ def panier(request):
         'mode_paiement_form': mode_paiement_form,
     }
     return render(request, 'shoping-cart.html', datas)
+
+
+@login_required(login_url='Authentification:login')
+@seller_required
+def seller_dashboard(request):
+    vendeur = request.user.profil_vendeur
+    produits = Produit.objects.filter(vendeur=vendeur)
+
+    # Ventes: somme des prix et nombre de commandes impliquant les produits du vendeur
+    ventes_qs = CommandeProduit.objects.filter(produit__produit__vendeur=vendeur, commande__statut_commande=StatutCommande.CONFIRMEE.value)
+    total_revenu = ventes_qs.aggregate(total=Sum('prix'))['total'] or 0
+    total_articles_vendus = ventes_qs.aggregate(total_q=Sum('quantite'))['total_q'] or 0
+
+    recent_commandes = Commande.objects.filter(Commande_Produit_ids__produit__produit__vendeur=vendeur).distinct().order_by('-created_at')[:10]
+
+    # Stats par produit (regroupement simple)
+    produit_stats = []
+    for produit in produits:
+        ventes_prod = CommandeProduit.objects.filter(produit__produit=produit, commande__statut_commande=StatutCommande.CONFIRMEE.value)
+        revenu_prod = ventes_prod.aggregate(r=Sum('prix'))['r'] or 0
+        quantite_vendue = ventes_prod.aggregate(q=Sum('quantite'))['q'] or 0
+        produit_stats.append({
+            'produit': produit,
+            'revenu': revenu_prod,
+            'quantite_vendue': quantite_vendue,
+        })
+
+    context = {
+        'produits': produits,
+        'total_revenu': total_revenu,
+        'total_articles_vendus': total_articles_vendus,
+        'recent_commandes': recent_commandes,
+        'produit_stats': produit_stats,
+        'active_page': 'seller_dashboard',
+    }
+    return render(request, 'seller/dashboard.html', context)
+
+
+@login_required(login_url='Authentification:login')
+@seller_required
+def seller_create_product(request):
+    vendeur = request.user.profil_vendeur
+
+    if request.method == 'POST':
+        form = ProduitForm(request.POST, request.FILES)
+        if form.is_valid():
+            produit = form.save(commit=False)
+            produit.vendeur = vendeur
+            produit.save()
+            messages.success(request, "Produit créé avec succès.")
+            return redirect('Ecommerce:seller_dashboard')
+    else:
+        form = ProduitForm()
+
+    return render(request, 'seller/product_form.html', {'form': form})
+
+
+@login_required(login_url='Authentification:login')
+@seller_required
+def seller_create_variation(request):
+    vendeur = request.user.profil_vendeur
+
+    if request.method == 'POST':
+        form = VariationProduitForm(request.POST, request.FILES)
+        if form.is_valid():
+            variation = form.save()
+            messages.success(request, "Variation créée avec succès.")
+            return redirect('Ecommerce:seller_dashboard')
+    else:
+        form = VariationProduitForm()
+        form.fields['produit'].queryset = Produit.objects.filter(vendeur=vendeur)
+
+    return render(request, 'seller/variation_form.html', {'form': form})
 
 
 

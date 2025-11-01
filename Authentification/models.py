@@ -51,3 +51,27 @@ class Vendeur(models.Model):
 
     def __str__(self):
         return self.boutique_name
+
+
+class ActivationOTP(models.Model):
+    """Stocke les OTP d'activation envoyés aux utilisateurs.
+
+    - code : code numérique envoyé à l'utilisateur
+    - user : user lié
+    - created_at / expires_at
+    - attempts : nombre d'essais de validation
+    - used : marque si le code a été consommé
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='activation_otps')
+    code = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    attempts = models.PositiveIntegerField(default=0)
+    used = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Activation OTP"
+        verbose_name_plural = "Activation OTPs"
+
+    def __str__(self):
+        return f"OTP for {self.user} ({'used' if self.used else 'open'})"
