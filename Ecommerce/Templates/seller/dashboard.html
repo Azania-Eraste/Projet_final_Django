@@ -2,9 +2,19 @@
 
 {% block content %}
 <div class="container p-6">
+  {# Flash messages #}
+  {% if messages %}
+  <div class="mb-4">
+    {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
   <h1 class="text-2xl font-bold mb-4">Tableau de bord vendeur</h1>
-  <p>Revenu total : {{ total_revenu }} </p>
-  <p>Articles vendus : {{ total_articles_vendus }} </p>
+  <p><strong>Revenu total :</strong> {{ total_revenu }} </p>
+  <p><strong>Articles vendus :</strong> {{ total_articles_vendus }} </p>
 
   <h2 class="mt-6">Vos produits</h2>
   <a href="{% url 'Ecommerce:seller_create_product' %}" class="btn btn-primary mb-3">Créer un produit</a>
@@ -33,6 +43,46 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <h2 class="mt-6">Commandes en attente (actions requises)</h2>
+  {% if pending_seller_commandes and pending_seller_commandes.exists %}
+    <table class="table-auto w-full mb-4">
+      <thead>
+        <tr>
+          <th>Commande</th>
+          <th>Prix total</th>
+          <th>Créée le</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sc in pending_seller_commandes %}
+          <tr>
+            <td>#{{ sc.commande.id }}</td>
+            <td>{{ sc.commande.prix_total }}</td>
+            <td>{{ sc.commande.created_at }}</td>
+            <td>
+              <form method="post" action="{% url 'Ecommerce:vendor_accept_seller_commande' sc.id %}" style="display:inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="accept">
+                <button type="submit" class="btn btn-success mr-2">Accepter</button>
+              </form>
+
+              <form method="post" action="{% url 'Ecommerce:vendor_accept_seller_commande' sc.id %}" style="display:inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-danger">Refuser</button>
+              </form>
+
+              <a href="{% url 'Ecommerce:commande_detail' sc.commande.id %}" class="btn btn-secondary ml-2">Voir</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Aucune demande en attente.</p>
+  {% endif %}
 
   <h2 class="mt-6">Commandes récentes</h2>
   <ul>

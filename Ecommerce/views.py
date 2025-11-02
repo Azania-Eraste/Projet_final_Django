@@ -36,6 +36,7 @@ from .models import (
     Paiement,
     Panier,
     Produit,
+    SellerCommande,
     StatutCommande,
     StatutLivraison,
     StatutPaiement,
@@ -214,6 +215,11 @@ def seller_dashboard(request):
         .order_by("-created_at")[:10]
     )
 
+    # Demandes en attente pour ce vendeur
+    pending_seller_commandes = SellerCommande.objects.filter(
+        vendeur=vendeur, statut=SellerCommande.STATUT_EN_ATTENTE
+    ).select_related("commande")
+
     # Stats par produit (regroupement simple)
     produit_stats = []
     for produit in produits:
@@ -236,10 +242,67 @@ def seller_dashboard(request):
         "total_revenu": total_revenu,
         "total_articles_vendus": total_articles_vendus,
         "recent_commandes": recent_commandes,
+        "pending_seller_commandes": pending_seller_commandes,
         "produit_stats": produit_stats,
         "active_page": "seller_dashboard",
     }
     return render(request, "seller/dashboard.html", context)
+
+
+@login_required(login_url="Authentification:login")
+@seller_required
+def vendor_accept_seller_commande(request, seller_commande_id):
+    """Permet au vendeur d'accepter ou refuser une SellerCommande.
+
+    Si tous les SellerCommande d'une commande sont acceptés, la commande
+    globale passe en statut CONFIRMEE.
+    """
+    vendeur = request.user.profil_vendeur
+    seller_cmd = get_object_or_404(SellerCommande, id=seller_commande_id)
+
+    # s'assurer que le vendeur courant correspond
+    if seller_cmd.vendeur != vendeur:
+        messages.error(request, "Vous n'êtes pas autorisé à accepter cette commande.")
+        return redirect("Ecommerce:seller_dashboard")
+
+    if request.method != "POST":
+        messages.error(
+            request, "Action non autorisée. Utilisez le bouton Accepter/Refuser."
+        )
+        return redirect("Ecommerce:seller_dashboard")
+
+    action = request.POST.get("action", "accept")
+    if action == "accept":
+        seller_cmd.statut = SellerCommande.STATUT_ACCEPTEE
+        seller_cmd.save()
+        # mettre à jour le statut global si tous les vendeurs ont accepté
+        seller_cmd.commande.check_and_mark_confirmed()
+        # notifier l'acheteur (optionnel)
+        try:
+            subject = f"""
+            Votre commande #{seller_cmd.commande.id} a été acceptée par le vendeur
+            """
+            html = render_to_string(
+                "emails/buyer_order_accepted.html",
+                {"commande": seller_cmd.commande, "vendeur": seller_cmd.vendeur},
+            )
+            email = EmailMessage(
+                subject,
+                html,
+                settings.EMAIL_HOST_USER,
+                [seller_cmd.commande.utilisateur.email],
+            )
+            email.content_subtype = "html"
+            email.send(fail_silently=True)
+        except Exception:
+            pass
+        messages.success(request, "Commande acceptée.")
+    else:
+        seller_cmd.statut = SellerCommande.STATUT_REFUSEE
+        seller_cmd.save()
+        messages.info(request, "Vous avez refusé la commande.")
+
+    return redirect("Ecommerce:seller_dashboard")
 
 
 @login_required(login_url="Authentification:login")

@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<style>
+			body { font-family: Arial, Helvetica, sans-serif; color: #222 }
+			.card { padding: 16px; border: 1px solid #e6e6e6; border-radius: 6px }
+			.btn { display:inline-block; padding:8px 12px; color:#fff; text-decoration:none; border-radius:4px }
+			.btn-accept { background:#28a745 }
+			.btn-decline { background:#dc3545 }
+			table { width:100%; border-collapse:collapse }
+			th,td { text-align:left; padding:6px; border-bottom:1px solid #f0f0f0 }
+		</style>
+	</head>
+	<body>
+		<div class="card">
+			<h2>Nouvelle commande N°{{ commande.id }}</h2>
+			<p>Bonjour <strong>{{ vendeur.boutique_name }}</strong>,</p>
+			<p>Une commande contient des produits qui vous concernent. Détails :</p>
+
+			<table>
+				<thead>
+					<tr><th>Produit</th><th>Quantité</th><th>Prix</th></tr>
+				</thead>
+				<tbody>
+					{% for cp in commande.Commande_Produit_ids.all %}
+						{% if cp.produit.produit.vendeur.id == vendeur.id %}
+							<tr>
+								<td>{{ cp.produit.nom }}</td>
+								<td>{{ cp.quantite }}</td>
+								<td>{{ cp.prix }}</td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+			</table>
+
+			<p><strong>Prix total (commande) :</strong> {{ commande.prix_total }}</p>
+
+			<p>
+				<a class="btn btn-accept" href="{{ accept_url }}">Accepter la commande</a>
+				&nbsp;
+				<a class="btn btn-decline" href="{{ accept_url }}?action=reject">Refuser</a>
+			</p>
+
+			<p>Merci,<br/>L'équipe</p>
+		</div>
+	</body>
+ </html>

@@ -26,6 +26,7 @@ class StatutPaiement(Enum):
 class StatutCommande(Enum):
     EN_ATTENTE = "En attente"
     CONFIRMEE = "Confirmée"
+    TERMINEE = "Terminée"
     ANNULEE = "Annulée"
 
 
@@ -111,7 +112,9 @@ class CategorieProduit(models.Model):
 class Commande(models.Model):
     date = models.DateField(auto_now_add=True)
     statut_commande = models.CharField(
-        max_length=50, choices=[(tag.name, tag.value) for tag in StatutCommande]
+        max_length=50,
+        choices=[(tag.name, tag.value) for tag in StatutCommande],
+        default=StatutCommande.EN_ATTENTE.value,
     )
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
     code_promo = models.ForeignKey(
@@ -126,6 +129,26 @@ class Commande(models.Model):
     def mettre_a_jour_statut(self, nouveau_statut):
         self.statut_commande = nouveau_statut
         self.save()
+
+    def check_and_mark_confirmed(self):
+        """
+        Si toutes les entrées SellerCommande liées sont acceptées,
+        marque la commande comme confirmée.
+        """
+        try:
+            seller_cmds = self.sellercommandes.all()
+            # s'il n'y a pas d'entrées sellercommandes, ne rien faire
+            if not seller_cmds.exists():
+                return
+            all_accepted = all(
+                sc.statut == SellerCommande.STATUT_ACCEPTEE for sc in seller_cmds
+            )
+            if all_accepted:
+                self.statut_commande = StatutCommande.CONFIRMEE.value
+                self.save()
+        except Exception:
+            # Si l'import circulaire pose problème, ignorer silencieusement
+            pass
 
     est_actif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -154,6 +177,50 @@ class CommandeProduit(models.Model):
 
     def __str__(self):
         return f"{self.quantite} x {self.produit.nom} dans commande {self.commande.id}"
+
+
+class SellerCommande(models.Model):
+    """Modèle pour suivre l'acceptation d'une commande par chaque vendeur
+
+    Une Commande peut concerner plusieurs vendeurs (différents produits).
+    Pour chaque vendeur présent dans la commande, on crée une SellerCommande
+    avec un statut (EN_ATTENTE / ACCEPTEE / REFUSEE). Lorsque tous les
+    SellerCommande sont acceptés, la commande globale passe en CONFIRMEE.
+    """
+
+    STATUT_EN_ATTENTE = "EN_ATTENTE"
+    STATUT_ACCEPTEE = "ACCEPTEE"
+    STATUT_REFUSEE = "REFUSEE"
+
+    STATUT_CHOICES = (
+        (STATUT_EN_ATTENTE, "En attente"),
+        (STATUT_ACCEPTEE, "Acceptée"),
+        (STATUT_REFUSEE, "Refusée"),
+    )
+
+    commande = models.ForeignKey(
+        Commande, on_delete=models.CASCADE, related_name="sellercommandes"
+    )
+    vendeur = models.ForeignKey(
+        "Authentification.Vendeur",
+        on_delete=models.CASCADE,
+        related_name="seller_commandes",
+    )
+    statut = models.CharField(
+        max_length=20, choices=STATUT_CHOICES, default=STATUT_EN_ATTENTE
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("commande", "vendeur")
+
+    def __str__(self):
+        return f"""
+        SellerCommande:
+        {self.commande.id} - {self.vendeur.boutique_name}
+        ({self.statut})
+        """
 
 
 class Livraison(models.Model):

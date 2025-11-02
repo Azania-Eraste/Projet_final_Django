@@ -105,4 +105,10 @@ urlpatterns = [
         views.seller_create_variation,
         name="seller_create_variation",
     ),
+    # route pour accepter/refuser une commande par vendeur
+    path(
+        "seller/order/<int:seller_commande_id>/accept/",
+        views.vendor_accept_seller_commande,
+        name="vendor_accept_seller_commande",
+    ),
 ]
