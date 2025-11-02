@@ -4,13 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0016_remove_commande_paiement_paiement_commande_and_more'),
+        ("Ecommerce", "0016_remove_commande_paiement_paiement_commande_and_more"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Role',
+            name="Role",
         ),
     ]

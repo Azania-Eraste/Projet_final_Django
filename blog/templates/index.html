@@ -12,7 +12,7 @@
                     {% for categorie in Categories %}
                         <div class="col-lg-3">
                             <div class="categories__item set-bg" data-setbg="{{ categorie.couverture.url }}">
-                                <h5><a href="{% url 'Ecommerce:shop' %}?categorie={{ categorie.id }}">{{ categorie.nom }}</a></h5>  
+                                <h5><a href="{% url 'Ecommerce:shop' %}?categorie={{ categorie.id }}">{{ categorie.nom }}</a></h5>
                             </div>
                         </div>
                     {% endfor %}
@@ -39,7 +39,7 @@
                             <div class="product__item__pic set-bg" data-setbg="{{ produit.images.url  }}">
                                 <ul class="product__item__pic__hover">
                                     <li><a href="{% url 'Ecommerce:favorite_add' produit.slug %}"><i class="fa fa-heart"></i></a></li>
-                                    
+
                                     <li><a href="{% url 'Ecommerce:panier_add' produit.slug %}"><i class="fa fa-shopping-cart"></i></a></li>
                                 </ul>
                             </div>
@@ -97,7 +97,7 @@
                                     <li><i class="fa fa-comment-o"></i> {{ article.article_commentaire_ids.count }}</li>
                                 </ul>
                                 <h5><a href="{% url 'blog:detail' article.slug %}">{{ article.titre }}</a></h5>  <!-- Corrigé : article.slug -->
-                                <p>{{ article.resume }}</p>   
+                                <p>{{ article.resume }}</p>
                             </div>
                         </div>
                     </div>

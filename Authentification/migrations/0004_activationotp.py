@@ -6,26 +6,43 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Authentification', '0003_vendeur_boutique_description_vendeur_created_at_and_more'),
+        (
+            "Authentification",
+            "0003_vendeur_boutique_description_vendeur_created_at_and_more",
+        ),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ActivationOTP',
+            name="ActivationOTP",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=10)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('expires_at', models.DateTimeField()),
-                ('attempts', models.PositiveIntegerField(default=0)),
-                ('used', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='activation_otps', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("code", models.CharField(max_length=10)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("expires_at", models.DateTimeField()),
+                ("attempts", models.PositiveIntegerField(default=0)),
+                ("used", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="activation_otps",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Activation OTP',
-                'verbose_name_plural': 'Activation OTPs',
+                "verbose_name": "Activation OTP",
+                "verbose_name_plural": "Activation OTPs",
             },
         ),
     ]

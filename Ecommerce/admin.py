@@ -1,21 +1,50 @@
 from django.contrib import admin
+
 from .models import (
-    Produit, CategorieProduit, Commande, Livraison, Mode, Paiement, 
-    Panier, Ville, Commune, Adresse, VariationProduit, Avis, CodePromo, Favoris,
-    CommandeProduit, Promotion
+    Adresse,
+    Avis,
+    CategorieProduit,
+    CodePromo,
+    Commande,
+    CommandeProduit,
+    Commune,
+    Favoris,
+    Livraison,
+    Mode,
+    Paiement,
+    Panier,
+    Produit,
+    Promotion,
+    VariationProduit,
+    Ville,
 )
+
 
 @admin.register(Promotion)
 class PromotionAdmin(admin.ModelAdmin):
     list_display = ("nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom", "variations", "reduction", "date_debut", "date_fin", "active", "raison")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        (
+            "Informations principales",
+            {
+                "fields": (
+                    "nom",
+                    "variations",
+                    "reduction",
+                    "date_debut",
+                    "date_fin",
+                    "active",
+                    "raison",
+                )
+            },
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
 
 
@@ -26,31 +55,38 @@ class ProduitAdmin(admin.ModelAdmin):
     list_filter = ("categorie",)
     ordering = ("nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom", "categorie")
-        }),
-        ("Détails", {
-            "fields": ("Image", "description"),
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("nom", "categorie")}),
+        (
+            "Détails",
+            {
+                "fields": ("Image", "description"),
+            },
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(CategorieProduit)
 class CategorieProduitAdmin(admin.ModelAdmin):
-    list_display = ("nom","slug")
+    list_display = ("nom", "slug")
     search_fields = ("nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom", "couverture")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("nom", "couverture")}),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Commande)
 class CommandeAdmin(admin.ModelAdmin):
@@ -58,136 +94,185 @@ class CommandeAdmin(admin.ModelAdmin):
     list_filter = ("statut_commande",)
     search_fields = ("utilisateur__username",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("statut_commande", "utilisateur")
-        }),
-        ("Détails de la commande", {
-            "fields": ("code_promo", "paiement"),
-        }),
-        ("Métadonnées", {
-            "fields": ("est_actif",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("statut_commande", "utilisateur")}),
+        (
+            "Détails de la commande",
+            {
+                "fields": ("code_promo", "paiement"),
+            },
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("est_actif",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Livraison)
 class LivraisonAdmin(admin.ModelAdmin):
-    list_display = ("commande",  "statut_livraison",)
+    list_display = (
+        "commande",
+        "statut_livraison",
+    )
     list_filter = ("statut_livraison",)
     search_fields = ("numero_suivi",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("commande", "statut_livraison")
-        }),
-        ("Métadonnées", {
-            "fields": ("est_actif",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("commande", "statut_livraison")}),
+        (
+            "Métadonnées",
+            {
+                "fields": ("est_actif",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Mode)
 class ModeAdmin(admin.ModelAdmin):
-    list_display = ("nom","type_paiement")
+    list_display = ("nom", "type_paiement")
     search_fields = ("nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom", "description","type_paiement","utilisateur")
-        }),
-        ("Informations spécifiques", {
-            "fields": ("numero_tel","numero","expiration","code")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        (
+            "Informations principales",
+            {"fields": ("nom", "description", "type_paiement", "utilisateur")},
+        ),
+        (
+            "Informations spécifiques",
+            {"fields": ("numero_tel", "numero", "expiration", "code")},
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Paiement)
 class PaiementAdmin(admin.ModelAdmin):
-    list_display = ("commande","montant", "mode", "statut_paiement")
+    list_display = ("commande", "montant", "mode", "statut_paiement")
     list_filter = ("statut_paiement",)
     search_fields = ("mode__nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("commande","montant", "mode", "statut_paiement","payment_intent_id")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        (
+            "Informations principales",
+            {
+                "fields": (
+                    "commande",
+                    "montant",
+                    "mode",
+                    "statut_paiement",
+                    "payment_intent_id",
+                )
+            },
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Panier)
 class PanierAdmin(admin.ModelAdmin):
     list_display = ("utilisateur",)
     search_fields = ("utilisateur__username",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("utilisateur", "produits")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("utilisateur", "produits")}),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Ville)
 class VilleAdmin(admin.ModelAdmin):
     list_display = ("nom",)
     search_fields = ("nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom",)
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("nom",)}),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Commune)
 class CommuneAdmin(admin.ModelAdmin):
     list_display = ("nom", "ville", "frais_livraison")
     search_fields = ("nom", "ville__nom")
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom", "ville", "frais_livraison")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("nom", "ville", "frais_livraison")}),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(CommandeProduit)
 class CommandeProduitAdmin(admin.ModelAdmin):
-    list_display = ('commande','produit','quantite')
-    search_fields = ('produit',)
+    list_display = ("commande", "produit", "quantite")
+    search_fields = ("produit",)
 
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("commande", "produit", "quantite")
-        }),
-        ("Métadonnées", {
-            "fields": ("est_actif",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("commande", "produit", "quantite")}),
+        (
+            "Métadonnées",
+            {
+                "fields": ("est_actif",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
 
 
 @admin.register(Adresse)
 class AdresseAdmin(admin.ModelAdmin):
-    list_display = ("nom","commune",)
+    list_display = (
+        "nom",
+        "commune",
+    )
     search_fields = ("commune__nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom","commune",)
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        (
+            "Informations principales",
+            {
+                "fields": (
+                    "nom",
+                    "commune",
+                )
+            },
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(VariationProduit)
 class VariationProduitAdmin(admin.ModelAdmin):
@@ -195,17 +280,35 @@ class VariationProduitAdmin(admin.ModelAdmin):
     list_filter = ("qualite", "mois_debut_recolte", "mois_fin_recolte")
     search_fields = ("produit__nom",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("nom" ,"produit", "images","qualite", "poids", "quantite", "prix")
-        }),
-        ("Période de récolte", {
-            "fields": ("mois_debut_recolte", "mois_fin_recolte", "origine"),
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        (
+            "Informations principales",
+            {
+                "fields": (
+                    "nom",
+                    "produit",
+                    "images",
+                    "qualite",
+                    "poids",
+                    "quantite",
+                    "prix",
+                )
+            },
+        ),
+        (
+            "Période de récolte",
+            {
+                "fields": ("mois_debut_recolte", "mois_fin_recolte", "origine"),
+            },
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Avis)
 class AvisAdmin(admin.ModelAdmin):
@@ -213,17 +316,25 @@ class AvisAdmin(admin.ModelAdmin):
     list_filter = ("note",)
     search_fields = ("utilisateur__username", "produit__nom")
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("utilisateur", "produit", "note", "commentaire")
-        }),
-        ("Dates", {
-            "fields": ("date",),  # Déjà correct
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        (
+            "Informations principales",
+            {"fields": ("utilisateur", "produit", "note", "commentaire")},
+        ),
+        (
+            "Dates",
+            {
+                "fields": ("date",),  # Déjà correct
+            },
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(CodePromo)
 class CodePromoAdmin(admin.ModelAdmin):
@@ -231,25 +342,31 @@ class CodePromoAdmin(admin.ModelAdmin):
     search_fields = ("code",)
     list_filter = ("date_expiration",)
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("code", "reduction", "date_expiration")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        (
+            "Informations principales",
+            {"fields": ("code", "reduction", "date_expiration")},
+        ),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )
+
 
 @admin.register(Favoris)
 class FavorisAdmin(admin.ModelAdmin):
     list_display = ("utilisateur",)
     search_fields = ("utilisateur__username", "produit__nom")
     fieldsets = (
-        ("Informations principales", {
-            "fields": ("utilisateur", "produit")
-        }),
-        ("Métadonnées", {
-            "fields": ("statut",),  # Ajout de la virgule
-            "classes": ("collapse",),
-        }),
+        ("Informations principales", {"fields": ("utilisateur", "produit")}),
+        (
+            "Métadonnées",
+            {
+                "fields": ("statut",),  # Ajout de la virgule
+                "classes": ("collapse",),
+            },
+        ),
     )

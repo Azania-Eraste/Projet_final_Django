@@ -4,19 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0008_livraison_adresse'),
+        ("Ecommerce", "0008_livraison_adresse"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='livraison',
-            old_name='numero_suivi',
-            new_name='numero_tel',
+            model_name="livraison",
+            old_name="numero_suivi",
+            new_name="numero_tel",
         ),
         migrations.RemoveField(
-            model_name='livraison',
-            name='transporteur',
+            model_name="livraison",
+            name="transporteur",
         ),
     ]

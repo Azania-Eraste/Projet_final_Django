@@ -1,8 +1,7 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from django_ckeditor_5.fields import CKEditor5Field
+from django.db import models
 from django.utils.text import slugify
-
+from django_ckeditor_5.fields import CKEditor5Field
 
 User = get_user_model()
 
@@ -10,14 +9,16 @@ User = get_user_model()
 
 
 class Categorie(models.Model):
-
     class Meta:
         verbose_name = "Catégorie"
         verbose_name_plural = "Catégories"
 
     nom = models.CharField(verbose_name="Nom", max_length=255)
     description = models.TextField()
-    slug = models.SlugField(unique=True, blank=True,)
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+    )
 
     # Standards
     statut = models.BooleanField(default=True)
@@ -31,10 +32,9 @@ class Categorie(models.Model):
 
     def __str__(self):
         return self.nom + self.slug
-    
+
 
 class Tag(models.Model):
-
     class Meta:
         verbose_name = "Tag"
         verbose_name_plural = "Tags"
@@ -48,10 +48,9 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.nom
-    
+
 
 class Article(models.Model):
-
     class Meta:
         verbose_name = "Article"
         verbose_name_plural = "Articles"
@@ -59,15 +58,34 @@ class Article(models.Model):
     titre = models.CharField(max_length=256)
     couverture = models.ImageField(upload_to="articles")
     resume = models.TextField()
-    contenu = CKEditor5Field(config_name='default')
-    slug = models.SlugField(unique=True, blank=True,)
+    contenu = CKEditor5Field(config_name="default")
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+    )
 
-    auteur_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="auteur_article_ids", verbose_name="auteurs")
-    categorie_id = models.ForeignKey('blog.Categorie', on_delete=models.SET_NULL, null=True, related_name="categorie_article_ids", verbose_name="Catégories")
-    tag_ids = models.ManyToManyField('blog.Tag', related_name="tag_article_ids", verbose_name="Tags")
-    
+    auteur_id = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="auteur_article_ids",
+        verbose_name="auteurs",
+    )
+    categorie_id = models.ForeignKey(
+        "blog.Categorie",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="categorie_article_ids",
+        verbose_name="Catégories",
+    )
+    tag_ids = models.ManyToManyField(
+        "blog.Tag", related_name="tag_article_ids", verbose_name="Tags"
+    )
+
     est_publie = models.BooleanField(default=False)
-    date_de_publicatio = models.DateField(verbose_name="Date de publication",auto_now=True)
+    date_de_publicatio = models.DateField(
+        verbose_name="Date de publication", auto_now=True
+    )
 
     # Standards
     statut = models.BooleanField(default=True)
@@ -78,22 +96,28 @@ class Article(models.Model):
         if not self.slug:
             self.slug = slugify(self.titre)  # Génère un slug basé sur le titre
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.titre
-    
+
     def nombreDeLike(self):
         return self.likes.count()
-    
+
 
 class Commentaire(models.Model):
-
     class Meta:
         verbose_name = "Commentaire"
         verbose_name_plural = "Commentaires"
 
-    auteur_id = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="auteur_commentaire_ids")
-    article_id = models.ForeignKey('blog.Article', on_delete=models.CASCADE, related_name="article_commentaire_ids")
+    auteur_id = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="auteur_commentaire_ids",
+    )
+    article_id = models.ForeignKey(
+        "blog.Article", on_delete=models.CASCADE, related_name="article_commentaire_ids"
+    )
     contenu = models.TextField()
 
     # Standards
@@ -103,4 +127,3 @@ class Commentaire(models.Model):
 
     def __str__(self):
         return self.auteur_id.username
-

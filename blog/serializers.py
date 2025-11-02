@@ -1,71 +1,78 @@
-from rest_framework import serializers
-from blog.models import Categorie,Article,Tag,Commentaire
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+from blog.models import Article, Categorie, Commentaire, Tag
 
 User = get_user_model()
 
+
 class UserSerializer(serializers.ModelSerializer):
-      class Meta: 
-            model = User
-            fields = [
-                        'id',
-                        'username',
-                        'email',
-                        'nom',
-                        'prenom',
-                        'number',
-                    ]
-            
-            
-            
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "nom",
+            "prenom",
+            "number",
+        ]
+
+
 class TagSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Tag
-            fields = ['id','nom',]
+    class Meta:
+        model = Tag
+        fields = [
+            "id",
+            "nom",
+        ]
+
 
 class CommentaireSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Commentaire
-            fields = [
-                        'id',
-                        'auteur_id',
-                        'article_id',
-                        'contenu',
-                    ]
-            
-class CategorieIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Commentaire
+        fields = [
+            "id",
+            "auteur_id",
+            "article_id",
+            "contenu",
+        ]
 
-        class Meta:
-            model = Categorie
-            fields = ['id','nom','description',]
+
+class CategorieIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categorie
+        fields = [
+            "id",
+            "nom",
+            "description",
+        ]
+
 
 class ArticleSerializer(serializers.ModelSerializer):
-        
-        auteur_id = UserSerializer()
-        tag_ids = TagSerializer(many=True)
-        categorie_id = CategorieIdSerializer()
+    auteur_id = UserSerializer()
+    tag_ids = TagSerializer(many=True)
+    categorie_id = CategorieIdSerializer()
 
-        class Meta:
-            depth = 1
-            model = Article
-            fields = [  
-                        'id',
-                        'titre',
-                        'couverture',
-                        'resume',
-                        'contenu',
-                        'auteur_id',
-                        'categorie_id',
-                        'tag_ids',
-                        'date_de_publicatio',
-                    ]
+    class Meta:
+        depth = 1
+        model = Article
+        fields = [
+            "id",
+            "titre",
+            "couverture",
+            "resume",
+            "contenu",
+            "auteur_id",
+            "categorie_id",
+            "tag_ids",
+            "date_de_publicatio",
+        ]
 
 
 class CategorieSerializer(serializers.ModelSerializer):
-        
-        categorie_article_ids = ArticleSerializer(many=True)
+    categorie_article_ids = ArticleSerializer(many=True)
 
-        class Meta:
-            model = Categorie
-            fields = ['id','nom','description', 'categorie_article_ids']
-
+    class Meta:
+        model = Categorie
+        fields = ["id", "nom", "description", "categorie_article_ids"]

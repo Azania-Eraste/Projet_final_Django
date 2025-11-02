@@ -34,7 +34,7 @@
             <div class="checkout__form">
                 <h4>Formulaire de demande Vendeur</h4>
                 <p>Remplissez ce formulaire pour soumettre votre demande. Votre profil sera examiné par nos administrateurs.</p>
-                
+
                 {% if messages %}
                     {% for message in messages %}
                         <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
@@ -47,7 +47,7 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-lg-8 col-md-6">
-                            
+
                             <div class="checkout__input">
                                 <p>{{ form.number.label }}<span>*</span></p>
                                 {{ form.number }} {% if form.number.errors %}
@@ -70,7 +70,7 @@
                                     <small class="text-danger">{{ form.boutique_description.errors|first }}</small>
                                 {% endif %}
                             </div>
-                            
+
                             <button type="submit" class="site-btn">SOUMETTRE LA DEMANDE</button>
                         </div>
 

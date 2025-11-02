@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0011_commune_frais_livraison_and_more'),
+        ("Ecommerce", "0011_commune_frais_livraison_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='livraison',
-            name='frais_livraison',
+            model_name="livraison",
+            name="frais_livraison",
             field=models.FloatField(null=True),
         ),
     ]

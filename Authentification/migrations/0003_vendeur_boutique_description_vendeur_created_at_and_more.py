@@ -7,41 +7,54 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Authentification', '0002_vendeur'),
+        ("Authentification", "0002_vendeur"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='vendeur',
-            name='boutique_description',
+            model_name="vendeur",
+            name="boutique_description",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='vendeur',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="vendeur",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='vendeur',
-            name='last_updated_at',
+            model_name="vendeur",
+            name="last_updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='vendeur',
-            name='statut',
-            field=models.CharField(choices=[('EN_ATTENTE', 'En attente'), ('APPROUVE', 'Approuvé'), ('REFUSE', 'Refusé')], default='EN_ATTENTE', max_length=10),
+            model_name="vendeur",
+            name="statut",
+            field=models.CharField(
+                choices=[
+                    ("EN_ATTENTE", "En attente"),
+                    ("APPROUVE", "Approuvé"),
+                    ("REFUSE", "Refusé"),
+                ],
+                default="EN_ATTENTE",
+                max_length=10,
+            ),
         ),
         migrations.AlterField(
-            model_name='vendeur',
-            name='boutique_name',
+            model_name="vendeur",
+            name="boutique_name",
             field=models.CharField(blank=True, max_length=255),
         ),
         migrations.AlterField(
-            model_name='vendeur',
-            name='user',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profil_vendeur', to=settings.AUTH_USER_MODEL),
+            model_name="vendeur",
+            name="user",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="profil_vendeur",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

@@ -1,19 +1,20 @@
-from django.db import models
 from enum import Enum
-from django.utils import timezone
+
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save, post_delete
+from django.db import models
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.text import slugify
 
 User = get_user_model()
 
-class TypePaiement(Enum):
-    MOBILE_MONEY = 'Mobile Money'
-    CREDIT_CARD = 'Carte de crédit/débit'
-    PREPAID_CARD = 'Carte prépayée'
-    LIQUIDE = 'Liquide'
 
+class TypePaiement(Enum):
+    MOBILE_MONEY = "Mobile Money"
+    CREDIT_CARD = "Carte de crédit/débit"
+    PREPAID_CARD = "Carte prépayée"
+    LIQUIDE = "Liquide"
 
 
 class StatutPaiement(Enum):
@@ -21,11 +22,13 @@ class StatutPaiement(Enum):
     EFFECTUE = "Effectué"
     ECHOUE = "Echoué"
 
+
 class StatutCommande(Enum):
     EN_ATTENTE = "En attente"
     CONFIRMEE = "Confirmée"
     ANNULEE = "Annulée"
-    
+
+
 class StatutLivraison(Enum):
     EN_ATTENTE = "En attente"
     EN_COURS = "En cours"
@@ -33,23 +36,44 @@ class StatutLivraison(Enum):
     LIVREE = "Livrée"
     RETOURNEE = "Retournée"
 
+
 MOIS_CHOICES = [
-    (1, "Janvier"), (2, "Février"), (3, "Mars"), (4, "Avril"),
-    (5, "Mai"), (6, "Juin"), (7, "Juillet"), (8, "Août"),
-    (9, "Septembre"), (10, "Octobre"), (11, "Novembre"), (12, "Décembre")
+    (1, "Janvier"),
+    (2, "Février"),
+    (3, "Mars"),
+    (4, "Avril"),
+    (5, "Mai"),
+    (6, "Juin"),
+    (7, "Juillet"),
+    (8, "Août"),
+    (9, "Septembre"),
+    (10, "Octobre"),
+    (11, "Novembre"),
+    (12, "Décembre"),
 ]
 
 
 class Produit(models.Model):
     nom = models.CharField(max_length=255)
-    vendeur = models.ForeignKey('Authentification.Vendeur', on_delete=models.SET_NULL, null=True, blank=True, related_name='produits')
+    vendeur = models.ForeignKey(
+        "Authentification.Vendeur",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="produits",
+    )
     Image = models.ImageField(upload_to="Produit")
     description = models.TextField()
     stock = models.IntegerField(default=0)
-    categorie = models.ForeignKey('Ecommerce.CategorieProduit', on_delete=models.CASCADE)
+    categorie = models.ForeignKey(
+        "Ecommerce.CategorieProduit", on_delete=models.CASCADE
+    )
 
     def mettre_a_jour_stock(self):
-        nouveau_stock = sum(variation.quantite for variation in self.Variation_Produit_ids.filter(statut=True))
+        nouveau_stock = sum(
+            variation.quantite
+            for variation in self.Variation_Produit_ids.filter(statut=True)
+        )
         Produit.objects.filter(pk=self.pk).update(stock=nouveau_stock)
 
     statut = models.BooleanField(default=True)
@@ -59,10 +83,14 @@ class Produit(models.Model):
     def __str__(self):
         return self.nom
 
+
 class CategorieProduit(models.Model):
     nom = models.CharField(max_length=255)
     couverture = models.ImageField(upload_to="CategorieProduit")
-    slug=models.SlugField(unique=True, blank=True,)
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+    )
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -79,15 +107,21 @@ class CategorieProduit(models.Model):
     def __str__(self):
         return self.nom
 
+
 class Commande(models.Model):
     date = models.DateField(auto_now_add=True)
-    statut_commande = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutCommande])
+    statut_commande = models.CharField(
+        max_length=50, choices=[(tag.name, tag.value) for tag in StatutCommande]
+    )
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
-    code_promo = models.ForeignKey('Ecommerce.CodePromo', on_delete=models.SET_NULL, null=True, blank=True)
+    code_promo = models.ForeignKey(
+        "Ecommerce.CodePromo", on_delete=models.SET_NULL, null=True, blank=True
+    )
     prix = models.FloatField(null=True)
     prix_total = models.FloatField(null=True)
-    mode = models.ForeignKey('Ecommerce.Mode', on_delete=models.SET_NULL, null=True, blank=True)
-    
+    mode = models.ForeignKey(
+        "Ecommerce.Mode", on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     def mettre_a_jour_statut(self, nouveau_statut):
         self.statut_commande = nouveau_statut
@@ -99,10 +133,15 @@ class Commande(models.Model):
 
     def __str__(self):
         return "Commande N" + str(self.pk)
-    
+
+
 class CommandeProduit(models.Model):
-    commande = models.ForeignKey('Ecommerce.Commande', on_delete=models.CASCADE, related_name="Commande_Produit_ids")
-    produit = models.ForeignKey('Ecommerce.VariationProduit', on_delete=models.CASCADE)
+    commande = models.ForeignKey(
+        "Ecommerce.Commande",
+        on_delete=models.CASCADE,
+        related_name="Commande_Produit_ids",
+    )
+    produit = models.ForeignKey("Ecommerce.VariationProduit", on_delete=models.CASCADE)
     quantite = models.PositiveIntegerField(default=1)
     prix = models.FloatField()
 
@@ -111,15 +150,20 @@ class CommandeProduit(models.Model):
     last_updated_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
-        unique_together = ('commande', 'produit')
+        unique_together = ("commande", "produit")
 
     def __str__(self):
         return f"{self.quantite} x {self.produit.nom} dans commande {self.commande.id}"
 
+
 class Livraison(models.Model):
-    commande = models.ForeignKey(Commande, on_delete=models.CASCADE, related_name='Livraison_id')
-    statut_livraison = models.CharField(max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison])
-    adresse = models.ForeignKey('Adresse', on_delete=models.CASCADE, null=True)
+    commande = models.ForeignKey(
+        Commande, on_delete=models.CASCADE, related_name="Livraison_id"
+    )
+    statut_livraison = models.CharField(
+        max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison]
+    )
+    adresse = models.ForeignKey("Adresse", on_delete=models.CASCADE, null=True)
     numero_tel = models.CharField(max_length=255)
     frais_livraison = models.FloatField(null=True)
 
@@ -130,6 +174,7 @@ class Livraison(models.Model):
     def __str__(self):
         return "Livraison N" + str(self.pk)
 
+
 class Mode(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     nom = models.CharField(max_length=255)  # Ex: "Wave", "Carte de crédit/débit"
@@ -137,7 +182,7 @@ class Mode(models.Model):
     type_paiement = models.CharField(
         max_length=20,
         choices=[(tag.name, tag.value) for tag in TypePaiement],
-        default=TypePaiement.MOBILE_MONEY.value
+        default=TypePaiement.MOBILE_MONEY.value,
     )
     numero_tel = models.CharField(max_length=255, blank=True, null=True)
     numero = models.CharField(max_length=255, blank=True, null=True)
@@ -155,22 +200,32 @@ class Mode(models.Model):
         verbose_name = "Mode de paiement"
         verbose_name_plural = "Modes de paiement"
 
+
 class Paiement(models.Model):
     montant = models.FloatField()
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    mode = models.ForeignKey("Ecommerce.Mode", on_delete=models.CASCADE, related_name="ModePaiement")
-    
+    mode = models.ForeignKey(
+        "Ecommerce.Mode", on_delete=models.CASCADE, related_name="ModePaiement"
+    )
+
     statut_paiement = models.CharField(
         max_length=50,
         choices=[(tag.name, tag.value) for tag in StatutPaiement],
-        default=StatutPaiement.EN_ATTENTE.value
+        default=StatutPaiement.EN_ATTENTE.value,
     )
-    payment_intent_id = models.CharField(max_length=255, null=True, blank=True)  # Ajout du champ pour stocker l'ID du Payment Intent
+    payment_intent_id = models.CharField(
+        max_length=255, null=True, blank=True
+    )  # Ajout du champ pour stocker l'ID du Payment Intent
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
-    commande = models.ForeignKey("Ecommerce.Commande", on_delete=models.CASCADE, related_name="paiements", null=True)  # Ajout de la relation avec Commande
+    commande = models.ForeignKey(
+        "Ecommerce.Commande",
+        on_delete=models.CASCADE,
+        related_name="paiements",
+        null=True,
+    )  # Ajout de la relation avec Commande
 
     def effectuer_paiement(self):
         if self.mode.type_paiement == "Liquide":
@@ -180,12 +235,13 @@ class Paiement(models.Model):
             self.save()
             print(f"Après sauvegarde : {self.statut_paiement}")
             return True
-        print(f"Mode de paiement non éligible pour effectuer_paiement : {self.mode.type}")
+        print(
+            f"Mode de paiement non éligible pour effectuer_paiement : {self.mode.type}"
+        )
         return False
 
     def __str__(self):
         return f"Paiement N{self.pk} - Commande {self.commande.id}"
-
 
 
 class Ville(models.Model):
@@ -198,14 +254,19 @@ class Ville(models.Model):
     def __str__(self):
         return self.nom
 
+
 class Commune(models.Model):
     nom = models.CharField(max_length=255)
-    ville = models.ForeignKey("Ecommerce.Ville", on_delete=models.CASCADE, related_name="Commune_ville_id")
+    ville = models.ForeignKey(
+        "Ecommerce.Ville", on_delete=models.CASCADE, related_name="Commune_ville_id"
+    )
     frais_livraison = models.DecimalField(
         max_digits=10,
-        decimal_places=0,  # Pas de décimales, car le franc CFA est généralement en unités entières
+        decimal_places=0,
+        # Pas de décimales
+        # le franc CFA est généralement en unités entières
         default=2500,  # Par défaut 2500 FCFA, ajustable selon vos besoins
-        help_text="Frais de livraison en francs CFA pour cette commune"
+        help_text="Frais de livraison en francs CFA pour cette commune",
     )
 
     statut = models.BooleanField(default=True)
@@ -215,10 +276,15 @@ class Commune(models.Model):
     def __str__(self):
         return self.nom
 
+
 class Adresse(models.Model):
     nom = models.CharField(max_length=255, null=True, unique=True)
-    utilisateur = models.ManyToManyField(User, related_name='Adresse_ids')
-    commune = models.ForeignKey("Ecommerce.Commune", on_delete=models.CASCADE, related_name="Adresse_Commune_ids")
+    utilisateur = models.ManyToManyField(User, related_name="Adresse_ids")
+    commune = models.ForeignKey(
+        "Ecommerce.Commune",
+        on_delete=models.CASCADE,
+        related_name="Adresse_Commune_ids",
+    )
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -227,14 +293,27 @@ class Adresse(models.Model):
     def __str__(self):
         return f"{self.nom}"
 
+
 class Promotion(models.Model):
-    nom = models.CharField(max_length=255, help_text="Nom de la promotion, ex: '20% fin de récolte'")
-    variations = models.ManyToManyField('Ecommerce.VariationProduit', related_name="promotions", blank=True)
-    reduction = models.FloatField(help_text="Réduction en pourcentage (ex: 20 pour 20%)")
+    nom = models.CharField(
+        max_length=255, help_text="Nom de la promotion, ex: '20% fin de récolte'"
+    )
+    variations = models.ManyToManyField(
+        "Ecommerce.VariationProduit", related_name="promotions", blank=True
+    )
+    reduction = models.FloatField(
+        help_text="Réduction en pourcentage (ex: 20 pour 20%)"
+    )
     date_debut = models.DateField(help_text="Début de la promotion")
     date_fin = models.DateField(help_text="Fin de la promotion")
-    active = models.BooleanField(default=False, help_text="Indique si la promotion est active")
-    raison = models.CharField(max_length=255, default="Fin de période de récolte", help_text="Raison de la promotion")
+    active = models.BooleanField(
+        default=False, help_text="Indique si la promotion est active"
+    )
+    raison = models.CharField(
+        max_length=255,
+        default="Fin de période de récolte",
+        help_text="Raison de la promotion",
+    )
 
     def est_active(self):
         aujourd_hui = timezone.now().date()
@@ -262,31 +341,44 @@ class Promotion(models.Model):
     def __str__(self):
         return f"{self.nom} - {self.reduction}% jusqu'au {self.date_fin}"
 
+
 class VariationProduit(models.Model):
     nom = models.CharField(max_length=255, null=True)
-    produit = models.ForeignKey("Ecommerce.Produit", on_delete=models.CASCADE, related_name="Variation_Produit_ids")
+    produit = models.ForeignKey(
+        "Ecommerce.Produit",
+        on_delete=models.CASCADE,
+        related_name="Variation_Produit_ids",
+    )
     poids = models.FloatField(help_text="Poids en kilogrammes")
     description = models.TextField(null=True)
-    images = models.ImageField(upload_to='Variant_produit', null=True)
+    images = models.ImageField(upload_to="Variant_produit", null=True)
     quantite = models.IntegerField(help_text="Quantité disponible")
     origine = models.CharField(max_length=255)
-    mois_debut_recolte = models.IntegerField(choices=MOIS_CHOICES, help_text="Mois de début de la période de récolte")
-    mois_fin_recolte = models.IntegerField(choices=MOIS_CHOICES, help_text="Mois de fin de la période de récolte")
+    mois_debut_recolte = models.IntegerField(
+        choices=MOIS_CHOICES, help_text="Mois de début de la période de récolte"
+    )
+    mois_fin_recolte = models.IntegerField(
+        choices=MOIS_CHOICES, help_text="Mois de fin de la période de récolte"
+    )
     prix = models.FloatField(help_text="Prix de la variation du produit")
-    qualite = models.CharField(max_length=255, choices=[("Premium", "Premium"), ("Standard", "Standard")])
-    slug = models.SlugField( unique=True,blank=True)
+    qualite = models.CharField(
+        max_length=255, choices=[("Premium", "Premium"), ("Standard", "Standard")]
+    )
+    slug = models.SlugField(unique=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.nom)  # Génère un slug basé sur le titre
         super().save(*args, **kwargs)
 
-
     def est_dans_periode_recolte(self):
         aujourd_hui = timezone.now().date()
         mois_actuel = aujourd_hui.month
         if self.mois_debut_recolte > self.mois_fin_recolte:
-            return mois_actuel >= self.mois_debut_recolte or mois_actuel <= self.mois_fin_recolte
+            return (
+                mois_actuel >= self.mois_debut_recolte
+                or mois_actuel <= self.mois_fin_recolte
+            )
         return self.mois_debut_recolte <= mois_actuel <= self.mois_fin_recolte
 
     def prix_avec_reduction_saison(self):
@@ -310,12 +402,12 @@ class VariationProduit(models.Model):
 
     def __str__(self):
         return f"{self.nom} - {self.qualite} - {self.poids} kg"
-    
-
 
 
 class Panier(models.Model):
-    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Panier_id")
+    utilisateur = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="Panier_id"
+    )
     produits = models.ManyToManyField("Ecommerce.VariationProduit")
 
     def ajouter_produit(self, produit):
@@ -333,7 +425,7 @@ class Panier(models.Model):
 
     def __str__(self):
         return "Panier N" + str(self.pk)
-    
+
 
 class Avis(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -349,6 +441,7 @@ class Avis(models.Model):
     def __str__(self):
         return f"{self.utilisateur} - {self.produit} - {self.note}"
 
+
 class CodePromo(models.Model):
     code = models.CharField(max_length=50, unique=True)
     reduction = models.FloatField()
@@ -361,9 +454,12 @@ class CodePromo(models.Model):
     def __str__(self):
         return f"Code promo N {self.pk}"
 
+
 class Favoris(models.Model):
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
-    produit = models.ManyToManyField("Ecommerce.VariationProduit", related_name="Favoris_ids")
+    produit = models.ManyToManyField(
+        "Ecommerce.VariationProduit", related_name="Favoris_ids"
+    )
 
     statut = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -372,9 +468,12 @@ class Favoris(models.Model):
     def __str__(self):
         return f"{self.utilisateur} aime {self.produit}"
 
+
 @receiver(post_save, sender=VariationProduit)
 @receiver(post_delete, sender=VariationProduit)
 def update_produit_stock(sender, instance, **kwargs):
-    """Met à jour le stock du produit quand une variation est créée, modifiée ou supprimée."""
+    """
+    Met à jour le stock du produit quand une variation est créée, modifiée ou supprimée.
+    """
     produit = instance.produit
     produit.mettre_a_jour_stock()

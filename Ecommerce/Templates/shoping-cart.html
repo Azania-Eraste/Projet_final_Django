@@ -67,20 +67,20 @@
                                                 <td class="shoping__cart__quantity">
                                                     <div class="quantity">
                                                         <div class="pro-qty">
-                                                            <input type="number" 
-                                                                   name="quantite_{{ item.produit.id }}" 
-                                                                   value="{{ item.form.quantite.value|default:1 }}" 
-                                                                   min="1" 
-                                                                   max="{{ item.produit.quantite|default:1 }}" 
-                                                                   data-max="{{ item.produit.quantite|default:1 }}" 
+                                                            <input type="number"
+                                                                   name="quantite_{{ item.produit.id }}"
+                                                                   value="{{ item.form.quantite.value|default:1 }}"
+                                                                   min="1"
+                                                                   max="{{ item.produit.quantite|default:1 }}"
+                                                                   data-max="{{ item.produit.quantite|default:1 }}"
                                                                    class="qty-input">
                                                         </div>
-                                                        <input type="hidden" 
-                                                               name="produit_id_{{ item.produit.id }}" 
+                                                        <input type="hidden"
+                                                               name="produit_id_{{ item.produit.id }}"
                                                                value="{{ item.produit.id }}">
                                                     </div>
                                                 </td>
-                                                <td class="shoping__cart__total" 
+                                                <td class="shoping__cart__total"
                                                     data-prix="{{ item.produit.prix_actuel }}"
                                                     data-quantite="{{ item.form.quantite.value|default:1 }}">
                                                     {{ item.produit.prix_actuel |mul:item.form.quantite.value|default:item.produit.prix_actuel }}
@@ -138,7 +138,7 @@
                                 {% endif %}
                                 {% if not mode_paiement_form.mode_paiement.queryset %}
                                     <p class="text-red-600 text-sm mt-2">
-                                        Aucun mode de paiement disponible. 
+                                        Aucun mode de paiement disponible.
                                         <a href="{% url 'Ecommerce:mode_paiement' %}" class="text-blue-600 underline">Ajouter un mode de paiement</a>
                                     </p>
                                 {% endif %}

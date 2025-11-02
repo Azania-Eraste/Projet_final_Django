@@ -6,35 +6,44 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0005_paiement_utilisateur'),
+        ("Ecommerce", "0005_paiement_utilisateur"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='adresse',
-            name='code_postal',
+            model_name="adresse",
+            name="code_postal",
         ),
         migrations.AddField(
-            model_name='adresse',
-            name='nom',
+            model_name="adresse",
+            name="nom",
             field=models.CharField(max_length=255, null=True),
         ),
         migrations.AddField(
-            model_name='adresse',
-            name='utilisateur',
-            field=models.ManyToManyField(related_name='Adresse_ids', to=settings.AUTH_USER_MODEL),
+            model_name="adresse",
+            name="utilisateur",
+            field=models.ManyToManyField(
+                related_name="Adresse_ids", to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AlterField(
-            model_name='commune',
-            name='ville',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='Commune_ville_id', to='Ecommerce.ville'),
+            model_name="commune",
+            name="ville",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="Commune_ville_id",
+                to="Ecommerce.ville",
+            ),
         ),
         migrations.AlterField(
-            model_name='livraison',
-            name='commande',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='Livraison_id', to='Ecommerce.commande'),
+            model_name="livraison",
+            name="commande",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="Livraison_id",
+                to="Ecommerce.commande",
+            ),
         ),
     ]

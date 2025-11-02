@@ -5,15 +5,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0007_alter_mode_options_mode_code_mode_expiration_and_more'),
+        ("Ecommerce", "0007_alter_mode_options_mode_code_mode_expiration_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='livraison',
-            name='adresse',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='Ecommerce.adresse'),
+            model_name="livraison",
+            name="adresse",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="Ecommerce.adresse",
+            ),
         ),
     ]

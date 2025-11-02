@@ -6,22 +6,35 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Authentification', '0001_initial'),
+        ("Authentification", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Vendeur',
+            name="Vendeur",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('boutique_name', models.CharField(max_length=255)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("boutique_name", models.CharField(max_length=255)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Vendeur',
-                'verbose_name_plural': 'Vendeurs',
+                "verbose_name": "Vendeur",
+                "verbose_name_plural": "Vendeurs",
             },
         ),
     ]

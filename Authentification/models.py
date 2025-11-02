@@ -1,8 +1,9 @@
-from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 # Create your models here.
+
 
 class CustomUser(AbstractUser):
     class Meta:
@@ -13,28 +14,29 @@ class CustomUser(AbstractUser):
     prenom = models.TextField()
     number = models.TextField()
 
+
 class Vendeur(models.Model):
     STATUT_CHOICES = (
-        ('EN_ATTENTE', 'En attente'),
-        ('APPROUVE', 'Approuvé'),
-        ('REFUSE', 'Refusé'),
+        ("EN_ATTENTE", "En attente"),
+        ("APPROUVE", "Approuvé"),
+        ("REFUSE", "Refusé"),
     )
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, 
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='profil_vendeur' # Ajouté pour un accès facile
+        related_name="profil_vendeur",  # Ajouté pour un accès facile
     )
-    
+
     boutique_name = models.CharField(max_length=255, blank=True)
     boutique_description = models.TextField(blank=True, null=True)
-    
+
     statut = models.CharField(
-        max_length=10, 
-        choices=STATUT_CHOICES, 
-        default='EN_ATTENTE'  # Le vendeur doit être approuvé
+        max_length=10,
+        choices=STATUT_CHOICES,
+        default="EN_ATTENTE",  # Le vendeur doit être approuvé
     )
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 
@@ -47,7 +49,7 @@ class Vendeur(models.Model):
         if not self.boutique_name:
             # ... on assigne le 'username' de l'utilisateur lié.
             self.boutique_name = self.user.username
-        super().save(*args, **kwargs) # Appelle la vraie méthode save()
+        super().save(*args, **kwargs)  # Appelle la vraie méthode save()
 
     def __str__(self):
         return self.boutique_name
@@ -62,7 +64,12 @@ class ActivationOTP(models.Model):
     - attempts : nombre d'essais de validation
     - used : marque si le code a été consommé
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='activation_otps')
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="activation_otps",
+    )
     code = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

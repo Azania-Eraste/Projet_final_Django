@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0009_rename_numero_suivi_livraison_numero_tel_and_more'),
+        ("Ecommerce", "0009_rename_numero_suivi_livraison_numero_tel_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='adresse',
-            name='nom',
+            model_name="adresse",
+            name="nom",
             field=models.CharField(max_length=255, null=True, unique=True),
         ),
     ]

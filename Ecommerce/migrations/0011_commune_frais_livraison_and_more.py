@@ -4,20 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0010_alter_adresse_nom'),
+        ("Ecommerce", "0010_alter_adresse_nom"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='commune',
-            name='frais_livraison',
-            field=models.DecimalField(decimal_places=0, default=2500, help_text='Frais de livraison en francs CFA pour cette commune', max_digits=10),
+            model_name="commune",
+            name="frais_livraison",
+            field=models.DecimalField(
+                decimal_places=0,
+                default=2500,
+                help_text="Frais de livraison en francs CFA pour cette commune",
+                max_digits=10,
+            ),
         ),
         migrations.AlterField(
-            model_name='livraison',
-            name='statut_livraison',
-            field=models.CharField(choices=[('EN_ATTENTE', 'En attente'), ('EN_COURS', 'En cours'), ('LIVREE', 'Livrée'), ('RETOURNEE', 'Retournée')], max_length=50),
+            model_name="livraison",
+            name="statut_livraison",
+            field=models.CharField(
+                choices=[
+                    ("EN_ATTENTE", "En attente"),
+                    ("EN_COURS", "En cours"),
+                    ("LIVREE", "Livrée"),
+                    ("RETOURNEE", "Retournée"),
+                ],
+                max_length=50,
+            ),
         ),
     ]

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -16,86 +15,182 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Categorie',
+            name="Categorie",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=255, verbose_name='Nom')),
-                ('description', models.TextField()),
-                ('slug', models.SlugField(blank=True, unique=True)),
-                ('statut', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('last_updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nom", models.CharField(max_length=255, verbose_name="Nom")),
+                ("description", models.TextField()),
+                ("slug", models.SlugField(blank=True, unique=True)),
+                ("statut", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("last_updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'Catégorie',
-                'verbose_name_plural': 'Catégories',
+                "verbose_name": "Catégorie",
+                "verbose_name_plural": "Catégories",
             },
         ),
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=255, verbose_name='Nom')),
-                ('statut', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('last_updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nom", models.CharField(max_length=255, verbose_name="Nom")),
+                ("statut", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("last_updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'Tag',
-                'verbose_name_plural': 'Tags',
+                "verbose_name": "Tag",
+                "verbose_name_plural": "Tags",
             },
         ),
         migrations.CreateModel(
-            name='Article',
+            name="Article",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('titre', models.CharField(max_length=256)),
-                ('couverture', models.ImageField(upload_to='articles')),
-                ('resume', models.TextField()),
-                ('contenu', django_ckeditor_5.fields.CKEditor5Field()),
-                ('slug', models.SlugField(blank=True, unique=True)),
-                ('est_publie', models.BooleanField(default=False)),
-                ('date_de_publicatio', models.DateField(auto_now=True, verbose_name='Date de publication')),
-                ('statut', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('last_updated_at', models.DateTimeField(auto_now=True)),
-                ('auteur_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='auteur_article_ids', to=settings.AUTH_USER_MODEL, verbose_name='auteurs')),
-                ('categorie_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='categorie_article_ids', to='blog.categorie', verbose_name='Catégories')),
-                ('tag_ids', models.ManyToManyField(related_name='tag_article_ids', to='blog.tag', verbose_name='Tags')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("titre", models.CharField(max_length=256)),
+                ("couverture", models.ImageField(upload_to="articles")),
+                ("resume", models.TextField()),
+                ("contenu", django_ckeditor_5.fields.CKEditor5Field()),
+                ("slug", models.SlugField(blank=True, unique=True)),
+                ("est_publie", models.BooleanField(default=False)),
+                (
+                    "date_de_publicatio",
+                    models.DateField(auto_now=True, verbose_name="Date de publication"),
+                ),
+                ("statut", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("last_updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "auteur_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="auteur_article_ids",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="auteurs",
+                    ),
+                ),
+                (
+                    "categorie_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="categorie_article_ids",
+                        to="blog.categorie",
+                        verbose_name="Catégories",
+                    ),
+                ),
+                (
+                    "tag_ids",
+                    models.ManyToManyField(
+                        related_name="tag_article_ids",
+                        to="blog.tag",
+                        verbose_name="Tags",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Article',
-                'verbose_name_plural': 'Articles',
+                "verbose_name": "Article",
+                "verbose_name_plural": "Articles",
             },
         ),
         migrations.CreateModel(
-            name='Commentaire',
+            name="Commentaire",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('contenu', models.TextField()),
-                ('statut', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('last_updated_at', models.DateTimeField(auto_now=True)),
-                ('article_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='article_commentaire_ids', to='blog.article')),
-                ('auteur_id', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='auteur_commentaire_ids', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("contenu", models.TextField()),
+                ("statut", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("last_updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "article_id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="article_commentaire_ids",
+                        to="blog.article",
+                    ),
+                ),
+                (
+                    "auteur_id",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="auteur_commentaire_ids",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Commentaire',
-                'verbose_name_plural': 'Commentaires',
+                "verbose_name": "Commentaire",
+                "verbose_name_plural": "Commentaires",
             },
         ),
         migrations.CreateModel(
-            name='Like',
+            name="Like",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='likes', to='blog.article')),
-                ('utilisateur', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                (
+                    "article",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="likes",
+                        to="blog.article",
+                    ),
+                ),
+                (
+                    "utilisateur",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'like',
-                'verbose_name_plural': 'likes',
-                'unique_together': {('utilisateur', 'article')},
+                "verbose_name": "like",
+                "verbose_name_plural": "likes",
+                "unique_together": {("utilisateur", "article")},
             },
         ),
     ]

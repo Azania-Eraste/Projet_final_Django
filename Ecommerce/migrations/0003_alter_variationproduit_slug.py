@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0002_variationproduit_slug'),
+        ("Ecommerce", "0002_variationproduit_slug"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='variationproduit',
-            name='slug',
+            model_name="variationproduit",
+            name="slug",
             field=models.SlugField(blank=True, unique=True),
         ),
     ]

@@ -4,19 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0017_delete_role'),
+        ("Ecommerce", "0017_delete_role"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='paiement',
-            name='est_actif',
+            model_name="paiement",
+            name="est_actif",
         ),
         migrations.AlterField(
-            model_name='paiement',
-            name='statut_paiement',
-            field=models.CharField(choices=[('EN_ATTENTE', 'En attente'), ('EFFECTUE', 'Effectué'), ('ECHOUE', 'Echoué')], default='En attente', max_length=50),
+            model_name="paiement",
+            name="statut_paiement",
+            field=models.CharField(
+                choices=[
+                    ("EN_ATTENTE", "En attente"),
+                    ("EFFECTUE", "Effectué"),
+                    ("ECHOUE", "Echoué"),
+                ],
+                default="En attente",
+                max_length=50,
+            ),
         ),
     ]

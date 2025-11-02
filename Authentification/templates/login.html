@@ -18,7 +18,7 @@
         <!-- Formulaire de connexion Django -->
         <form method="post" id="auth-form" class="mt-4">
             {% csrf_token %}
-            
+
             <!-- Affichage des erreurs de formulaire -->
             {% if form.non_field_errors %}
                 <div class="mb-4 text-red-500 text-sm">
@@ -29,7 +29,7 @@
                     </ul>
                 </div>
             {% endif %}
-            
+
             <div class="mb-4">
                 <label for="username" class="block ml-5 text-sm font-medium text-gray-600">Nom d'utilisateur</label>
                 {{ form.username }}
@@ -41,7 +41,7 @@
                     </ul>
                 {% endif %}
             </div>
-    
+
             <div class="mb-6">
                 <label for="password" class="block ml-5 text-sm font-medium text-gray-600">Mot de passe</label>
                 {{ form.password }}
@@ -53,10 +53,10 @@
                     </ul>
                 {% endif %}
             </div>
-    
+
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg">Se connecter</button>
         </form>
-    
+
         <p class="mt-4 text-center text-sm">
             Pas encore de compte ? <a href="{% url 'Authentification:register' %}" id="toggle-form" class="text-blue-500">Créer un compte</a>
         </p>

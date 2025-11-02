@@ -5,25 +5,45 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0014_alter_commande_prix'),
+        ("Ecommerce", "0014_alter_commande_prix"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='commande',
-            name='mode',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='Ecommerce.mode'),
+            model_name="commande",
+            name="mode",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="Ecommerce.mode",
+            ),
         ),
         migrations.AlterField(
-            model_name='commande',
-            name='statut_commande',
-            field=models.CharField(choices=[('EN_ATTENTE', 'En attente'), ('EN_COURS', 'En cours'), ('ANNULEE', 'Annulée')], max_length=50),
+            model_name="commande",
+            name="statut_commande",
+            field=models.CharField(
+                choices=[
+                    ("EN_ATTENTE", "En attente"),
+                    ("EN_COURS", "En cours"),
+                    ("ANNULEE", "Annulée"),
+                ],
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='livraison',
-            name='statut_livraison',
-            field=models.CharField(choices=[('EN_ATTENTE', 'En attente'), ('EN_COURS', 'En cours'), ('EXPEDIEE', 'Expédiée'), ('LIVREE', 'Livrée'), ('RETOURNEE', 'Retournée')], max_length=50),
+            model_name="livraison",
+            name="statut_livraison",
+            field=models.CharField(
+                choices=[
+                    ("EN_ATTENTE", "En attente"),
+                    ("EN_COURS", "En cours"),
+                    ("EXPEDIEE", "Expédiée"),
+                    ("LIVREE", "Livrée"),
+                    ("RETOURNEE", "Retournée"),
+                ],
+                max_length=50,
+            ),
         ),
     ]

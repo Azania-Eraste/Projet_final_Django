@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0012_livraison_frais_livraison'),
+        ("Ecommerce", "0012_livraison_frais_livraison"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='commande',
-            name='prix_total',
+            model_name="commande",
+            name="prix_total",
             field=models.FloatField(null=True),
         ),
         migrations.AlterField(
-            model_name='commande',
-            name='prix',
+            model_name="commande",
+            name="prix",
             field=models.FloatField(),
         ),
     ]

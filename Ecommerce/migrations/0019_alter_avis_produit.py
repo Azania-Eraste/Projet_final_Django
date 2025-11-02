@@ -5,15 +5,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('Ecommerce', '0018_remove_paiement_est_actif_and_more'),
+        ("Ecommerce", "0018_remove_paiement_est_actif_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='avis',
-            name='produit',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Ecommerce.variationproduit'),
+            model_name="avis",
+            name="produit",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="Ecommerce.variationproduit",
+            ),
         ),
     ]

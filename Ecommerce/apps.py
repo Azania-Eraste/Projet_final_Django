@@ -2,8 +2,8 @@ from django.apps import AppConfig
 
 
 class EcommerceConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'Ecommerce'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "Ecommerce"
 
     def ready(self):
-        import Ecommerce.signals
+        pass

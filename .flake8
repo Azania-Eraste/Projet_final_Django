@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 88
+extend-ignore = E203, W503
+exclude = .git,__pycache__,venv,venv2,env,build,dist,static,media,projet_final/static
+
+# Exclure les migrations et fichiers générés (imports non utilisés etc.)
+per-file-ignores =
+    **/migrations/*.py: F401,F403,E501
+    **/settings.py: E402,E501
+    **/wsgi.py: E402,E501
+    **/asgi.py: E402,E501
+
+# If you want to allow longer lines in some generated files (migrations),
+# we ignore E501 there. Keep code files checked strictly.
