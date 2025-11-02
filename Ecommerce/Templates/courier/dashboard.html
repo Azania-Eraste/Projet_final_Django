@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container p-6">
+  <h1>Tableau de bord Livreur</h1>
+
+  <h2 class="mt-4">Livraisons à traiter</h2>
+  {% if livraisons %}
+    <table class="table-auto w-full">
+      <thead>
+        <tr><th>Commande</th><th>Adresse</th><th>Client</th><th>Statut</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for l in livraisons %}
+          <tr>
+            <td>#{{ l.commande.id }}</td>
+            <td>{{ l.adresse.nom }}</td>
+            <td>{{ l.commande.utilisateur.username }}</td>
+            <td>{{ l.statut_livraison }}</td>
+            <td>
+              <form method="post" action="{% url 'Ecommerce:livreur_pickup' l.id %}" style="display:inline">
+                {% csrf_token %}
+                <button class="btn btn-primary">Marquer comme récupéré</button>
+              </form>
+              <a class="btn btn-secondary" href="{% url 'Ecommerce:livreur_mark_delivered' l.id %}">Livrer</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Aucune livraison à traiter pour le moment.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+<!doctype html>
+<html>
+  <body>
+    <p>Bonjour {{ livraison.commande.utilisateur.get_full_name|default:livraison.commande.utilisateur.username }},</p>
+    <p>Votre commande N°{{ livraison.commande.id }} a été prise en charge par le livreur.</p>
+    <p>Nous vous tiendrons informé lorsque la livraison sera effectuée.</p>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import CustomUser
+from .models import CustomUser, Vendeur
 
 
 # Register your models here.
@@ -20,3 +20,10 @@ class CustomUserAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+@admin.register(Vendeur)
+class VendeurAdmin(admin.ModelAdmin):
+    list_display = ("user", "boutique_name", "statut", "created_at")
+    list_filter = ("statut",)
+    search_fields = ("user__username", "boutique_name")

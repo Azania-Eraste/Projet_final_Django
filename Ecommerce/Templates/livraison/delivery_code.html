@@ -1,0 +1,59 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container p-6">
+  <h1>Code de livraison pour la commande #{{ livraison.commande.id }}</h1>
+  <p>Montrez ce code au livreur pour valider la remise du colis :</p>
+  <div style="font-size:2rem; font-weight:700; margin:12px 0;">{{ livraison.delivery_code }}</div>
+  {% if qr_url %}
+    <p>Présentez ce QR au livreur :</p>
+    <div id="qr-container" style="margin:12px 0;">
+      <img id="qr-image" src="{{ qr_url }}" alt="QR code" style="max-width:220px; max-height:220px;" />
+    </div>
+    <p>
+      <button id="print-qr" class="btn btn-secondary">Imprimer le QR</button>
+      <button id="fullscreen-qr" class="btn btn-info">Afficher plein écran</button>
+    </p>
+  {% else %}
+    <p>Vous pouvez aussi afficher ce code en format QR auprès du livreur.</p>
+  {% endif %}
+
+  <script>
+    (function(){
+      const qrImg = document.getElementById('qr-image');
+      const printBtn = document.getElementById('print-qr');
+      const fsBtn = document.getElementById('fullscreen-qr');
+      const qrContainer = document.getElementById('qr-container');
+
+      if (printBtn) {
+        printBtn.addEventListener('click', function(){
+          const w = window.open('', '_blank');
+          w.document.write('<html><head><title>QR code</title></head><body style="display:flex;align-items:center;justify-content:center;height:100vh">' + qrContainer.innerHTML + '</body></html>');
+          w.document.close();
+          w.focus();
+          setTimeout(function(){ w.print(); w.close(); }, 300);
+        });
+      }
+
+      if (fsBtn) {
+        fsBtn.addEventListener('click', async function(){
+          if (qrContainer.requestFullscreen) {
+            await qrContainer.requestFullscreen();
+          } else if (qrContainer.webkitRequestFullscreen) {
+            qrContainer.webkitRequestFullscreen();
+          }
+        });
+      }
+
+      // optional: auto open fullscreen if query param auto=1
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('auto') === '1' && qrContainer.requestFullscreen) {
+          qrContainer.requestFullscreen().catch(()=>{});
+        }
+      } catch(e){}
+    })();
+  </script>
+  <p><a class="btn btn-primary" href="{% url 'Ecommerce:commandes' %}">Retour aux commandes</a></p>
+</div>
+{% endblock %}

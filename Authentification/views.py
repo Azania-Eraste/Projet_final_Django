@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.decorators.http import require_POST
 
 from Authentification.form import (
     ForgetPasswordForm,
@@ -24,7 +25,52 @@ from Authentification.form import (
 from Ecommerce.models import Favoris, Panier
 
 from .form import DevenirVendeurForm, OTPVerifyForm
-from .models import ActivationOTP
+from .models import ActivationOTP, Vendeur
+
+
+def staff_required(user):
+    return user.is_active and user.is_staff
+
+
+@login_required
+@user_passes_test(staff_required)
+def vendeur_requests(request):
+    """Page interne pour que le staff consulte et gère les demandes vendeurs."""
+    demandes = Vendeur.objects.filter(statut="EN_ATTENTE").order_by("created_at")
+    return render(request, "admin/vendeur_requests.html", {"demandes": demandes})
+
+
+@login_required
+@user_passes_test(staff_required)
+@require_POST
+def approve_vendeur(request, vendeur_id):
+    try:
+        profil = Vendeur.objects.get(pk=vendeur_id)
+    except Vendeur.DoesNotExist:
+        messages.error(request, "Demande introuvable.")
+        return redirect("Authentification:vendeur_requests")
+
+    profil.statut = "APPROUVE"
+    profil.save()
+    messages.success(request, f"La demande de {profil.user.username} a été approuvée.")
+    return redirect("Authentification:vendeur_requests")
+
+
+@login_required
+@user_passes_test(staff_required)
+@require_POST
+def reject_vendeur(request, vendeur_id):
+    try:
+        profil = Vendeur.objects.get(pk=vendeur_id)
+    except Vendeur.DoesNotExist:
+        messages.error(request, "Demande introuvable.")
+        return redirect("Authentification:vendeur_requests")
+
+    profil.statut = "REFUSE"
+    profil.save()
+    messages.info(request, f"La demande de {profil.user.username} a été refusée.")
+    return redirect("Authentification:vendeur_requests")
+
 
 # Create your views here.
 

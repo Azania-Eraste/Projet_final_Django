@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from Ecommerce import views
+from Ecommerce import views, views_qr
 
 from .viewset import (
     AdresseViewSet,
@@ -110,5 +110,27 @@ urlpatterns = [
         "seller/order/<int:seller_commande_id>/accept/",
         views.vendor_accept_seller_commande,
         name="vendor_accept_seller_commande",
+    ),
+    # Delivery related
+    path(
+        "livraison/<int:livraison_id>/code/",
+        views.show_delivery_code,
+        name="show_delivery_code",
+    ),
+    path(
+        "livraison/<int:livraison_id>/pickup/",
+        views.livreur_pickup,
+        name="livreur_pickup",
+    ),
+    path(
+        "livraison/<int:livraison_id>/deliver/",
+        views.livreur_mark_delivered,
+        name="livreur_mark_delivered",
+    ),
+    path("livreur/dashboard/", views.livreur_dashboard, name="livreur_dashboard"),
+    path(
+        "livraison/<int:livraison_id>/qrcode.png",
+        views_qr.livraison_qr_png,
+        name="livraison_qr_png",
     ),
 ]

@@ -4,7 +4,7 @@ import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import models
@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from Authentification.decorators import seller_required
+from Authentification.models import Livreur
 from Ecommerce.form import (
     AvisForm,
     CheckForm,
@@ -32,6 +33,7 @@ from .models import (
     CommandeProduit,
     Favoris,
     Livraison,
+    LivraisonTracking,
     Mode,
     Paiement,
     Panier,
@@ -428,13 +430,29 @@ def checkout(request):
                 livraison.save()
             else:
                 # Sinon, créer une nouvelle livraison
+                import random
+
+                code = str(random.randint(100000, 999999))
                 livraison = Livraison.objects.create(
                     commande=commande,
                     statut_livraison=StatutLivraison.EN_COURS.value,
                     adresse=adresse,
                     numero_tel=form.cleaned_data["phone"],
                     frais_livraison=frais_livraison,
+                    delivery_code=code,
                 )
+                # enregistrement initial de suivi
+                try:
+                    LivraisonTracking.objects.create(
+                        livraison=livraison,
+                        statut=StatutLivraison.EN_COURS.name,
+                        note="Colis pris en charge pour préparation/collecte.",
+                        actor="system",
+                    )
+                except Exception:
+                    # Ne pas faire planter le processus de checkout
+                    # pour un problème de tracking
+                    pass
 
             # Calculer le prix total
             prix_total = Decimal(str(commande.prix)) + frais_livraison
@@ -980,6 +998,175 @@ def profile_view(request):
     }
 
     return render(request, "profile.html", datas)
+
+
+@login_required(login_url="Authentification:login")
+def show_delivery_code(request, livraison_id):
+    """
+    Permet à l'acheteur de voir le code de livraison (ou QR) à transmettre au livreur.
+    """
+    livraison = get_object_or_404(Livraison, id=livraison_id)
+    if livraison.commande.utilisateur != request.user:
+        messages.error(request, "Accès non autorisé.")
+        return redirect("Ecommerce:commandes")
+
+    # use a PNG endpoint for QR (safer and smaller payload);
+    # pass its URL to the template
+    try:
+        qr_url = reverse("Ecommerce:livraison_qr_png", args=[livraison.id])
+    except Exception:
+        qr_url = None
+
+    return render(
+        request,
+        "livraison/delivery_code.html",
+        {"livraison": livraison, "qr_url": qr_url},
+    )
+
+
+def _is_livreur(user):
+    # Vérifier s'il existe un profil Livreur actif pour l'utilisateur
+    if not (user and user.is_authenticated):
+        return False
+    try:
+        return Livreur.objects.filter(user=user, active=True).exists()
+    except Exception:
+        # si le modèle Livreur n'est pas migré, fallback sur is_staff
+        return user.is_staff
+
+
+@login_required(login_url="Authentification:login")
+@user_passes_test(_is_livreur)
+def livreur_pickup(request, livraison_id):
+    """Marquer la livraison comme prise en charge par le livreur."""
+    livraison = get_object_or_404(Livraison, id=livraison_id)
+    livraison.statut_livraison = StatutLivraison.EN_COURS.value
+    livraison.save()
+    try:
+        LivraisonTracking.objects.create(
+            livraison=livraison,
+            statut=StatutLivraison.EN_COURS.name,
+            note="Le livreur a récupéré le colis",
+            actor=str(request.user.username),
+        )
+    except Exception:
+        pass
+
+    # notifier l'acheteur
+    try:
+        subject = f"Votre commande #{livraison.commande.id} a été prise en charge"
+        html = render_to_string(
+            "emails/delivery_picked_up.html",
+            {"livraison": livraison},
+        )
+        email = EmailMessage(
+            subject,
+            html,
+            settings.EMAIL_HOST_USER,
+            [livraison.commande.utilisateur.email],
+        )
+        email.content_subtype = "html"
+        email.send(fail_silently=True)
+    except Exception:
+        pass
+
+    messages.success(request, "Livraison marquée comme prise en charge.")
+    return redirect("Ecommerce:commandes")
+
+
+@login_required(login_url="Authentification:login")
+@user_passes_test(_is_livreur)
+def livreur_mark_delivered(request, livraison_id):
+    """Valider la livraison côté livreur : demander le code remis par le client.
+
+    POST: {'code': '123456'}
+    """
+    livraison = get_object_or_404(Livraison, id=livraison_id)
+    if request.method == "POST":
+        code = request.POST.get("code")
+        if not code:
+            messages.error(
+                request, "Veuillez fournir le code de livraison remis par le client."
+            )
+            return redirect("Ecommerce:commandes")
+
+        if (
+            livraison.delivery_code
+            and str(code).strip() == str(livraison.delivery_code).strip()
+        ):
+            livraison.statut_livraison = StatutLivraison.LIVREE.value
+            livraison.code_used = True
+            livraison.save()
+            try:
+                LivraisonTracking.objects.create(
+                    livraison=livraison,
+                    statut=StatutLivraison.LIVREE.name,
+                    note="Livraison confirmée par code fourni par le client.",
+                    actor=str(request.user.username),
+                )
+            except Exception:
+                pass
+
+            # marquer la commande terminée
+            livraison.commande.statut_commande = StatutCommande.TERMINEE.value
+            livraison.commande.save()
+
+            # notifier l'acheteur et le vendeur
+            try:
+                subject = f"Votre commande #{livraison.commande.id} a été livrée"
+                html = render_to_string(
+                    "emails/delivery_completed.html",
+                    {"livraison": livraison},
+                )
+                email = EmailMessage(
+                    subject,
+                    html,
+                    settings.EMAIL_HOST_USER,
+                    [livraison.commande.utilisateur.email],
+                )
+                email.content_subtype = "html"
+                email.send(fail_silently=True)
+            except Exception:
+                pass
+
+            messages.success(request, "Livraison confirmée.")
+            return redirect("Ecommerce:commandes")
+        else:
+            messages.error(request, "Code invalide. Livraison non validée.")
+            return redirect("Ecommerce:commandes")
+
+    # Si GET, afficher petit formulaire pour saisir le code
+    return render(
+        request, "livraison/livreur_enter_code.html", {"livraison": livraison}
+    )
+
+
+@login_required(login_url="Authentification:login")
+@user_passes_test(_is_livreur)
+def livreur_dashboard(request):
+    """
+    Vue simple listant les livraisons en attente / en cours pour le livreur.
+    """
+    try:
+        courier = Livreur.objects.get(user=request.user)
+    except Exception:
+        courier = None
+    if courier:
+        # si des livraisons sont assignées,
+        # montrer celles-ci sinon montrer toutes en cours
+        livraisons = Livraison.objects.filter(assigned_courier=courier).order_by(
+            "created_at"
+        ) or Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EN_COURS.value
+        ).order_by(
+            "created_at"
+        )
+    else:
+        livraisons = Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EN_COURS.value
+        ).order_by("created_at")
+
+    return render(request, "livreur/dashboard.html", {"livraisons": livraisons})
 
 
 def commandes_view(request):

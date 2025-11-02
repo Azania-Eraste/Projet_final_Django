@@ -230,7 +230,17 @@ class Livraison(models.Model):
     statut_livraison = models.CharField(
         max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison]
     )
+    # code à transmettre au livreur pour valider la livraison (6 chiffres)
+    delivery_code = models.CharField(max_length=10, null=True, blank=True)
+    code_used = models.BooleanField(default=False)
     adresse = models.ForeignKey("Adresse", on_delete=models.CASCADE, null=True)
+    assigned_courier = models.ForeignKey(
+        "Authentification.Livreur",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="livraisons",
+    )
     numero_tel = models.CharField(max_length=255)
     frais_livraison = models.FloatField(null=True)
 
@@ -240,6 +250,24 @@ class Livraison(models.Model):
 
     def __str__(self):
         return "Livraison N" + str(self.pk)
+
+
+class LivraisonTracking(models.Model):
+    livraison = models.ForeignKey(
+        Livraison, on_delete=models.CASCADE, related_name="tracking_events"
+    )
+    statut = models.CharField(
+        max_length=50, choices=[(tag.name, tag.value) for tag in StatutLivraison]
+    )
+    note = models.TextField(blank=True, null=True)
+    actor = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"Livraison {self.livraison.id} - {self.statut} @ {self.created_at}"
 
 
 class Mode(models.Model):
