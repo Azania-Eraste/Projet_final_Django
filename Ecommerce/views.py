@@ -1,3 +1,4 @@
+import random
 from decimal import Decimal
 
 import stripe
@@ -451,7 +452,6 @@ def checkout(request):
                 livraison.save()
             else:
                 # Sinon, créer une nouvelle livraison
-                import random
 
                 code = str(random.randint(100000, 999999))
                 livraison = Livraison.objects.create(
@@ -1059,10 +1059,16 @@ def profile_view(request):
 
     # 'adresse' result is not used below; remove assignment to avoid lint errors
 
+    # fournir au client tout code de livraison généré et non encore utilisé
+    livraison_codes = Livraison.objects.filter(
+        commande__utilisateur=request.user, delivery_code__isnull=False, code_used=False
+    ).order_by("-created_at")
+
     datas = {
         "active_page": "shop",
         "favoris_produit": favoris_produits,
         "panier_produit": panier_produits,
+        "livraison_codes": livraison_codes,
     }
 
     return render(request, "profile.html", datas)
@@ -1108,12 +1114,12 @@ def _is_livreur(user):
 def livreur_pickup(request, livraison_id):
     """Marquer la livraison comme prise en charge par le livreur."""
     livraison = get_object_or_404(Livraison, id=livraison_id)
-    livraison.statut_livraison = StatutLivraison.EN_COURS.value
+    livraison.statut_livraison = StatutLivraison.EXPEDIEE.value
     livraison.save()
     try:
         LivraisonTracking.objects.create(
             livraison=livraison,
-            statut=StatutLivraison.EN_COURS.name,
+            statut=StatutLivraison.EXPEDIEE.name,
             note="Le livreur a récupéré le colis",
             actor=str(request.user.username),
         )
@@ -1204,6 +1210,44 @@ def livreur_mark_delivered(request, livraison_id):
             return redirect("Ecommerce:commandes")
 
     # Si GET, afficher petit formulaire pour saisir le code
+    # When a livreur opens the code entry page (GET), ensure a delivery code
+    # exists and notify the buyer so the code appears in their profile.
+    if not livraison.delivery_code:
+        # generate a 6-digit numeric code
+        code = f"{random.randint(0, 999999):06d}"
+        livraison.delivery_code = code
+        livraison.save()
+        try:
+            LivraisonTracking.objects.create(
+                livraison=livraison,
+                statut=StatutLivraison.EN_COURS.name,
+                note=f"Code de livraison généré et envoyé au client: {code}",
+                actor=str(request.user.username),
+            )
+        except Exception:
+            pass
+
+        # notifier l'acheteur par email (optionnel) - email simple
+        try:
+            subject = f"Code de livraison pour votre commande #{livraison.commande.id}"
+            message = f"""
+            Bonjour {livraison.commande.utilisateur.username},
+
+            Votre code de livraison est : {code}
+            Remettez ce code au livreur pour valider la livraison.
+
+            Cordialement,\nL'équipe
+            """
+            email = EmailMessage(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [livraison.commande.utilisateur.email],
+            )
+            email.send(fail_silently=True)
+        except Exception:
+            pass
+
     return render(
         request, "livraison/livreur_enter_code.html", {"livraison": livraison}
     )
@@ -1229,12 +1273,27 @@ def livreur_dashboard(request):
         ).order_by(
             "created_at"
         )
+
+        livraisons_expediees = Livraison.objects.filter(
+            assigned_courier=courier, statut_livraison=StatutLivraison.EXPEDIEE.value
+        ).order_by("created_at") or Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EXPEDIEE.value
+        ).order_by(
+            "created_at"
+        )
     else:
         livraisons = Livraison.objects.filter(
             statut_livraison=StatutLivraison.EN_COURS.value
         ).order_by("created_at")
+        livraisons_expediees = Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EXPEDIEE.value
+        ).order_by("created_at")
 
-    return render(request, "livreur/dashboard.html", {"livraisons": livraisons})
+    return render(
+        request,
+        "livreur/dashboard.html",
+        {"livraisons": livraisons, "livraisons_expediees": livraisons_expediees},
+    )
 
 
 def commandes_view(request):

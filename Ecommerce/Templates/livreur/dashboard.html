@@ -1,4 +1,10 @@
 {% extends 'base/base.html' %}
+{% load static %}
+
+{% block header %}
+<div></div>
+{% endblock %}
+
 
 {% block content %}
 <div class="container p-6">
@@ -22,7 +28,7 @@
                 {% csrf_token %}
                 <button class="btn btn-primary">Marquer comme récupéré</button>
               </form>
-              <a class="btn btn-secondary" href="{% url 'Ecommerce:livreur_mark_delivered' l.id %}">Livrer</a>
+
             </td>
           </tr>
         {% endfor %}
@@ -30,6 +36,31 @@
     </table>
   {% else %}
     <p>Aucune livraison à traiter pour le moment.</p>
+  {% endif %}
+
+  <h2 class="mt-4">Livraisons à exécuter</h2>
+  {% if livraisons_expediees %}
+    <table class="table-auto w-full">
+      <thead>
+        <tr><th>Commande</th><th>Adresse</th><th>Client</th><th>Statut</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for l in livraisons %}
+          <tr>
+            <td>#{{ l.commande.id }}</td>
+            <td>{{ l.adresse.nom }}</td>
+            <td>{{ l.commande.utilisateur.username }}</td>
+            <td>{{ l.statut_livraison }}</td>
+            <td>
+
+              <a class="btn btn-primary" href="{% url 'Ecommerce:livreur_mark_delivered' l.id %}">Marquer comme livrée</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Aucune livraison à exécuter pour le moment.</p>
   {% endif %}
 </div>
 {% endblock %}

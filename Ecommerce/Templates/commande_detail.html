@@ -37,10 +37,20 @@
                             <span>Mon Compte</span>
                         </div>
                         <ul>
+                            {% if request.user.profil_vendeur %}
+                                <li class="{% if request.resolver_match.view_name == 'Ecommerce:seller_dashboard' %}active{% endif %}"><a href="{% url 'Ecommerce:seller_dashboard' %}">Dashboard</a></li>
+                            {% endif %}
+                            {% if request.user.livreur_profile %}
+                                <li class="{% if request.resolver_match.view_name == 'Ecommerce:livreur_dashboard' %}active{% endif %}"><a href="{% url 'Ecommerce:livreur_dashboard' %}">Dashboard</a></li>
+                            {% endif %}
                             <li class="{% if request.resolver_match.view_name == 'Ecommerce:profile' %}active{% endif %}"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
                             <li class="{% if request.resolver_match.view_name == 'Ecommerce:commandes' %}active{% endif %}"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
                             <li class="{% if request.resolver_match.view_name == 'Ecommerce:favorite' %}active{% endif %}"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
                             <li class="{% if request.resolver_match.view_name == 'Ecommerce:mode_paiement' %}active{% endif %}"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+                            {% if request.user.profil_vendeur is none and request.user.livreur_profile is none %}
+                                <a href="{% url 'Authentification:devenir_vendeur' %}" class="primary-btn mt-4 mr-4">Devenir Vendeur</a>
+                                <a href="{% url 'Authentification:devenir_livreur' %}" class="primary-btn mt-4 mr-4">Devenir Livreur</a>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
@@ -56,12 +66,12 @@
                                 <ul>
                                     <li><strong>Date de commande :</strong> <span>{{ commande.created_at|date:"d M Y, H:i" }}</span></li>
                                     <li><strong>Statut de la commande :</strong>
-                                        <span class="{% if commande.statut_commande == 'Confirmée' %}text-green-600{% else %}text-orange-600{% endif %}">
+                                        <span class="{% if commande.statut_commande == 'Terminée' %}text-green-600{% elif commande.statut_commande == 'Annulée' %}text-red-600{% else %}text-orange-600{% endif %}">
                                             {{ commande.statut_commande }}
                                         </span>
                                     </li>
                                     <li><strong>Statut de la livraison :</strong>
-                                        <span class="{% if livraison.statut_livraison == 'En cours' %}text-green-600{% else %}text-orange-600{% endif %}">
+                                        <span class="{% if livraison.statut_livraison == 'Livrée' %}text-green-600{% else %}text-orange-600{% endif %}">
                                             {{ livraison.statut_livraison }}
                                         </span>
                                     </li>

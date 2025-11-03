@@ -20,118 +20,123 @@
       <a href="{% url 'Ecommerce:seller_create_variation' %}" class="btn btn-secondary">Ajouter une variante</a>
     </div>
   </div>
-  <div class="row g-3">
-    <div class="col-lg-3">
-      <div class="hero__categories">
-        <div class="hero__categories__all">
-          <i class="fa fa-bars"></i>
-          <span>Mon Compte</span>
+  <div class="dashboard-wrapper">
+    <div class="dashboard-inner d-flex">
+      <div class="dashboard-sidebar col-lg-3">
+        <div class="hero__categories">
+          <div class="hero__categories__all">
+            <i class="fa fa-bars"></i>
+            <span>Mon Compte</span>
+          </div>
+          <ul>
+            <li class="{% if request.resolver_match.view_name == 'Ecommerce:seller_dashboard' %}active{% endif %}"><a href="{% url 'Ecommerce:seller_dashboard' %}">Dashboard</a></li>
+            <li class="{% if request.resolver_match.view_name == 'Ecommerce:profile' %}active{% endif %}"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
+            <li class="{% if request.resolver_match.view_name == 'Ecommerce:commandes' %}active{% endif %}"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
+            <li class="{% if request.resolver_match.view_name == 'Ecommerce:favorite' %}active{% endif %}"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
+            <li class="{% if request.resolver_match.view_name == 'Ecommerce:mode_paiement' %}active{% endif %}"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+          </ul>
         </div>
-        <ul>
-          <li class="{% if request.resolver_match.view_name == 'Ecommerce:profile' %}active{% endif %}"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
-          <li class="{% if request.resolver_match.view_name == 'Ecommerce:commandes' %}active{% endif %}"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
-          <li class="{% if request.resolver_match.view_name == 'Ecommerce:favorite' %}active{% endif %}"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
-          <li class="{% if request.resolver_match.view_name == 'Ecommerce:mode_paiement' %}active{% endif %}"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+      </div>
+
+      <div class="dashboard-main col-lg-9">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">Revenu total</h5>
+                <p class="card-text h5">{{ total_revenu }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title">Articles vendus</h5>
+                <p class="card-text h5">{{ total_articles_vendus }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="mt-4">Vos produits</h2>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Produit</th>
+                <th>Stock</th>
+                <th>Quantité vendue</th>
+                <th>Revenu</th>
+                <th>Créé le</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for stat in produit_stats %}
+              <tr>
+                <td>{{ stat.produit.nom }}</td>
+                <td>{{ stat.produit.quantite }}</td>
+                <td>{{ stat.quantite_vendue }}</td>
+                <td>{{ stat.revenu }}</td>
+                <td>{{ stat.produit.created_at }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5">Aucun produit pour le moment.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <h2 class="mt-4">Commandes en attente (actions requises)</h2>
+        {% if pending_seller_commandes and pending_seller_commandes.exists %}
+          <div class="table-responsive mb-4">
+            <table class="table table-striped table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Commande</th>
+                  <th>Prix total</th>
+                  <th>Créée le</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sc in pending_seller_commandes %}
+                  <tr>
+                    <td>#{{ sc.commande.id }}</td>
+                    <td>{{ sc.commande.prix_total }}</td>
+                    <td>{{ sc.commande.created_at }}</td>
+                    <td>
+                      <form method="post" action="{% url 'Ecommerce:vendor_accept_seller_commande' sc.id %}" style="display:inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="accept">
+                        <button type="submit" class="btn btn-success btn-sm me-2">Accepter</button>
+                      </form>
+
+                      <form method="post" action="{% url 'Ecommerce:vendor_accept_seller_commande' sc.id %}" style="display:inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="btn btn-danger btn-sm">Refuser</button>
+                      </form>
+
+                      <a href="{% url 'Ecommerce:commande_detail' sc.commande.id %}" class="btn btn-outline-secondary btn-sm ms-2">Voir</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-secondary">Aucune demande en attente.</div>
+        {% endif %}
+
+        <h2 class="mt-4">Commandes récentes</h2>
+        <ul class="list-group">
+          {% for commande in recent_commandes %}
+            <li class="list-group-item">Commande #{{ commande.id }} — {{ commande.prix_total }} — {{ commande.created_at }}</li>
+          {% empty %}
+            <li class="list-group-item">Aucune commande trouvée.</li>
+          {% endfor %}
         </ul>
       </div>
-    </div>
-    <div class="col-lg-9">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Revenu total</h5>
-          <p class="card-text h5">{{ total_revenu }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Articles vendus</h5>
-          <p class="card-text h5">{{ total_articles_vendus }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <h2 class="mt-4">Vos produits</h2>
-  <div class="table-responsive">
-    <table class="table table-striped table-bordered">
-      <thead class="table-light">
-        <tr>
-          <th>Produit</th>
-          <th>Stock</th>
-          <th>Quantité vendue</th>
-          <th>Revenu</th>
-          <th>Créé le</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for stat in produit_stats %}
-        <tr>
-          <td>{{ stat.produit.nom }}</td>
-          <td>{{ stat.produit.quantite }}</td>
-          <td>{{ stat.quantite_vendue }}</td>
-          <td>{{ stat.revenu }}</td>
-          <td>{{ stat.produit.created_at }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5">Aucun produit pour le moment.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <h2 class="mt-4">Commandes en attente (actions requises)</h2>
-  {% if pending_seller_commandes and pending_seller_commandes.exists %}
-    <div class="table-responsive mb-4">
-      <table class="table table-striped table-bordered">
-        <thead class="table-light">
-          <tr>
-            <th>Commande</th>
-            <th>Prix total</th>
-            <th>Créée le</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for sc in pending_seller_commandes %}
-            <tr>
-              <td>#{{ sc.commande.id }}</td>
-              <td>{{ sc.commande.prix_total }}</td>
-              <td>{{ sc.commande.created_at }}</td>
-              <td>
-                <form method="post" action="{% url 'Ecommerce:vendor_accept_seller_commande' sc.id %}" style="display:inline">
-                  {% csrf_token %}
-                  <input type="hidden" name="action" value="accept">
-                  <button type="submit" class="btn btn-success btn-sm me-2">Accepter</button>
-                </form>
-
-                <form method="post" action="{% url 'Ecommerce:vendor_accept_seller_commande' sc.id %}" style="display:inline">
-                  {% csrf_token %}
-                  <input type="hidden" name="action" value="reject">
-                  <button type="submit" class="btn btn-danger btn-sm">Refuser</button>
-                </form>
-
-                <a href="{% url 'Ecommerce:commande_detail' sc.commande.id %}" class="btn btn-outline-secondary btn-sm ms-2">Voir</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% else %}
-    <div class="alert alert-secondary">Aucune demande en attente.</div>
-  {% endif %}
-
-  <h2 class="mt-4">Commandes récentes</h2>
-  <ul class="list-group">
-    {% for commande in recent_commandes %}
-      <li class="list-group-item">Commande #{{ commande.id }} — {{ commande.prix_total }} — {{ commande.created_at }}</li>
-    {% empty %}
-      <li class="list-group-item">Aucune commande trouvée.</li>
-    {% endfor %}
-  </ul>
     </div>
   </div>
 </div>
