@@ -44,12 +44,14 @@ class CategorieProduitSerializer(serializers.ModelSerializer):
 class VariationProduitSerializer(serializers.ModelSerializer):
     produit = serializers.PrimaryKeyRelatedField(queryset=Produit.objects.all())
     prix_actuel = serializers.ReadOnlyField()  # Champ calculé
+    vendeur = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = VariationProduit
         fields = [
             "id",
             "nom",
+            "vendeur",
             "produit",
             "poids",
             "description",

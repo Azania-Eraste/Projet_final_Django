@@ -56,13 +56,6 @@ MOIS_CHOICES = [
 
 class Produit(models.Model):
     nom = models.CharField(max_length=255)
-    vendeur = models.ForeignKey(
-        "Authentification.Vendeur",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="produits",
-    )
     Image = models.ImageField(upload_to="Produit")
     description = models.TextField()
     stock = models.IntegerField(default=0)
@@ -439,6 +432,13 @@ class Promotion(models.Model):
 
 class VariationProduit(models.Model):
     nom = models.CharField(max_length=255, null=True)
+    vendeur = models.ForeignKey(
+        "Authentification.Vendeur",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="variations",
+    )
     produit = models.ForeignKey(
         "Ecommerce.Produit",
         on_delete=models.CASCADE,

@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from .models import Commande, Mode, SellerCommande, TypePaiement
+from .models import Commande, CommandeProduit, Mode, SellerCommande, TypePaiement
 
 
 @receiver(post_save, sender=User)
@@ -33,13 +33,11 @@ def notify_vendeurs_on_commande_create(sender, instance, created, **kwargs):
         # récupérer les vendeurs distincts présents dans la commande
         vendeurs = set()
         for cp in instance.Commande_Produit_ids.select_related(
-            "produit", "produit__produit"
+            "produit", "produit__vendeur"
         ).all():
-            vendeur = (
-                cp.produit.produit.vendeur
-                if cp.produit and cp.produit.produit
-                else None
-            )
+            # cp.produit est une VariationProduit; après modification le vendeur
+            # est attaché à la variation elle-même
+            vendeur = cp.produit.vendeur if cp.produit else None
             if vendeur:
                 vendeurs.add(vendeur)
 
@@ -71,4 +69,49 @@ def notify_vendeurs_on_commande_create(sender, instance, created, **kwargs):
                 pass
     except Exception:
         # protéger contre erreurs inattendues
+        pass
+
+
+@receiver(post_save, sender=CommandeProduit)
+def notify_vendeur_on_commandeproduit_create(sender, instance, created, **kwargs):
+    """Lorsqu'un CommandeProduit est créé, s'assurer qu'une SellerCommande
+    existe pour le vendeur concerné et l'en notifier.
+    """
+    if not created:
+        return
+
+    try:
+        vendeur = instance.produit.vendeur if instance.produit else None
+        if not vendeur:
+            return
+
+        seller_cmd, created_sc = SellerCommande.objects.get_or_create(
+            commande=instance.commande, vendeur=vendeur
+        )
+
+        # construire l'url d'acceptation pour le vendeur
+        accept_path = reverse(
+            "Ecommerce:vendor_accept_seller_commande", args=[seller_cmd.id]
+        )
+        accept_url = f"{settings.SITE_URL}{accept_path}"
+
+        subject = f"Nouvelle commande #{instance.commande.id} - action requise"
+        html = render_to_string(
+            "emails/vendor_new_order.html",
+            {
+                "vendeur": vendeur,
+                "commande": instance.commande,
+                "accept_url": accept_url,
+            },
+        )
+
+        email = EmailMessage(
+            subject, html, settings.EMAIL_HOST_USER, [vendeur.user.email]
+        )
+        email.content_subtype = "html"
+        try:
+            email.send(fail_silently=True)
+        except Exception:
+            pass
+    except Exception:
         pass

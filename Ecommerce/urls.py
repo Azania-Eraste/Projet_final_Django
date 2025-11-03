@@ -96,11 +96,6 @@ urlpatterns = [
     # Seller routes
     path("seller/dashboard/", views.seller_dashboard, name="seller_dashboard"),
     path(
-        "seller/product/create/",
-        views.seller_create_product,
-        name="seller_create_product",
-    ),
-    path(
         "seller/variation/create/",
         views.seller_create_variation,
         name="seller_create_variation",

@@ -24,7 +24,7 @@ from Ecommerce.form import (
 )
 
 from .filters import VariationProduitFilter
-from .form import ProduitForm, VariationProduitForm
+from .form import VariationProduitForm
 from .models import (
     Adresse,
     Avis,
@@ -71,6 +71,23 @@ def panier(request):
                 Commande.objects.filter(utilisateur=user).order_by("-id").first()
             )
             print(f"Dernière commande: {last_commande}")
+            # Empêcher un vendeur d'acheter ses propres produits :
+            try:
+                vendeur_profil = request.user.profil_vendeur
+            except Exception:
+                vendeur_profil = None
+
+            if vendeur_profil:
+                own_products = [p for p in produits if p.vendeur == vendeur_profil]
+                if own_products:
+                    messages.error(
+                        request,
+                        """
+                        Votre panier contient des produits que vous vendez.
+                        Vous ne pouvez pas acheter vos propres produits.
+                        """,
+                    )
+                    return redirect("Ecommerce:panier")
             if (
                 not last_commande
                 or last_commande.statut_commande != StatutCommande.EN_ATTENTE.value
@@ -200,19 +217,36 @@ def panier(request):
 @login_required(login_url="Authentification:login")
 @seller_required
 def seller_dashboard(request):
-    vendeur = request.user.profil_vendeur
-    produits = Produit.objects.filter(vendeur=vendeur)
+    panier_produits = None
+    favoris_produits = None
 
-    # Ventes: somme des prix et nombre de commandes impliquant les produits du vendeur
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user, defaults={"statut": True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user, defaults={"statut": True}
+        )
+        panier_produits = panier.produits.all()
+
+    vendeur = request.user.profil_vendeur
+    produits = VariationProduit.objects.filter(vendeur=vendeur)
+
+    # Ventes: somme des prix et nombre de commandes impliquant les variations du vendeur
     ventes_qs = CommandeProduit.objects.filter(
-        produit__produit__vendeur=vendeur,
+        produit__vendeur=vendeur,
         commande__statut_commande=StatutCommande.CONFIRMEE.value,
     )
     total_revenu = ventes_qs.aggregate(total=Sum("prix"))["total"] or 0
     total_articles_vendus = ventes_qs.aggregate(total_q=Sum("quantite"))["total_q"] or 0
 
+    print("===================================================================bugger")
     recent_commandes = (
-        Commande.objects.filter(Commande_Produit_ids__produit__produit__vendeur=vendeur)
+        Commande.objects.filter(Commande_Produit_ids__produit__vendeur=vendeur)
         .distinct()
         .order_by("-created_at")[:10]
     )
@@ -225,8 +259,9 @@ def seller_dashboard(request):
     # Stats par produit (regroupement simple)
     produit_stats = []
     for produit in produits:
+        # 'produit' est une VariationProduit; filtrer directement par la variation
         ventes_prod = CommandeProduit.objects.filter(
-            produit__produit=produit,
+            produit=produit,
             commande__statut_commande=StatutCommande.CONFIRMEE.value,
         )
         revenu_prod = ventes_prod.aggregate(r=Sum("prix"))["r"] or 0
@@ -247,6 +282,8 @@ def seller_dashboard(request):
         "pending_seller_commandes": pending_seller_commandes,
         "produit_stats": produit_stats,
         "active_page": "seller_dashboard",
+        "favoris_produit": favoris_produits,
+        "panier_produit": panier_produits,
     }
     return render(request, "seller/dashboard.html", context)
 
@@ -308,24 +345,6 @@ def vendor_accept_seller_commande(request, seller_commande_id):
 
 
 @login_required(login_url="Authentification:login")
-@seller_required
-def seller_create_product(request):
-    vendeur = request.user.profil_vendeur
-
-    if request.method == "POST":
-        form = ProduitForm(request.POST, request.FILES)
-        if form.is_valid():
-            produit = form.save(commit=False)
-            produit.vendeur = vendeur
-            produit.save()
-            messages.success(request, "Produit créé avec succès.")
-            return redirect("Ecommerce:seller_dashboard")
-    else:
-        form = ProduitForm()
-
-    return render(request, "seller/product_form.html", {"form": form})
-
-
 @login_required(login_url="Authentification:login")
 @seller_required
 def seller_create_variation(request):
@@ -334,12 +353,14 @@ def seller_create_variation(request):
     if request.method == "POST":
         form = VariationProduitForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            variation = form.save(commit=False)
+            variation.vendeur = vendeur
+            variation.save()
             messages.success(request, "Variation créée avec succès.")
             return redirect("Ecommerce:seller_dashboard")
     else:
         form = VariationProduitForm()
-        form.fields["produit"].queryset = Produit.objects.filter(vendeur=vendeur)
+        form.fields["produit"].queryset = Produit.objects.all()
 
     return render(request, "seller/variation_form.html", {"form": form})
 
@@ -457,7 +478,8 @@ def checkout(request):
             # Calculer le prix total
             prix_total = Decimal(str(commande.prix)) + frais_livraison
             commande.prix_total = prix_total
-            commande.statut_commande = StatutCommande.CONFIRMEE.value
+            # Ne pas confirmer la commande ici : la confirmation doit
+            # venir du/des vendeurs via le dashboard (SellerCommande).
             commande.save()
 
             # Créer un enregistrement de paiement si ce n'est pas déjà fait
@@ -588,11 +610,24 @@ def confirmation(request, commande_id):
 
     # Vérifier si le paiement a été effectué
     if paiement.statut_paiement == StatutPaiement.EFFECTUE.value:
-        commande.statut_commande = StatutCommande.CONFIRMEE.value
-        commande.save()
-        # Rediriger vers Ecommerce:commandes pour tous les modes sauf CREDIT_CARD
-        if commande.mode.type_paiement != TypePaiement.CREDIT_CARD.value:
-            messages.success(request, "Commande confirmée avec succès !")
+        # Le paiement est effectué : tenter de marquer la commande comme
+        # confirmée seulement si tous les SellerCommande associés sont
+        # acceptés. Si les vendeurs ne l'ont pas encore accepté, la
+        # commande restera en 'En attente'.
+        commande.check_and_mark_confirmed()
+        if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+            # Rediriger vers Ecommerce:commandes pour tous les modes sauf CREDIT_CARD
+            if commande.mode.type_paiement != TypePaiement.CREDIT_CARD.value:
+                messages.success(request, "Commande confirmée avec succès !")
+                return redirect("Ecommerce:commandes")
+        else:
+            messages.info(
+                request,
+                """
+                Paiement reçu.
+                La commande est en attente de confirmation par le(s) vendeur(s).
+                """,
+            )
             return redirect("Ecommerce:commandes")
 
     elif paiement.statut_paiement == StatutPaiement.ECHOUE.value:
@@ -641,9 +676,12 @@ def confirmation(request, commande_id):
                 )
                 if payment_intent.status == "succeeded":
                     paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-                    commande.statut_commande = StatutCommande.CONFIRMEE.value
                     paiement.save()
-                    commande.save()
+                    # Ne pas forcer la confirmation globale ici;
+                    # vérifier si tous les vendeurs ont accepté
+                    commande.check_and_mark_confirmed()
+                    if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+                        commande.save()
                 else:
                     # Ne pas mettre à jour le statut ici, attendre que
                     # l'utilisateur clique sur le bouton dans l'email
@@ -678,15 +716,24 @@ def confirmation(request, commande_id):
             TypePaiement.LIQUIDE.value,
             TypePaiement.PREPAID_CARD.value,
         ]:
-            # Pour LIQUIDE et PREPAID_CARD, confirmer directement et rediriger
+            # Pour LIQUIDE et PREPAID_CARD, marquer le paiement comme effectué
+            # puis tenter de marquer la commande confirmée si tous les
+            # vendeurs ont accepté.
             paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-            commande.statut_commande = StatutCommande.CONFIRMEE.value
             paiement.save()
-            commande.save()
-            messages.success(request, "Commande confirmée avec succès !")
-            return redirect(
-                "Ecommerce:commandes"
-            )  # Redirection vers Ecommerce:commandes
+            commande.check_and_mark_confirmed()
+            if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+                commande.save()
+                messages.success(request, "Commande confirmée avec succès !")
+            else:
+                messages.info(
+                    request,
+                    """
+                    Paiement reçu.
+                    La commande est en attente de confirmation par le(s) vendeur(s).
+                    """,
+                )
+            return redirect("Ecommerce:commandes")
 
     # Afficher la page de confirmation uniquement pour CREDIT_CARD et MOBILE_MONEY
     if commande.mode.type_paiement in [
@@ -720,10 +767,21 @@ def validate_payment(request, paiement_id):
     # Vérifier que le paiement est en attente
     if paiement.statut_paiement == StatutPaiement.EN_ATTENTE.value:
         paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-        commande.statut_commande = StatutCommande.CONFIRMEE.value
         paiement.save()
-        commande.save()
-        messages.success(request, "Paiement validé avec succès !")
+        # Ne pas forcer la confirmation globale : laisser la logique des
+        # SellerCommande décider quand la commande passe en Confirmée.
+        commande.check_and_mark_confirmed()
+        if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+            commande.save()
+            messages.success(request, "Paiement validé et commande confirmée !")
+        else:
+            messages.success(
+                request,
+                """
+                Paiement validé.
+                La commande est en attente de confirmation par le(s) vendeur(s).
+                """,
+            )
     else:
         messages.error(
             request, "Le paiement a déjà été traité ou n'est pas en attente."
@@ -736,6 +794,16 @@ def validate_payment(request, paiement_id):
 def add_panier(request, slug):
     try:
         produit = VariationProduit.objects.get(slug=slug)
+        # Empêcher un vendeur d'ajouter son propre produit au panier
+        try:
+            vendeur_profil = request.user.profil_vendeur
+        except Exception:
+            vendeur_profil = None
+
+        if vendeur_profil and produit.vendeur and produit.vendeur == vendeur_profil:
+            messages.error(request, "Vous ne pouvez pas acheter vos propres produits.")
+            return redirect("Ecommerce:shop")
+
         panier, created = Panier.objects.get_or_create(utilisateur=request.user)
         panier.ajouter_produit(produit)
         messages.success(request, "Produit ajouté au panier")

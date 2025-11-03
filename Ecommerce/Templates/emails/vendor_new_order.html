@@ -24,7 +24,7 @@
 				</thead>
 				<tbody>
 					{% for cp in commande.Commande_Produit_ids.all %}
-						{% if cp.produit.produit.vendeur.id == vendeur.id %}
+						{% if cp.produit.vendeur and cp.produit.vendeur.id == vendeur.id %}
 							<tr>
 								<td>{{ cp.produit.nom }}</td>
 								<td>{{ cp.quantite }}</td>

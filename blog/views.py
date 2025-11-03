@@ -19,6 +19,13 @@ def index(request):
         "-created_at"
     )[:3]
 
+    if request.user.is_authenticated:
+        # accéder au profil vendeur sans lever d'exception si absent
+        profil_vendeur = getattr(request.user, "profil_vendeur", None)
+        if profil_vendeur is not None:
+            print(profil_vendeur)
+            print(profil_vendeur.statut)
+            print(profil_vendeur and profil_vendeur.statut == "APPROUVE")
     # Récupérer tous les produits actifs (disponibles pour tous)
     produits = VariationProduit.objects.filter(statut=True)[:6]
 
@@ -54,19 +61,6 @@ def index(request):
 def contact(request):
     panier_produits = None
     favoris_produits = None
-
-    if request.user.is_authenticated:
-        # Gestion des favoris pour l'utilisateur connecté
-        favoris, created = Favoris.objects.get_or_create(
-            utilisateur=request.user, defaults={"statut": True}
-        )
-        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
-
-        # Gestion du panier pour l'utilisateur connecté
-        panier, created = Panier.objects.get_or_create(
-            utilisateur=request.user, defaults={"statut": True}
-        )
-        panier_produits = panier.produits.all()
 
     if request.user.is_authenticated:
         # Gestion des favoris pour l'utilisateur connecté
