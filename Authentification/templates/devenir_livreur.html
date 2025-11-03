@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block header %}
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Devenir Livreur</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'blog:index' %}">Home</a>
+                            <span>Devenir Livreur</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block content %}
+    <section class="checkout spad">
+        <div class="container">
+            <div class="checkout__form">
+                <h4>Formulaire de demande Livreur</h4>
+                <p>Remplissez ce formulaire pour soumettre votre demande. Notre équipe examinera votre profil.</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url 'Authentification:devenir_livreur' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6">
+
+                            <div class="checkout__input">
+                                <p>{{ form.phone.label }}<span>*</span></p>
+                                {{ form.phone }} {% if form.phone.errors %}
+                                    <small class="text-danger">{{ form.phone.errors|first }}</small>
+                                {% endif %}
+                            </div>
+
+                            <button type="submit" class="site-btn">SOUMETTRE LA DEMANDE</button>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6">
+                            <div class="checkout__order" style="background: #f5f5f5;">
+                                <h4 style="border-bottom: 1px solid #e1e1e1;">Processus d'inscription</h4>
+                                <div class="checkout__order__products">Comment ça marche ?</div>
+                                <ul style="list-style-type: decimal; padding-left: 20px; margin-top: 15px; color: #666;">
+                                    <li>Remplissez le formulaire.</li>
+                                    <li>Notre équipe examine votre profil.</li>
+                                    <li>Vous recevez une notification.</li>
+                                    <li>Vous pouvez commencer les livraisons après approbation.</li>
+                                </ul>
+                                <div class="checkout__order__total">Statut Actuel
+                                    <span>EN ATTENTE D'ENVOI</span>
+                                </div>
+                                <p style="font-size: 14px; color: #888; margin-top: 15px;">
+                                    Une fois votre demande soumise, son statut passera à "En attente".
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

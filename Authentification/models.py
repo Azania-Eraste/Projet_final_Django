@@ -100,6 +100,8 @@ class Livreur(models.Model):
     )
     active = models.BooleanField(default=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Livreur"

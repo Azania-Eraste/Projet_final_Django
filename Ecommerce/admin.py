@@ -1,7 +1,5 @@
 from django.contrib import admin
 
-from Authentification.models import Livreur
-
 from .models import (
     Adresse,
     Avis,
@@ -147,12 +145,6 @@ class SellerCommandeAdmin(admin.ModelAdmin):
     list_display = ("commande", "vendeur", "statut")
     list_filter = ("statut",)
     search_fields = ("commande__id", "vendeur__boutique_name")
-
-
-@admin.register(Livreur)
-class LivreurAdmin(admin.ModelAdmin):
-    list_display = ("user", "active", "phone")
-    search_fields = ("user__username",)
 
 
 @admin.register(Mode)

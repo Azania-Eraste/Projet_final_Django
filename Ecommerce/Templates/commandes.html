@@ -35,10 +35,10 @@
                             <span>Mon Compte</span>
                         </div>
                         <ul>
-                            <li><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
-                            <li class="active"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
-                            <li><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
-                            <li><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:profile' %}active{% endif %}"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:commandes' %}active{% endif %}"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:favorite' %}active{% endif %}"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:mode_paiement' %}active{% endif %}"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
                         </ul>
                     </div>
                 </div>

@@ -12,12 +12,12 @@
             {% for message in messages %}
                 <p class="text-center text-sm {% if message.tags == 'success' %}text-green-600{% else %}text-red-600{% endif %}">
                     {{ message }}
-                </p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <!-- Breadcrumb Section Begin -->
+                        <ul>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:profile' %}active{% endif %}"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:commandes' %}active{% endif %}"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:favorite' %}active{% endif %}"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:mode_paiement' %}active{% endif %}"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+                        </ul>
     <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
         <div class="container">
             <div class="row">
@@ -47,10 +47,10 @@
                             <span>Mon Compte</span>
                         </div>
                         <ul>
-                            <li><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
-                            <li><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
-                            <li class="active"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
-                            <li><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:profile' %}active{% endif %}"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:commandes' %}active{% endif %}"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:favorite' %}active{% endif %}"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:mode_paiement' %}active{% endif %}"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
                         </ul>
                     </div>
                 </div>

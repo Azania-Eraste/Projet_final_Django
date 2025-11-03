@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Vendeur
+from .models import Livreur, Vendeur
 
 FormStyle = """w-full h-12 px-4 py-2 text-lg border rounded-xl focus:outline-none
  focus:ring-2 focus:ring-blue-500"""
@@ -170,6 +170,34 @@ class DevenirVendeurForm(forms.ModelForm):
         # Pré-remplir 'boutique_name' avec le username si le champ est vide
         if user and not self.fields["boutique_name"].initial:
             self.fields["boutique_name"].initial = user.username
+
+
+class DevenirLivreurForm(forms.ModelForm):
+    """Formulaire simple pour qu'un utilisateur demande à devenir livreur."""
+
+    phone = forms.CharField(
+        label="Votre numéro de téléphone",
+        max_length=20,
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "+225 00 00 00 00"}
+        ),
+    )
+
+    class Meta:
+        model = Livreur
+        fields = ["phone"]
+
+        widgets = {
+            "phone": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "+225 00 00 00 00"}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super(DevenirLivreurForm, self).__init__(*args, **kwargs)
+        if user and hasattr(user, "number") and user.number:
+            self.fields["phone"].initial = user.number
 
 
 class OTPVerifyForm(forms.Form):
