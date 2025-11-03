@@ -1,10 +1,11 @@
+import random
 from decimal import Decimal
 
 import stripe
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db import models
@@ -14,6 +15,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from Authentification.decorators import seller_required
+from Authentification.models import Livreur
 from Ecommerce.form import (
     AvisForm,
     CheckForm,
@@ -23,7 +25,7 @@ from Ecommerce.form import (
 )
 
 from .filters import VariationProduitFilter
-from .form import ProduitForm, VariationProduitForm
+from .form import VariationProduitForm
 from .models import (
     Adresse,
     Avis,
@@ -32,10 +34,12 @@ from .models import (
     CommandeProduit,
     Favoris,
     Livraison,
+    LivraisonTracking,
     Mode,
     Paiement,
     Panier,
     Produit,
+    SellerCommande,
     StatutCommande,
     StatutLivraison,
     StatutPaiement,
@@ -68,6 +72,23 @@ def panier(request):
                 Commande.objects.filter(utilisateur=user).order_by("-id").first()
             )
             print(f"Dernière commande: {last_commande}")
+            # Empêcher un vendeur d'acheter ses propres produits :
+            try:
+                vendeur_profil = request.user.profil_vendeur
+            except Exception:
+                vendeur_profil = None
+
+            if vendeur_profil:
+                own_products = [p for p in produits if p.vendeur == vendeur_profil]
+                if own_products:
+                    messages.error(
+                        request,
+                        """
+                        Votre panier contient des produits que vous vendez.
+                        Vous ne pouvez pas acheter vos propres produits.
+                        """,
+                    )
+                    return redirect("Ecommerce:panier")
             if (
                 not last_commande
                 or last_commande.statut_commande != StatutCommande.EN_ATTENTE.value
@@ -197,28 +218,51 @@ def panier(request):
 @login_required(login_url="Authentification:login")
 @seller_required
 def seller_dashboard(request):
-    vendeur = request.user.profil_vendeur
-    produits = Produit.objects.filter(vendeur=vendeur)
+    panier_produits = None
+    favoris_produits = None
 
-    # Ventes: somme des prix et nombre de commandes impliquant les produits du vendeur
+    if request.user.is_authenticated:
+        # Gestion des favoris pour l'utilisateur connecté
+        favoris, created = Favoris.objects.get_or_create(
+            utilisateur=request.user, defaults={"statut": True}
+        )
+        favoris_produits = favoris.produit.all()  # Corrigé : produits au pluriel
+
+        # Gestion du panier pour l'utilisateur connecté
+        panier, created = Panier.objects.get_or_create(
+            utilisateur=request.user, defaults={"statut": True}
+        )
+        panier_produits = panier.produits.all()
+
+    vendeur = request.user.profil_vendeur
+    produits = VariationProduit.objects.filter(vendeur=vendeur)
+
+    # Ventes: somme des prix et nombre de commandes impliquant les variations du vendeur
     ventes_qs = CommandeProduit.objects.filter(
-        produit__produit__vendeur=vendeur,
+        produit__vendeur=vendeur,
         commande__statut_commande=StatutCommande.CONFIRMEE.value,
     )
     total_revenu = ventes_qs.aggregate(total=Sum("prix"))["total"] or 0
     total_articles_vendus = ventes_qs.aggregate(total_q=Sum("quantite"))["total_q"] or 0
 
+    print("===================================================================bugger")
     recent_commandes = (
-        Commande.objects.filter(Commande_Produit_ids__produit__produit__vendeur=vendeur)
+        Commande.objects.filter(Commande_Produit_ids__produit__vendeur=vendeur)
         .distinct()
         .order_by("-created_at")[:10]
     )
 
+    # Demandes en attente pour ce vendeur
+    pending_seller_commandes = SellerCommande.objects.filter(
+        vendeur=vendeur, statut=SellerCommande.STATUT_EN_ATTENTE
+    ).select_related("commande")
+
     # Stats par produit (regroupement simple)
     produit_stats = []
     for produit in produits:
+        # 'produit' est une VariationProduit; filtrer directement par la variation
         ventes_prod = CommandeProduit.objects.filter(
-            produit__produit=produit,
+            produit=produit,
             commande__statut_commande=StatutCommande.CONFIRMEE.value,
         )
         revenu_prod = ventes_prod.aggregate(r=Sum("prix"))["r"] or 0
@@ -236,31 +280,72 @@ def seller_dashboard(request):
         "total_revenu": total_revenu,
         "total_articles_vendus": total_articles_vendus,
         "recent_commandes": recent_commandes,
+        "pending_seller_commandes": pending_seller_commandes,
         "produit_stats": produit_stats,
         "active_page": "seller_dashboard",
+        "favoris_produit": favoris_produits,
+        "panier_produit": panier_produits,
     }
     return render(request, "seller/dashboard.html", context)
 
 
 @login_required(login_url="Authentification:login")
 @seller_required
-def seller_create_product(request):
+def vendor_accept_seller_commande(request, seller_commande_id):
+    """Permet au vendeur d'accepter ou refuser une SellerCommande.
+
+    Si tous les SellerCommande d'une commande sont acceptés, la commande
+    globale passe en statut CONFIRMEE.
+    """
     vendeur = request.user.profil_vendeur
+    seller_cmd = get_object_or_404(SellerCommande, id=seller_commande_id)
 
-    if request.method == "POST":
-        form = ProduitForm(request.POST, request.FILES)
-        if form.is_valid():
-            produit = form.save(commit=False)
-            produit.vendeur = vendeur
-            produit.save()
-            messages.success(request, "Produit créé avec succès.")
-            return redirect("Ecommerce:seller_dashboard")
+    # s'assurer que le vendeur courant correspond
+    if seller_cmd.vendeur != vendeur:
+        messages.error(request, "Vous n'êtes pas autorisé à accepter cette commande.")
+        return redirect("Ecommerce:seller_dashboard")
+
+    if request.method != "POST":
+        messages.error(
+            request, "Action non autorisée. Utilisez le bouton Accepter/Refuser."
+        )
+        return redirect("Ecommerce:seller_dashboard")
+
+    action = request.POST.get("action", "accept")
+    if action == "accept":
+        seller_cmd.statut = SellerCommande.STATUT_ACCEPTEE
+        seller_cmd.save()
+        # mettre à jour le statut global si tous les vendeurs ont accepté
+        seller_cmd.commande.check_and_mark_confirmed()
+        # notifier l'acheteur (optionnel)
+        try:
+            subject = f"""
+            Votre commande #{seller_cmd.commande.id} a été acceptée par le vendeur
+            """
+            html = render_to_string(
+                "emails/buyer_order_accepted.html",
+                {"commande": seller_cmd.commande, "vendeur": seller_cmd.vendeur},
+            )
+            email = EmailMessage(
+                subject,
+                html,
+                settings.EMAIL_HOST_USER,
+                [seller_cmd.commande.utilisateur.email],
+            )
+            email.content_subtype = "html"
+            email.send(fail_silently=True)
+        except Exception:
+            pass
+        messages.success(request, "Commande acceptée.")
     else:
-        form = ProduitForm()
+        seller_cmd.statut = SellerCommande.STATUT_REFUSEE
+        seller_cmd.save()
+        messages.info(request, "Vous avez refusé la commande.")
 
-    return render(request, "seller/product_form.html", {"form": form})
+    return redirect("Ecommerce:seller_dashboard")
 
 
+@login_required(login_url="Authentification:login")
 @login_required(login_url="Authentification:login")
 @seller_required
 def seller_create_variation(request):
@@ -269,12 +354,14 @@ def seller_create_variation(request):
     if request.method == "POST":
         form = VariationProduitForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            variation = form.save(commit=False)
+            variation.vendeur = vendeur
+            variation.save()
             messages.success(request, "Variation créée avec succès.")
             return redirect("Ecommerce:seller_dashboard")
     else:
         form = VariationProduitForm()
-        form.fields["produit"].queryset = Produit.objects.filter(vendeur=vendeur)
+        form.fields["produit"].queryset = Produit.objects.all()
 
     return render(request, "seller/variation_form.html", {"form": form})
 
@@ -365,18 +452,34 @@ def checkout(request):
                 livraison.save()
             else:
                 # Sinon, créer une nouvelle livraison
+
+                code = str(random.randint(100000, 999999))
                 livraison = Livraison.objects.create(
                     commande=commande,
                     statut_livraison=StatutLivraison.EN_COURS.value,
                     adresse=adresse,
                     numero_tel=form.cleaned_data["phone"],
                     frais_livraison=frais_livraison,
+                    delivery_code=code,
                 )
+                # enregistrement initial de suivi
+                try:
+                    LivraisonTracking.objects.create(
+                        livraison=livraison,
+                        statut=StatutLivraison.EN_COURS.name,
+                        note="Colis pris en charge pour préparation/collecte.",
+                        actor="system",
+                    )
+                except Exception:
+                    # Ne pas faire planter le processus de checkout
+                    # pour un problème de tracking
+                    pass
 
             # Calculer le prix total
             prix_total = Decimal(str(commande.prix)) + frais_livraison
             commande.prix_total = prix_total
-            commande.statut_commande = StatutCommande.CONFIRMEE.value
+            # Ne pas confirmer la commande ici : la confirmation doit
+            # venir du/des vendeurs via le dashboard (SellerCommande).
             commande.save()
 
             # Créer un enregistrement de paiement si ce n'est pas déjà fait
@@ -507,11 +610,24 @@ def confirmation(request, commande_id):
 
     # Vérifier si le paiement a été effectué
     if paiement.statut_paiement == StatutPaiement.EFFECTUE.value:
-        commande.statut_commande = StatutCommande.CONFIRMEE.value
-        commande.save()
-        # Rediriger vers Ecommerce:commandes pour tous les modes sauf CREDIT_CARD
-        if commande.mode.type_paiement != TypePaiement.CREDIT_CARD.value:
-            messages.success(request, "Commande confirmée avec succès !")
+        # Le paiement est effectué : tenter de marquer la commande comme
+        # confirmée seulement si tous les SellerCommande associés sont
+        # acceptés. Si les vendeurs ne l'ont pas encore accepté, la
+        # commande restera en 'En attente'.
+        commande.check_and_mark_confirmed()
+        if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+            # Rediriger vers Ecommerce:commandes pour tous les modes sauf CREDIT_CARD
+            if commande.mode.type_paiement != TypePaiement.CREDIT_CARD.value:
+                messages.success(request, "Commande confirmée avec succès !")
+                return redirect("Ecommerce:commandes")
+        else:
+            messages.info(
+                request,
+                """
+                Paiement reçu.
+                La commande est en attente de confirmation par le(s) vendeur(s).
+                """,
+            )
             return redirect("Ecommerce:commandes")
 
     elif paiement.statut_paiement == StatutPaiement.ECHOUE.value:
@@ -560,9 +676,12 @@ def confirmation(request, commande_id):
                 )
                 if payment_intent.status == "succeeded":
                     paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-                    commande.statut_commande = StatutCommande.CONFIRMEE.value
                     paiement.save()
-                    commande.save()
+                    # Ne pas forcer la confirmation globale ici;
+                    # vérifier si tous les vendeurs ont accepté
+                    commande.check_and_mark_confirmed()
+                    if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+                        commande.save()
                 else:
                     # Ne pas mettre à jour le statut ici, attendre que
                     # l'utilisateur clique sur le bouton dans l'email
@@ -597,15 +716,24 @@ def confirmation(request, commande_id):
             TypePaiement.LIQUIDE.value,
             TypePaiement.PREPAID_CARD.value,
         ]:
-            # Pour LIQUIDE et PREPAID_CARD, confirmer directement et rediriger
+            # Pour LIQUIDE et PREPAID_CARD, marquer le paiement comme effectué
+            # puis tenter de marquer la commande confirmée si tous les
+            # vendeurs ont accepté.
             paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-            commande.statut_commande = StatutCommande.CONFIRMEE.value
             paiement.save()
-            commande.save()
-            messages.success(request, "Commande confirmée avec succès !")
-            return redirect(
-                "Ecommerce:commandes"
-            )  # Redirection vers Ecommerce:commandes
+            commande.check_and_mark_confirmed()
+            if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+                commande.save()
+                messages.success(request, "Commande confirmée avec succès !")
+            else:
+                messages.info(
+                    request,
+                    """
+                    Paiement reçu.
+                    La commande est en attente de confirmation par le(s) vendeur(s).
+                    """,
+                )
+            return redirect("Ecommerce:commandes")
 
     # Afficher la page de confirmation uniquement pour CREDIT_CARD et MOBILE_MONEY
     if commande.mode.type_paiement in [
@@ -639,10 +767,21 @@ def validate_payment(request, paiement_id):
     # Vérifier que le paiement est en attente
     if paiement.statut_paiement == StatutPaiement.EN_ATTENTE.value:
         paiement.statut_paiement = StatutPaiement.EFFECTUE.value
-        commande.statut_commande = StatutCommande.CONFIRMEE.value
         paiement.save()
-        commande.save()
-        messages.success(request, "Paiement validé avec succès !")
+        # Ne pas forcer la confirmation globale : laisser la logique des
+        # SellerCommande décider quand la commande passe en Confirmée.
+        commande.check_and_mark_confirmed()
+        if commande.statut_commande == StatutCommande.CONFIRMEE.value:
+            commande.save()
+            messages.success(request, "Paiement validé et commande confirmée !")
+        else:
+            messages.success(
+                request,
+                """
+                Paiement validé.
+                La commande est en attente de confirmation par le(s) vendeur(s).
+                """,
+            )
     else:
         messages.error(
             request, "Le paiement a déjà été traité ou n'est pas en attente."
@@ -655,6 +794,16 @@ def validate_payment(request, paiement_id):
 def add_panier(request, slug):
     try:
         produit = VariationProduit.objects.get(slug=slug)
+        # Empêcher un vendeur d'ajouter son propre produit au panier
+        try:
+            vendeur_profil = request.user.profil_vendeur
+        except Exception:
+            vendeur_profil = None
+
+        if vendeur_profil and produit.vendeur and produit.vendeur == vendeur_profil:
+            messages.error(request, "Vous ne pouvez pas acheter vos propres produits.")
+            return redirect("Ecommerce:shop")
+
         panier, created = Panier.objects.get_or_create(utilisateur=request.user)
         panier.ajouter_produit(produit)
         messages.success(request, "Produit ajouté au panier")
@@ -910,13 +1059,241 @@ def profile_view(request):
 
     # 'adresse' result is not used below; remove assignment to avoid lint errors
 
+    # fournir au client tout code de livraison généré et non encore utilisé
+    livraison_codes = Livraison.objects.filter(
+        commande__utilisateur=request.user, delivery_code__isnull=False, code_used=False
+    ).order_by("-created_at")
+
     datas = {
         "active_page": "shop",
         "favoris_produit": favoris_produits,
         "panier_produit": panier_produits,
+        "livraison_codes": livraison_codes,
     }
 
     return render(request, "profile.html", datas)
+
+
+@login_required(login_url="Authentification:login")
+def show_delivery_code(request, livraison_id):
+    """
+    Permet à l'acheteur de voir le code de livraison (ou QR) à transmettre au livreur.
+    """
+    livraison = get_object_or_404(Livraison, id=livraison_id)
+    if livraison.commande.utilisateur != request.user:
+        messages.error(request, "Accès non autorisé.")
+        return redirect("Ecommerce:commandes")
+
+    # use a PNG endpoint for QR (safer and smaller payload);
+    # pass its URL to the template
+    try:
+        qr_url = reverse("Ecommerce:livraison_qr_png", args=[livraison.id])
+    except Exception:
+        qr_url = None
+
+    return render(
+        request,
+        "livraison/delivery_code.html",
+        {"livraison": livraison, "qr_url": qr_url},
+    )
+
+
+def _is_livreur(user):
+    # Vérifier s'il existe un profil Livreur actif pour l'utilisateur
+    if not (user and user.is_authenticated):
+        return False
+    try:
+        return Livreur.objects.filter(user=user, active=True).exists()
+    except Exception:
+        # si le modèle Livreur n'est pas migré, fallback sur is_staff
+        return user.is_staff
+
+
+@login_required(login_url="Authentification:login")
+@user_passes_test(_is_livreur)
+def livreur_pickup(request, livraison_id):
+    """Marquer la livraison comme prise en charge par le livreur."""
+    livraison = get_object_or_404(Livraison, id=livraison_id)
+    livraison.statut_livraison = StatutLivraison.EXPEDIEE.value
+    livraison.save()
+    try:
+        LivraisonTracking.objects.create(
+            livraison=livraison,
+            statut=StatutLivraison.EXPEDIEE.name,
+            note="Le livreur a récupéré le colis",
+            actor=str(request.user.username),
+        )
+    except Exception:
+        pass
+
+    # notifier l'acheteur
+    try:
+        subject = f"Votre commande #{livraison.commande.id} a été prise en charge"
+        html = render_to_string(
+            "emails/delivery_picked_up.html",
+            {"livraison": livraison},
+        )
+        email = EmailMessage(
+            subject,
+            html,
+            settings.EMAIL_HOST_USER,
+            [livraison.commande.utilisateur.email],
+        )
+        email.content_subtype = "html"
+        email.send(fail_silently=True)
+    except Exception:
+        pass
+
+    messages.success(request, "Livraison marquée comme prise en charge.")
+    return redirect("Ecommerce:commandes")
+
+
+@login_required(login_url="Authentification:login")
+@user_passes_test(_is_livreur)
+def livreur_mark_delivered(request, livraison_id):
+    """Valider la livraison côté livreur : demander le code remis par le client.
+
+    POST: {'code': '123456'}
+    """
+    livraison = get_object_or_404(Livraison, id=livraison_id)
+    if request.method == "POST":
+        code = request.POST.get("code")
+        if not code:
+            messages.error(
+                request, "Veuillez fournir le code de livraison remis par le client."
+            )
+            return redirect("Ecommerce:commandes")
+
+        if (
+            livraison.delivery_code
+            and str(code).strip() == str(livraison.delivery_code).strip()
+        ):
+            livraison.statut_livraison = StatutLivraison.LIVREE.value
+            livraison.code_used = True
+            livraison.save()
+            try:
+                LivraisonTracking.objects.create(
+                    livraison=livraison,
+                    statut=StatutLivraison.LIVREE.name,
+                    note="Livraison confirmée par code fourni par le client.",
+                    actor=str(request.user.username),
+                )
+            except Exception:
+                pass
+
+            # marquer la commande terminée
+            livraison.commande.statut_commande = StatutCommande.TERMINEE.value
+            livraison.commande.save()
+
+            # notifier l'acheteur et le vendeur
+            try:
+                subject = f"Votre commande #{livraison.commande.id} a été livrée"
+                html = render_to_string(
+                    "emails/delivery_completed.html",
+                    {"livraison": livraison},
+                )
+                email = EmailMessage(
+                    subject,
+                    html,
+                    settings.EMAIL_HOST_USER,
+                    [livraison.commande.utilisateur.email],
+                )
+                email.content_subtype = "html"
+                email.send(fail_silently=True)
+            except Exception:
+                pass
+
+            messages.success(request, "Livraison confirmée.")
+            return redirect("Ecommerce:commandes")
+        else:
+            messages.error(request, "Code invalide. Livraison non validée.")
+            return redirect("Ecommerce:commandes")
+
+    # Si GET, afficher petit formulaire pour saisir le code
+    # When a livreur opens the code entry page (GET), ensure a delivery code
+    # exists and notify the buyer so the code appears in their profile.
+    if not livraison.delivery_code:
+        # generate a 6-digit numeric code
+        code = f"{random.randint(0, 999999):06d}"
+        livraison.delivery_code = code
+        livraison.save()
+        try:
+            LivraisonTracking.objects.create(
+                livraison=livraison,
+                statut=StatutLivraison.EN_COURS.name,
+                note=f"Code de livraison généré et envoyé au client: {code}",
+                actor=str(request.user.username),
+            )
+        except Exception:
+            pass
+
+        # notifier l'acheteur par email (optionnel) - email simple
+        try:
+            subject = f"Code de livraison pour votre commande #{livraison.commande.id}"
+            message = f"""
+            Bonjour {livraison.commande.utilisateur.username},
+
+            Votre code de livraison est : {code}
+            Remettez ce code au livreur pour valider la livraison.
+
+            Cordialement,\nL'équipe
+            """
+            email = EmailMessage(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [livraison.commande.utilisateur.email],
+            )
+            email.send(fail_silently=True)
+        except Exception:
+            pass
+
+    return render(
+        request, "livraison/livreur_enter_code.html", {"livraison": livraison}
+    )
+
+
+@login_required(login_url="Authentification:login")
+@user_passes_test(_is_livreur)
+def livreur_dashboard(request):
+    """
+    Vue simple listant les livraisons en attente / en cours pour le livreur.
+    """
+    try:
+        courier = Livreur.objects.get(user=request.user)
+    except Exception:
+        courier = None
+    if courier:
+        # si des livraisons sont assignées,
+        # montrer celles-ci sinon montrer toutes en cours
+        livraisons = Livraison.objects.filter(assigned_courier=courier).order_by(
+            "created_at"
+        ) or Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EN_COURS.value
+        ).order_by(
+            "created_at"
+        )
+
+        livraisons_expediees = Livraison.objects.filter(
+            assigned_courier=courier, statut_livraison=StatutLivraison.EXPEDIEE.value
+        ).order_by("created_at") or Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EXPEDIEE.value
+        ).order_by(
+            "created_at"
+        )
+    else:
+        livraisons = Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EN_COURS.value
+        ).order_by("created_at")
+        livraisons_expediees = Livraison.objects.filter(
+            statut_livraison=StatutLivraison.EXPEDIEE.value
+        ).order_by("created_at")
+
+    return render(
+        request,
+        "livreur/dashboard.html",
+        {"livraisons": livraisons, "livraisons_expediees": livraisons_expediees},
+    )
 
 
 def commandes_view(request):

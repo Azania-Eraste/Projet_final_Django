@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.decorators.http import require_POST
 
 from Authentification.form import (
     ForgetPasswordForm,
@@ -23,8 +24,93 @@ from Authentification.form import (
 )
 from Ecommerce.models import Favoris, Panier
 
-from .form import DevenirVendeurForm, OTPVerifyForm
-from .models import ActivationOTP
+from .form import DevenirLivreurForm, DevenirVendeurForm, OTPVerifyForm
+from .models import ActivationOTP, Livreur, Vendeur
+
+
+def staff_required(user):
+    return user.is_active and user.is_staff
+
+
+@login_required
+@user_passes_test(staff_required)
+def vendeur_requests(request):
+    """Page interne pour que le staff consulte et gère les demandes vendeurs."""
+    demandes = Vendeur.objects.filter(statut="EN_ATTENTE").order_by("created_at")
+    return render(request, "admin/vendeur_requests.html", {"demandes": demandes})
+
+
+@login_required
+@user_passes_test(staff_required)
+def livreur_requests(request):
+    """Page interne pour que le staff consulte et gère les demandes livreurs."""
+    demandes = Livreur.objects.filter(active=False).order_by("user__username")
+    return render(request, "admin/livreur_requests.html", {"demandes": demandes})
+
+
+@login_required
+@user_passes_test(staff_required)
+@require_POST
+def approve_vendeur(request, vendeur_id):
+    try:
+        profil = Vendeur.objects.get(pk=vendeur_id)
+    except Vendeur.DoesNotExist:
+        messages.error(request, "Demande introuvable.")
+        return redirect("Authentification:vendeur_requests")
+
+    profil.statut = "APPROUVE"
+    profil.save()
+    messages.success(request, f"La demande de {profil.user.username} a été approuvée.")
+    return redirect("Authentification:vendeur_requests")
+
+
+@login_required
+@user_passes_test(staff_required)
+@require_POST
+def reject_vendeur(request, vendeur_id):
+    try:
+        profil = Vendeur.objects.get(pk=vendeur_id)
+    except Vendeur.DoesNotExist:
+        messages.error(request, "Demande introuvable.")
+        return redirect("Authentification:vendeur_requests")
+
+    profil.statut = "REFUSE"
+    profil.save()
+    messages.info(request, f"La demande de {profil.user.username} a été refusée.")
+    return redirect("Authentification:vendeur_requests")
+
+
+@login_required
+@user_passes_test(staff_required)
+@require_POST
+def approve_livreur(request, livreur_id):
+    try:
+        profil = Livreur.objects.get(pk=livreur_id)
+    except Livreur.DoesNotExist:
+        messages.error(request, "Demande introuvable.")
+        return redirect("Authentification:livreur_requests")
+
+    profil.active = True
+    profil.save()
+    messages.success(request, f"La demande de {profil.user.username} a été approuvée.")
+    return redirect("Authentification:livreur_requests")
+
+
+@login_required
+@user_passes_test(staff_required)
+@require_POST
+def reject_livreur(request, livreur_id):
+    try:
+        profil = Livreur.objects.get(pk=livreur_id)
+    except Livreur.DoesNotExist:
+        messages.error(request, "Demande introuvable.")
+        return redirect("Authentification:livreur_requests")
+
+    # Supprimer le profil livreur ou le marquer comme inactif
+    profil.delete()
+    messages.info(request, f"La demande de {profil.user.username} a été refusée.")
+    return redirect("Authentification:livreur_requests")
+
 
 # Create your views here.
 
@@ -436,3 +522,54 @@ def devenir_vendeur(request):
     }
     # Utilise le template HTML que je vous ai montré précédemment
     return render(request, "devenir_vendeur.html", context)
+
+
+@login_required
+def devenir_livreur(request):
+    """Permet à un utilisateur connecté de demander à devenir livreur.
+
+    Crée un profil `Livreur` avec `active=False` qui sera visible par le staff
+    dans la page d'administration personnalisée.
+    """
+    favoris, created = Favoris.objects.get_or_create(
+        utilisateur=request.user, defaults={"statut": True}
+    )
+    favoris_produits = favoris.produit.all()
+
+    panier, created = Panier.objects.get_or_create(
+        utilisateur=request.user, defaults={"statut": True}
+    )
+    panier_produits = panier.produits.all()
+
+    # Si l'utilisateur a déjà un profil livreur
+    if hasattr(request.user, "livreur_profile"):
+        profil = request.user.livreur_profile
+        if profil.active:
+            messages.info(request, "Vous êtes déjà un livreur actif.")
+        else:
+            messages.info(
+                request, "Votre demande de livreur est en attente d'approbation."
+            )
+        return redirect("Ecommerce:profile")
+
+    if request.method == "POST":
+        form = DevenirLivreurForm(request.POST, user=request.user)
+        if form.is_valid():
+            # créer le profil livreur (active False par défaut)
+            livreur = form.save(commit=False)
+            livreur.user = request.user
+            livreur.active = False
+            livreur.save()
+            messages.success(
+                request, "Votre demande pour devenir livreur a été envoyée."
+            )
+            return redirect("Ecommerce:profile")
+    else:
+        form = DevenirLivreurForm(user=request.user)
+
+    context = {
+        "form": form,
+        "favoris_produit": favoris_produits,
+        "panier_produit": panier_produits,
+    }
+    return render(request, "devenir_livreur.html", context)

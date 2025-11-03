@@ -1,12 +1,31 @@
 {% extends 'base/base.html' %}
+{% load rest_framework %}
+{% block header %}
 
+{% endblock %}
 {% block content %}
-<div class="container p-6">
-  <h1 class="text-2xl font-bold mb-4">Créer une variation</h1>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary" type="submit">Créer variante</button>
-  </form>
+<div class="container py-4">
+  <div class="card">
+    <div class="card-body">
+      <h1 class="card-title h4 mb-3">Créer une variation</h1>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            {{ field.label_tag }}
+            {{ field|add_class:"form-control" }}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+            {% for error in field.errors %}
+              <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <button class="btn btn-primary" type="submit">Créer variante</button>
+        <a href="{% url 'Ecommerce:seller_dashboard' %}" class="btn btn-secondary ms-2">Annuler</a>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}

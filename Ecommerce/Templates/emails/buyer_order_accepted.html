@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<style>
+			body { font-family: Arial, Helvetica, sans-serif; color: #222 }
+			.card { padding: 16px; border: 1px solid #e6e6e6; border-radius: 6px }
+		</style>
+	</head>
+	<body>
+		<div class="card">
+			<h2>Mise à jour de votre commande N°{{ commande.id }}</h2>
+			<p>Bonjour <strong>{{ commande.utilisateur.get_full_name|default:commande.utilisateur.username }}</strong>,</p>
+			<p>Le vendeur <strong>{{ vendeur.boutique_name }}</strong> a accepté sa partie de la commande.</p>
+
+			<p><strong>Résumé :</strong></p>
+			<ul>
+				{% for cp in commande.Commande_Produit_ids.all %}
+					<li>{{ cp.produit.nom }} — x{{ cp.quantite }} — {{ cp.prix }}</li>
+				{% endfor %}
+			</ul>
+
+			<p>Prix total : {{ commande.prix_total }}</p>
+			<p>Nous vous informerons lorsque l'ensemble des vendeurs aura traité la commande.</p>
+			<p>Merci pour votre confiance.</p>
+		</div>
+	</body>
+ </html>

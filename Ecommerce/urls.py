@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from Ecommerce import views
+from Ecommerce import views, views_qr
 
 from .viewset import (
     AdresseViewSet,
@@ -96,13 +96,36 @@ urlpatterns = [
     # Seller routes
     path("seller/dashboard/", views.seller_dashboard, name="seller_dashboard"),
     path(
-        "seller/product/create/",
-        views.seller_create_product,
-        name="seller_create_product",
-    ),
-    path(
         "seller/variation/create/",
         views.seller_create_variation,
         name="seller_create_variation",
+    ),
+    # route pour accepter/refuser une commande par vendeur
+    path(
+        "seller/order/<int:seller_commande_id>/accept/",
+        views.vendor_accept_seller_commande,
+        name="vendor_accept_seller_commande",
+    ),
+    # Delivery related
+    path(
+        "livraison/<int:livraison_id>/code/",
+        views.show_delivery_code,
+        name="show_delivery_code",
+    ),
+    path(
+        "livraison/<int:livraison_id>/pickup/",
+        views.livreur_pickup,
+        name="livreur_pickup",
+    ),
+    path(
+        "livraison/<int:livraison_id>/deliver/",
+        views.livreur_mark_delivered,
+        name="livreur_mark_delivered",
+    ),
+    path("livreur/dashboard/", views.livreur_dashboard, name="livreur_dashboard"),
+    path(
+        "livraison/<int:livraison_id>/qrcode.png",
+        views_qr.livraison_qr_png,
+        name="livraison_qr_png",
     ),
 ]

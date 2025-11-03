@@ -47,11 +47,17 @@
         </div>
         <div class="humberger__menu__widget">
             <div class="header__top__right__auth">
-                {% if request.user.is_authenticated %}
-                    <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
-                {% else %}
-                    <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
-                {% endif %}
+                    {% if request.user.is_authenticated %}
+
+                        {# Montrer le dashboard vendeur uniquement si le profil existe ET est approuvé #}
+                        {% if request.user.profil_vendeur and request.user.profil_vendeur.statut == "APPROUVE" %}
+                            <a href="{% url 'Ecommerce:seller_dashboard' %}" class="fa fa-user"> Dashboard vendeur</a>
+                        {% else %}
+                            <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard utilisateur</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
+                    {% endif %}
             </div>
         </div>
         <nav class="humberger__menu__nav mobile-menu">
@@ -95,7 +101,13 @@
 
                             <div class="header__top__right__auth">
                                 {% if request.user.is_authenticated %}
-                                <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
+
+                                    {# Montrer le dashboard vendeur uniquement si le profil existe ET est approuvé #}
+                                    {% if request.user.profil_vendeur and request.user.profil_vendeur.statut == "APPROUVE" %}
+                                        <a href="{% url 'Ecommerce:seller_dashboard' %}" class="fa fa-user"> Dashboard</a>
+                                    {% else %}
+                                        <a href="{% url 'Ecommerce:profile' %}" class="fa fa-user"> Dashboard</a>
+                                    {% endif %}
                                 {% else %}
                                     <a href="{% url 'Authentification:login' %}"><i class="fa fa-user"></i> Connexion</a>
                                 {% endif %}

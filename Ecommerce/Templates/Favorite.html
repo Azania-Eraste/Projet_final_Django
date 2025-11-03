@@ -16,8 +16,6 @@
             {% endfor %}
         </div>
     {% endif %}
-
-    <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
         <div class="container">
             <div class="row">
@@ -47,10 +45,20 @@
                             <span>Mon Compte</span>
                         </div>
                         <ul>
-                            <li><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
-                            <li><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
-                            <li class="active"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
-                            <li><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+                            {% if request.user.profil_vendeur %}
+                                <li class="{% if request.resolver_match.view_name == 'Ecommerce:seller_dashboard' %}active{% endif %}"><a href="{% url 'Ecommerce:seller_dashboard' %}">Dashboard</a></li>
+                            {% endif %}
+                            {% if request.user.livreur_profile %}
+                                <li class="{% if request.resolver_match.view_name == 'Ecommerce:livreur_dashboard' %}active{% endif %}"><a href="{% url 'Ecommerce:livreur_dashboard' %}">Dashboard</a></li>
+                            {% endif %}
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:profile' %}active{% endif %}"><a href="{% url 'Ecommerce:profile' %}">Profil</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:commandes' %}active{% endif %}"><a href="{% url 'Ecommerce:commandes' %}">Mes Commandes</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:favorite' %}active{% endif %}"><a href="{% url 'Ecommerce:favorite' %}">Mes Favoris</a></li>
+                            <li class="{% if request.resolver_match.view_name == 'Ecommerce:mode_paiement' %}active{% endif %}"><a href="{% url 'Ecommerce:mode_paiement' %}">Mode de Paiement</a></li>
+                            {% if request.user.profil_vendeur is none and request.user.livreur_profile is none %}
+                                <a href="{% url 'Authentification:devenir_vendeur' %}" class="primary-btn mt-4 mr-4">Devenir Vendeur</a>
+                                <a href="{% url 'Authentification:devenir_livreur' %}" class="primary-btn mt-4 mr-4">Devenir Livreur</a>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

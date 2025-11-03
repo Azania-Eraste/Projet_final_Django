@@ -12,6 +12,30 @@ urlpatterns = [
     path("register/resend-otp/<int:user_id>/", views.resend_otp, name="resend_otp"),
     path("forget-password/", views.forgetpassword, name="forgetpassword"),
     path("devenir-vendeur/", views.devenir_vendeur, name="devenir_vendeur"),
+    path("devenir-livreur/", views.devenir_livreur, name="devenir_livreur"),
+    # Staff pages to manage vendor requests
+    path("admin/vendeurs/requests/", views.vendeur_requests, name="vendeur_requests"),
+    path("admin/livreurs/requests/", views.livreur_requests, name="livreur_requests"),
+    path(
+        "admin/livreurs/<int:livreur_id>/approve/",
+        views.approve_livreur,
+        name="approve_livreur",
+    ),
+    path(
+        "admin/livreurs/<int:livreur_id>/reject/",
+        views.reject_livreur,
+        name="reject_livreur",
+    ),
+    path(
+        "admin/vendeurs/<int:vendeur_id>/approve/",
+        views.approve_vendeur,
+        name="approve_vendeur",
+    ),
+    path(
+        "admin/vendeurs/<int:vendeur_id>/reject/",
+        views.reject_vendeur,
+        name="reject_vendeur",
+    ),
     path(
         "register/<str:uidb64>/<str:token>/", views.active_account, name="activecompte"
     ),

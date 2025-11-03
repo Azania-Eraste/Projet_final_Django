@@ -1,0 +1,15 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container p-6">
+  <h1>Valider livraison - Commande #{{ livraison.commande.id }}</h1>
+  <p>Entrez le code fourni par le client pour confirmer la livraison :</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <input type="text" name="code" class="form-control" placeholder="Code de livraison" required>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Valider</button>
+  </form>
+</div>
+{% endblock %}

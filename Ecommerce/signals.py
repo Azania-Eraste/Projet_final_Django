@@ -1,8 +1,12 @@
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.urls import reverse
 
-from .models import Mode, TypePaiement
+from .models import Commande, CommandeProduit, Mode, SellerCommande, TypePaiement
 
 
 @receiver(post_save, sender=User)
@@ -15,3 +19,99 @@ def create_default_payment_mode(sender, instance, created, **kwargs):
             statut=True,
             nom="liquide",
         )
+
+
+@receiver(post_save, sender=Commande)
+def notify_vendeurs_on_commande_create(sender, instance, created, **kwargs):
+    """Lorsqu'une commande est créée, générer une entrée SellerCommande par vendeur
+    et envoyer un email d'alerte à chaque vendeur pour qu'il accepte la commande.
+    """
+    if not created:
+        return
+
+    try:
+        # récupérer les vendeurs distincts présents dans la commande
+        vendeurs = set()
+        for cp in instance.Commande_Produit_ids.select_related(
+            "produit", "produit__vendeur"
+        ).all():
+            # cp.produit est une VariationProduit; après modification le vendeur
+            # est attaché à la variation elle-même
+            vendeur = cp.produit.vendeur if cp.produit else None
+            if vendeur:
+                vendeurs.add(vendeur)
+
+        for vendeur in vendeurs:
+            seller_cmd, _ = SellerCommande.objects.get_or_create(
+                commande=instance, vendeur=vendeur
+            )
+
+            # construire l'url d'acceptation pour le vendeur
+            accept_path = reverse(
+                "Ecommerce:vendor_accept_seller_commande", args=[seller_cmd.id]
+            )
+            accept_url = f"{settings.SITE_URL}{accept_path}"
+
+            subject = f"Nouvelle commande #{instance.id} - action requise"
+            html = render_to_string(
+                "emails/vendor_new_order.html",
+                {"vendeur": vendeur, "commande": instance, "accept_url": accept_url},
+            )
+
+            email = EmailMessage(
+                subject, html, settings.EMAIL_HOST_USER, [vendeur.user.email]
+            )
+            email.content_subtype = "html"
+            try:
+                email.send(fail_silently=True)
+            except Exception:
+                # Ne pas faire échouer la création de commande si l'email ne part pas
+                pass
+    except Exception:
+        # protéger contre erreurs inattendues
+        pass
+
+
+@receiver(post_save, sender=CommandeProduit)
+def notify_vendeur_on_commandeproduit_create(sender, instance, created, **kwargs):
+    """Lorsqu'un CommandeProduit est créé, s'assurer qu'une SellerCommande
+    existe pour le vendeur concerné et l'en notifier.
+    """
+    if not created:
+        return
+
+    try:
+        vendeur = instance.produit.vendeur if instance.produit else None
+        if not vendeur:
+            return
+
+        seller_cmd, created_sc = SellerCommande.objects.get_or_create(
+            commande=instance.commande, vendeur=vendeur
+        )
+
+        # construire l'url d'acceptation pour le vendeur
+        accept_path = reverse(
+            "Ecommerce:vendor_accept_seller_commande", args=[seller_cmd.id]
+        )
+        accept_url = f"{settings.SITE_URL}{accept_path}"
+
+        subject = f"Nouvelle commande #{instance.commande.id} - action requise"
+        html = render_to_string(
+            "emails/vendor_new_order.html",
+            {
+                "vendeur": vendeur,
+                "commande": instance.commande,
+                "accept_url": accept_url,
+            },
+        )
+
+        email = EmailMessage(
+            subject, html, settings.EMAIL_HOST_USER, [vendeur.user.email]
+        )
+        email.content_subtype = "html"
+        try:
+            email.send(fail_silently=True)
+        except Exception:
+            pass
+    except Exception:
+        pass

@@ -6,4 +6,8 @@ class EcommerceConfig(AppConfig):
     name = "Ecommerce"
 
     def ready(self):
-        pass
+        # Import signals to ensure they're registered
+        try:
+            from . import signals  # noqa: F401
+        except Exception:
+            pass

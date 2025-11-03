@@ -10,11 +10,13 @@ from .models import (
     Commune,
     Favoris,
     Livraison,
+    LivraisonTracking,
     Mode,
     Paiement,
     Panier,
     Produit,
     Promotion,
+    SellerCommande,
     VariationProduit,
     Ville,
 )
@@ -129,6 +131,20 @@ class LivraisonAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+@admin.register(LivraisonTracking)
+class LivraisonTrackingAdmin(admin.ModelAdmin):
+    list_display = ("livraison", "statut", "actor", "created_at")
+    list_filter = ("statut",)
+    search_fields = ("livraison__commande__id",)
+
+
+@admin.register(SellerCommande)
+class SellerCommandeAdmin(admin.ModelAdmin):
+    list_display = ("commande", "vendeur", "statut")
+    list_filter = ("statut",)
+    search_fields = ("commande__id", "vendeur__boutique_name")
 
 
 @admin.register(Mode)

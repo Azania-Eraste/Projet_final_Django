@@ -82,3 +82,30 @@ class ActivationOTP(models.Model):
 
     def __str__(self):
         return f"OTP for {self.user} ({'used' if self.used else 'open'})"
+
+
+class Livreur(models.Model):
+    """Profile simple pour les livreurs. Relie un user à un profil livreur.
+
+    Placé ici pour centraliser les profils d'utilisateurs (vendeur, livreur, ...)
+    et éviter les dépendances circulaires entre apps.
+    """
+
+    from django.conf import settings
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="livreur_profile",
+    )
+    active = models.BooleanField(default=True)
+    phone = models.CharField(max_length=50, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Livreur"
+        verbose_name_plural = "Livreurs"
+
+    def __str__(self):
+        return f"Livreur: {self.user.username}"
